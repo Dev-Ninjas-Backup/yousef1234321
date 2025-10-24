@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 
@@ -37,7 +38,7 @@ class SplashScreen extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Navigate to the next screen
+                    Get.offAllNamed('/onboardingScreen');
                   },
                   child: Container(
                     margin: EdgeInsets.only(left: 16),
