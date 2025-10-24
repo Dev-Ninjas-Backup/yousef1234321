@@ -1,3 +1,3 @@
 class Iconpath {
-  static String googleIcon = '';
+  static String splashLogo = 'assets/icons/splashLogo.png';
 }
