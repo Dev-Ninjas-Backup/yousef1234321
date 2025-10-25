@@ -90,7 +90,9 @@ class SignInScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed('/forgetPasswordScreen');
+                  },
                   child: const Text(
                     "Forget password?",
                     style: TextStyle(
