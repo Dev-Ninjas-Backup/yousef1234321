@@ -5,14 +5,14 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
-import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
+import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignInController());
+    final controller = Get.put(SignUpController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -195,7 +195,7 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.back();
+                                Get.offAllNamed('/signInScreen');
                               },
                           ),
                         ],

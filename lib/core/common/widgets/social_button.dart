@@ -7,11 +7,11 @@ class SocialButton extends StatelessWidget {
   final VoidCallback? onTap;
 
   const SocialButton({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.text,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
