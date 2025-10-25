@@ -20,23 +20,6 @@ class SignInScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Align(
-              //   alignment: Alignment.topLeft,
-              //   child: Container(
-              //     height: 44,
-              //     width: 44,
-              //     decoration: BoxDecoration(
-              //       color: Color(0xFFE8F1FD),
-              //       borderRadius: BorderRadius.circular(100),
-              //     ),
-              //     child: Center(
-              //       child: Icon(
-              //         Icons.arrow_back_ios,
-              //         color: AppColors.splashButtonColor,
-              //       ),
-              //     ),
-              //   ),
-              // ),
               SizedBox(height: 40),
               Text(
                 'Sign In Now',
@@ -109,7 +92,7 @@ class SignInScreen extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {},
                   child: const Text(
-                    "Forgot password?",
+                    "Forget password?",
                     style: TextStyle(
                       color: AppColors.splashButtonColor,
                       fontWeight: FontWeight.w600,
@@ -162,7 +145,10 @@ class SignInScreen extends StatelessWidget {
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
                       ),
-                      recognizer: TapGestureRecognizer()..onTap = () {},
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Get.offNamed('/signUpScreen');
+                        },
                     ),
                   ],
                 ),
