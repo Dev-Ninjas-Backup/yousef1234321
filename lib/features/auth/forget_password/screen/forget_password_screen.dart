@@ -2,14 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
+import 'package:yousef1234321/core/common/widgets/custom_button.dart';
+import 'package:yousef1234321/features/auth/forget_password/controller/forget_password_controller.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignUpController());
+    final controller = Get.put(ForgetPasswordController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -64,8 +65,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                         fontWeight: FontWeight.w400,
                         color: AppColors.subTextColor,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 40),
+                    SizedBox(height: 32),
 
                     TextField(
                       controller: controller.emailController,
@@ -86,33 +88,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : controller.signIn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.splashButtonColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: controller.isLoading.value
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                "Reset Password",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
-                    ),
+                    CustomButton(title: "Reset Password", onPressed: () {}),
                   ],
                 ),
               ),
