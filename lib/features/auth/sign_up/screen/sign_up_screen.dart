@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
 import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
 
@@ -148,33 +149,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 63),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: controller.isLoading.value
-                            ? null
-                            : controller.signIn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.splashButtonColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                        ),
-                        child: controller.isLoading.value
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                      ),
-                    ),
+                    CustomButton(title: 'Sign Up', onPressed: () {}),
                     SizedBox(height: 48),
                     RichText(
                       textAlign: TextAlign.center,
