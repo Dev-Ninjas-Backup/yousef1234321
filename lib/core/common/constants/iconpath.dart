@@ -5,4 +5,5 @@ class Iconpath {
   static String smart = 'assets/icons/smart.png';
   static String service = 'assets/icons/smart.png';
   static String secure = 'assets/icons/smart.png';
+  static String email = 'assets/icons/email.png';
 }

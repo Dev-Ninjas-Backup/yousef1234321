@@ -21,20 +21,20 @@ class ForgetPasswordScreen extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () {
-                    Get.back();
                     if (kDebugMode) {
-                      print('Tapped');
+                      print('Back button tapped');
                     }
+                    Get.back();
                   },
                   child: Container(
                     margin: const EdgeInsets.only(left: 24, top: 24),
                     height: 44,
                     width: 44,
                     decoration: BoxDecoration(
-                      color: Color(0xFFE8F1FD),
+                      color: const Color(0xFFE8F1FD),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Icon(
                         Icons.arrow_back_ios,
                         color: AppColors.splashButtonColor,
@@ -44,12 +44,12 @@ class ForgetPasswordScreen extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 47, right: 47),
+                padding: const EdgeInsets.symmetric(horizontal: 47),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 40),
-                    Text(
+                    const SizedBox(height: 40),
+                    const Text(
                       'Forget Password',
                       style: TextStyle(
                         fontSize: 26,
@@ -57,9 +57,9 @@ class ForgetPasswordScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      'Enter your email account to reset  your password',
+                      'Enter your email account to reset your password',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -67,8 +67,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 32),
-
+                    const SizedBox(height: 32),
                     TextField(
                       controller: controller.emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -80,15 +79,23 @@ class ForgetPasswordScreen extends StatelessWidget {
                           horizontal: 20,
                         ),
                         filled: true,
-                        fillColor: Color(0xFFF7F7F9),
+                        fillColor: const Color(0xFFF7F7F9),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
                           borderSide: BorderSide.none,
                         ),
                       ),
                     ),
-                    SizedBox(height: 40),
-                    CustomButton(title: "Reset Password", onPressed: () {}),
+                    const SizedBox(height: 40),
+                    CustomButton(
+                      title: "Reset Password",
+                      onPressed: () {
+                        if (kDebugMode) {
+                          print('Reset Password button pressed');
+                        }
+                        controller.resetPasswordDialog();
+                      },
+                    ),
                   ],
                 ),
               ),
