@@ -3,6 +3,7 @@ import 'package:get/route_manager.dart';
 import 'package:yousef1234321/features/auth/forget_password/screen/forget_password_screen.dart';
 import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
+import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
@@ -12,6 +13,8 @@ class Approute {
   static String signInScreen = '/signInScreen';
   static String signUpScreen = '/signUpScreen';
   static String forgetPasswordScreen = '/forgetPasswordScreen';
+  static String bottomNavBarScreen = '/bottomNavBarScreen';
+
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -25,5 +28,7 @@ class Approute {
     GetPage(name: signInScreen, page: () => SignInScreen()),
     GetPage(name: signUpScreen, page: () => SignUpScreen()),
     GetPage(name: forgetPasswordScreen, page: () => ForgetPasswordScreen()),
+    GetPage(name: bottomNavBarScreen, page: () => BottomNavbarScreen()),
+
   ];
 }

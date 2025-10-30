@@ -6,6 +6,7 @@ import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -108,7 +109,7 @@ class SignInScreen extends StatelessWidget {
               CustomButton(
                 title: 'Sign In',
                 onPressed: () {
-                  Get.offNamed('/bottomNavBar');
+                  Get.offAllNamed(Approute.bottomNavBarScreen);
                 },
               ),
               SizedBox(height: 48),
