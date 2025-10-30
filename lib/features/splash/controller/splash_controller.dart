@@ -12,17 +12,15 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     _startImageRotation();
   }
 
   void _startImageRotation() {
-    Future.delayed(Duration(seconds: 1), () {
-      if (currentImageIndex.value < images.length - 1) {
-        currentImageIndex.value++;
-      } else {
-        currentImageIndex.value = 0;
-      }
-      _startImageRotation();
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+      return true;
     });
   }
 }
