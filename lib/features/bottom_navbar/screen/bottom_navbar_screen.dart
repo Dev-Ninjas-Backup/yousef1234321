@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/home/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
+import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});
@@ -13,7 +14,7 @@ class BottomNavbarScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       HomeScreen(),
-      HomeScreen(),
+      SparePartsScreen(),
       HomeScreen(),
       HomeScreen(),
       HomeScreen(),
