@@ -27,7 +27,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     Get.back();
                   },
                   child: Container(
-                    margin: const EdgeInsets.only(left: 24, top: 24),
+                    margin: EdgeInsets.only(left: 24, top: 24),
                     height: 44,
                     width: 44,
                     decoration: BoxDecoration(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/features/auth/otp/screen/otp_screen.dart';
 
 class ForgetPasswordController extends GetxController {
   final emailController = TextEditingController();
@@ -100,7 +101,7 @@ class ForgetPasswordController extends GetxController {
                 height: 44,
                 child: ElevatedButton(
                   onPressed: () {
-                    Get.back();
+                    Get.to(OtpScreen());
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.splashButtonColor,
