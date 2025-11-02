@@ -19,13 +19,13 @@ class OnboardingScreen extends StatelessWidget {
             'Your one-stop platform to find garages, book mobile mechanics, and get emergency car services anywhere in the UAE.',
       },
       {
-        'image': Imagepath.onboarding2,
+        'image': Imagepath.image2,
         'title': 'Find Trusted Garages',
         'description':
             'Search and filter garages by service type, vehicle model, ratings, and location for quick and reliable service.',
       },
       {
-        'image': Imagepath.onboarding3,
+        'image': Imagepath.image3,
         'title': 'Car Repair at Your Doorstep',
         'description':
             'Schedule licensed mechanics for diagnostics, oil changes, battery replacements, and more all at home or office.',
