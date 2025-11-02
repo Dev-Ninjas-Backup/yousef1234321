@@ -78,9 +78,8 @@ class OtpScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
-                    // OTP Boxes
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
@@ -138,7 +137,6 @@ class OtpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 20),
 
-                    // Resend row
                     Obx(() {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
