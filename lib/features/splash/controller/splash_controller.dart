@@ -1,7 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 
-class SplashController extends GetxController {
+class SplashController extends GetxController with GetSingleTickerProviderStateMixin {
+
+  late AnimationController animationController;
+
   var currentImageIndex = 0.obs;
   final List<String> images = [
     Iconpath.smart,
@@ -11,6 +15,11 @@ class SplashController extends GetxController {
 
   @override
   void onInit() {
+
+      animationController = AnimationController(
+        vsync: this,
+        duration: const Duration(seconds: 1),
+      )..repeat();
     super.onInit();
 
     _startImageRotation();
@@ -23,4 +32,27 @@ class SplashController extends GetxController {
       return true;
     });
   }
+
+  @override
+  void onClose() {
+    animationController.dispose();
+    super.onClose();
+  }
 }
+// late AnimationController animationController;
+
+// @override
+// void onInit() {
+//   animationController = AnimationController(
+//     vsync: this,
+//     duration: const Duration(seconds: 5),
+//   )..repeat();
+
+//   super.onInit();
+// }
+
+// @override
+// void onClose() {
+//   animationController.dispose();
+//   super.onClose();
+// }
