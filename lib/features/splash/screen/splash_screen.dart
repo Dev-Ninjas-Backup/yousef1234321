@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/splash/controller/splash_controller.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -16,7 +15,34 @@ class SplashScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 300),
-          Image.asset(Iconpath.splashLogo, fit: BoxFit.cover),
+          Center(
+            child: SizedBox(
+              width: 350,
+              child: Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  RotationTransition(
+                    turns: controller.animationController,
+                    child: Image.asset("assets/images/tire.png", width: 90),
+                  ),
+
+                  // tyre position 1 (your shown logo has only 1 wheel visually)
+                  Positioned(
+                    top: 42, // adjust this based on your PNG
+                    child: Image.asset(
+                      "assets/images/splash_car.jpg",
+                      width: 350,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Image.asset("assets/images/sayara_hub.png", width: 200),
+          const SizedBox(height: 10),
+          Text('Find. Fix. Drive'),
           const Spacer(),
 
           /// 🔁 Rotating Image Section
