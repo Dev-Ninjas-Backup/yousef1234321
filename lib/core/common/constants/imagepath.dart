@@ -7,4 +7,12 @@ class Imagepath {
   static String image2 = 'assets/images/image2.png';
   static String image3 = 'assets/images/image3.png';
   static String image4 = 'assets/images/image4.jpg';
+  static String slide1 = 'assets/images/slide1.png';
+  static String slide2 = 'assets/images/slide2.png';
+  static String slide3 = 'assets/images/slide3.png';
+  static String slide4 = 'assets/images/slide4.png';
+  static String slide5 = 'assets/images/slide5.png';
+  static String slide6 = 'assets/images/slide6.png';
+
+
 }

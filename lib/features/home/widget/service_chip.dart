@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ServiceChip extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final String icon;
   final VoidCallback? onTap;
 
   const ServiceChip({
@@ -18,7 +18,7 @@ class ServiceChip extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 60,
-
+        width: 110,
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -35,9 +35,12 @@ class ServiceChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: Colors.blueAccent),
+            Image.asset(icon, scale: 3),
             const SizedBox(width: 6),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+            ),
           ],
         ),
       ),

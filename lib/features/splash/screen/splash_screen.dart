@@ -27,7 +27,6 @@ class SplashScreen extends StatelessWidget {
                     child: Image.asset("assets/images/tire.png", width: 90),
                   ),
 
-                  // tyre position 1 (your shown logo has only 1 wheel visually)
                   Positioned(
                     top: 42, // adjust this based on your PNG
                     child: Image.asset(

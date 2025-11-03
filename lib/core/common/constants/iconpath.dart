@@ -11,5 +11,12 @@ class Iconpath {
   static String bottom3 = 'assets/icons/bottom_3.png';
   static String bottom4 = 'assets/icons/bottom_4.png';
   static String bottom5 = 'assets/icons/bottom_5.png';
+  static String notification = 'assets/icons/notification.png';
+  static String acIcon = 'assets/icons/AC_icon.png';
+  static String batterryIcon = 'assets/icons/batterry_icon.png';
+  static String electricIcon = 'assets/icons/electric_icon.png';
+  static String engineIcon = 'assets/icons/engine_icon.png';
+  static String spareIcon = 'assets/icons/spare_icon.png';
+  static String wheelIcon = 'assets/icons/wheel_icon.png';
 
 }
