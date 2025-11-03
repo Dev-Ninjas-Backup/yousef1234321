@@ -1,8 +1,43 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/features/home/model/garage_model.dart';
 
 
 class HomeController extends GetxController {
+
+  final ScrollController scrollController = ScrollController();
+  late Timer timer;
+
+  double speed = 1.0; 
+
+  startScroll() {
+    timer = Timer.periodic(const Duration(milliseconds: 16), (t) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(scrollController.offset + speed);
+
+        if (scrollController.offset >=
+            scrollController.position.maxScrollExtent) {
+          scrollController.jumpTo(0);
+        }
+      }
+    });
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    startScroll();
+  }
+
+  @override
+  void onClose() {
+    timer.cancel();
+    scrollController.dispose();
+    super.onClose();
+  }
+
   var garages = <GarageModel>[
     GarageModel(
       name: "Al Majid Auto Service",
@@ -49,3 +84,35 @@ class HomeController extends GetxController {
 
   final locations = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"];
 }
+
+
+// final ScrollController scrollController = ScrollController();
+// late Timer timer;
+
+// double speed = 1.0; // can increase for faster slide
+
+// startScroll() {
+//   timer = Timer.periodic(const Duration(milliseconds: 16), (t) {
+//     if (scrollController.hasClients) {
+//       scrollController.jumpTo(scrollController.offset + speed);
+
+//       if (scrollController.offset >=
+//           scrollController.position.maxScrollExtent) {
+//         scrollController.jumpTo(0);
+//       }
+//     }
+//   });
+// }
+
+// @override
+// void onInit() {
+//   super.onInit();
+//   startScroll();
+// }
+
+// @override
+// void onClose() {
+//   timer.cancel();
+//   scrollController.dispose();
+//   super.onClose();
+// }

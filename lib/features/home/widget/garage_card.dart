@@ -53,15 +53,19 @@ class GarageCard extends StatelessWidget {
                     spacing: 12,
                     children: [
                       Container(
-                        padding: EdgeInsets.all(8),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(16),
+                          color: AppColors.greenOpacity,
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           garage.status,
                           style: const TextStyle(
                             color: Colors.green,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -71,7 +75,7 @@ class GarageCard extends StatelessWidget {
                         children: garage.tags
                             .map(
                               (tag) => Text(
-                                "${tag}  ",
+                                "${tag} ",
                                 style: const TextStyle(fontSize: 12),
                               ),
                             )

@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/home/controller/home_controller.dart';
+import 'package:yousef1234321/features/home/widget/brand_marque.dart';
 
 class SearchSection extends StatelessWidget {
   SearchSection({super.key});
@@ -76,6 +76,7 @@ class SearchSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
+
                     /// 🔹 Service Type Dropdown
                     Expanded(
                       child: Obx(
@@ -114,6 +115,9 @@ class SearchSection extends StatelessWidget {
                     backgroundColor: AppColors.primaryColor,
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 45),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(8),
+                    ),
                   ),
                   onPressed: () {},
                   child: const Text("Search parts"),
@@ -123,7 +127,7 @@ class SearchSection extends StatelessWidget {
           ),
 
           const SizedBox(height: 8),
-          Image.asset(Imagepath.autoCarSlide),
+          BrandMarqueeView(),
         ],
       ),
     );

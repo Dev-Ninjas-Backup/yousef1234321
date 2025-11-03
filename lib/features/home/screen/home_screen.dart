@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/home/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/widget/search_section.dart';
@@ -14,34 +16,43 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            Icon(Icons.directions_car, color: Colors.blue),
-            SizedBox(width: 8),
-            Text("SayaraHub", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        actions: [
-          CircleAvatar(
-            backgroundColor: Colors.black.withValues(alpha: 0.1),
-            child: Icon(Icons.notifications_none),
-          ),
-          SizedBox(width: 12),
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-              "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-            ),
-          ),
-          SizedBox(width: 12),
-        ],
-      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.directions_car, color: Colors.blue),
+                    SizedBox(width: 8),
+                    Text(
+                      "SayaraHub",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      child: Image.asset(Iconpath.notification, scale: 2),
+                    ),
+                    SizedBox(width: 12),
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
             SearchSection(),
             const SizedBox(height: 16),
             Container(
@@ -66,6 +77,9 @@ class HomeScreen extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.circular(8),
+                      ),
                     ),
                     onPressed: () {},
                     child: Text(
@@ -89,18 +103,44 @@ class HomeScreen extends StatelessWidget {
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ServiceChip(label: "AC Repair", icon: Icons.ac_unit),
-                    ServiceChip(label: "Battery", icon: Icons.battery_full),
-                    ServiceChip(label: "Engine", icon: Icons.build),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "AC Repair",
+                        icon: Iconpath.acIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Battery",
+                        icon: Iconpath.batterryIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(label: "Engine", icon: Iconpath.engineIcon,
+                      ),
+                    ),
                   ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   spacing: 10,
                   children: [
-                    ServiceChip(label: "Tires", icon: Icons.tire_repair),
-                    ServiceChip(label: "Electrical", icon: Icons.flash_on),
-                    ServiceChip(label: "Spares", icon: Icons.settings),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Tires",
+                        icon: Iconpath.wheelIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Electrical",
+                        icon: Iconpath.electricIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(label: "Spares", icon: Iconpath.spareIcon,
+                      ),
+                    ),
                   ],
                 ),
               ],
