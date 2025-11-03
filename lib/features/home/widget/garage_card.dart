@@ -75,7 +75,7 @@ class GarageCard extends StatelessWidget {
                         children: garage.tags
                             .map(
                               (tag) => Text(
-                                "${tag} ",
+                                "$tag ",
                                 style: const TextStyle(fontSize: 12),
                               ),
                             )
