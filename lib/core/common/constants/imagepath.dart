@@ -13,6 +13,9 @@ class Imagepath {
   static String slide4 = 'assets/images/slide4.png';
   static String slide5 = 'assets/images/slide5.png';
   static String slide6 = 'assets/images/slide6.png';
+  static String drive='assets/images/drive.png';
+  static String find='assets/images/Find.png';
+  static String fix='assets/images/fix.png';
 
 
 }

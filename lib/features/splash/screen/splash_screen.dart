@@ -24,24 +24,21 @@ class SplashScreen extends StatelessWidget {
                 children: [
                   RotationTransition(
                     turns: controller.animationController,
-                    child: Image.asset("assets/images/tire.png", width: 90),
+                    child: Image.asset("assets/images/tire.png", width: 89),
                   ),
 
                   Positioned(
-                    top: 42, // adjust this based on your PNG
+                    top: 36, // adjust this based on your PNG
                     child: Image.asset(
-                      "assets/images/splash_car.jpg",
-                      width: 350,
+                      "assets/images/carwithlogo2.png",
+                      width: 312,
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 10),
-          Image.asset("assets/images/sayara_hub.png", width: 200),
-          const SizedBox(height: 10),
-          Text('Find. Fix. Drive'),
+
           const Spacer(),
 
           /// 🔁 Rotating Image Section
@@ -74,13 +71,13 @@ class SplashScreen extends StatelessWidget {
               child: Image.asset(
                 controller.images[controller.currentImageIndex.value],
                 key: ValueKey(controller.currentImageIndex.value),
-                width: 179,
-                height: 60,
+                width: 147,
+                height: 40,
               ),
             );
           }),
 
-          const SizedBox(height: 40),
+          const SizedBox(height: 50),
 
           /// Bottom Button Section
           Container(
