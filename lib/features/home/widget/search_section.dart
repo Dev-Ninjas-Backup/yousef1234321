@@ -123,7 +123,7 @@ class SearchSection extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {},
-                  child: const Text("Search parts"),
+                  child: const Text("Search garage"),
                 ),
               ],
             ),
