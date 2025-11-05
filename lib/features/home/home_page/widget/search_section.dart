@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/features/home/controller/home_controller.dart';
-import 'package:yousef1234321/features/home/widget/brand_marque.dart';
+import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
+import 'package:yousef1234321/features/home/home_page/widget/brand_marque.dart';
+
+import '../../../../routes/app_route.dart';
 
 class SearchSection extends StatelessWidget {
   SearchSection({super.key});
@@ -97,7 +99,7 @@ class SearchSection extends StatelessWidget {
                           decoration: InputDecoration(
                             hintText: "Service type",
                             filled: true,
-                           fillColor: Colors.white,
+                            fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(color: Color(0xFFE5E7EB)),
@@ -122,7 +124,9 @@ class SearchSection extends StatelessWidget {
                       borderRadius: BorderRadiusGeometry.circular(8),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed(Approute.getfindGaragePage());
+                  },
                   child: const Text("Search garage"),
                 ),
               ],

@@ -7,6 +7,8 @@ import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
+import '../features/home/find_garage/screen/find_garage_page.dart';
+
 class Approute {
   static String splashScreen = '/splashScreen';
   static String onboardingScreen = '/onboardingScreen';
@@ -14,6 +16,9 @@ class Approute {
   static String signUpScreen = '/signUpScreen';
   static String forgetPasswordScreen = '/forgetPasswordScreen';
   static String bottomNavBarScreen = '/bottomNavBarScreen';
+  //home
+  static String findGaragePage='/home/findGaragePage';
+  
 
 
   static String getSplashScreen() => splashScreen;
@@ -21,6 +26,8 @@ class Approute {
   static String getSignInScreen() => signInScreen;
   static String getSignUpScreen() => signUpScreen;
   static String getForgetPasswordScreen() => forgetPasswordScreen;
+  //home
+  static String getfindGaragePage()=>findGaragePage;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -29,6 +36,8 @@ class Approute {
     GetPage(name: signUpScreen, page: () => SignUpScreen()),
     GetPage(name: forgetPasswordScreen, page: () => ForgetPasswordScreen()),
     GetPage(name: bottomNavBarScreen, page: () => BottomNavbarScreen()),
+    //home
+    GetPage(name: findGaragePage, page: ()=>FindGaragePage())
 
   ];
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/features/home/model/garage_model.dart';
+import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 
 class GarageCard extends StatelessWidget {
   final GarageModel garage;

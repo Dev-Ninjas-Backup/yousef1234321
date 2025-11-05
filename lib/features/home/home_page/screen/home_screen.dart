@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
-import 'package:yousef1234321/features/home/controller/home_controller.dart';
-import 'package:yousef1234321/features/home/widget/garage_card.dart';
-import 'package:yousef1234321/features/home/widget/search_section.dart';
-import 'package:yousef1234321/features/home/widget/service_chip.dart';
+import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
+import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
+import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
+import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -27,11 +27,14 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Image.asset(Iconpath.carHomeIcon,height: 37,width: 37,),
+                    Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
                     SizedBox(width: 8),
                     Text(
                       "SayaraHub",
-                      style: getTextStyle(fontSize: 28,fontWeight: FontWeight.w700),
+                      style: getTextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
@@ -115,7 +118,9 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: ServiceChip(label: "Engine", icon: Iconpath.engineIcon,
+                      child: ServiceChip(
+                        label: "Engine",
+                        icon: Iconpath.engineIcon,
                       ),
                     ),
                   ],
@@ -137,7 +142,9 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: ServiceChip(label: "Spares", icon: Iconpath.spareIcon,
+                      child: ServiceChip(
+                        label: "Spares",
+                        icon: Iconpath.spareIcon,
                       ),
                     ),
                   ],
