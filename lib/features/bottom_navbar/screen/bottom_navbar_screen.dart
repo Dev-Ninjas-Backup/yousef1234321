@@ -23,7 +23,7 @@ class BottomNavbarScreen extends StatelessWidget {
     final List<String> icons = [
       Iconpath.bottom1,
       Iconpath.bottom2,
-      "assets/icons/bottom_3.png",
+      Iconpath.homeIcon,
       Iconpath.bottom4,
       Iconpath.bottom5,
     ];

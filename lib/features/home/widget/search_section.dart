@@ -16,27 +16,28 @@ class SearchSection extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.primaryColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             "Find Car Services Near You",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             "Emergency repairs, maintenance & more",
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -63,13 +64,14 @@ class SearchSection extends StatelessWidget {
                           decoration: InputDecoration(
                             hintText: "Location",
                             filled: true,
-                            fillColor: Colors.grey.withValues(alpha: 0.2),
+                            fillColor: Colors.white,
                             border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12,
-                              vertical: 10,
+                              vertical: 8,
                             ),
                           ),
                         ),
@@ -95,13 +97,14 @@ class SearchSection extends StatelessWidget {
                           decoration: InputDecoration(
                             hintText: "Service type",
                             filled: true,
-                            fillColor: Colors.grey.withValues(alpha: 0.2),
+                           fillColor: Colors.white,
                             border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12,
-                              vertical: 10,
+                              vertical: 8,
                             ),
                           ),
                         ),
