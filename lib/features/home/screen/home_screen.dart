@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/home/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/widget/search_section.dart';
@@ -26,11 +27,11 @@ class HomeScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.directions_car, color: Colors.blue),
+                    Image.asset(Iconpath.carHomeIcon,height: 37,width: 37,),
                     SizedBox(width: 8),
                     Text(
                       "SayaraHub",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: getTextStyle(fontSize: 28,fontWeight: FontWeight.w700),
                     ),
                   ],
                 ),
@@ -46,7 +47,6 @@ class HomeScreen extends StatelessWidget {
                         "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
                       ),
                     ),
-                    SizedBox(width: 12),
                   ],
                 ),
               ],

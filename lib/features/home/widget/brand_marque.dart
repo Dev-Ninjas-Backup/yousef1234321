@@ -32,7 +32,7 @@ class BrandMarqueeView extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: all.length,
-        itemBuilder: (_, i) => Image.asset(all[i], height: 40),
+        itemBuilder: (_, i) => Image.asset(all[i], height: 40,width: 40,),
         separatorBuilder: (_, __) => const SizedBox(width: 20),
       ),
     );
