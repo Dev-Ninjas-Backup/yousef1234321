@@ -102,7 +102,7 @@ class BottomNavbarScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // const SizedBox(height: 4),
+                     const SizedBox(height: 4),
                     Text(
                       labels[index],
                       style: TextStyle(
