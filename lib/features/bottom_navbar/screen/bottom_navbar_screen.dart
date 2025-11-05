@@ -13,11 +13,20 @@ class BottomNavbarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      HomeScreen(),
+      Padding(
+        padding: EdgeInsetsGeometry.all(50),
+        child: Center(child: Text("development on progress...")),
+      ),
       SparePartsScreen(),
       HomeScreen(),
-      HomeScreen(),
-      HomeScreen(),
+      Padding(
+        padding: EdgeInsetsGeometry.all(50),
+        child: Center(child: Text("development on progress...")),
+      ),
+      Padding(
+        padding: EdgeInsetsGeometry.all(50),
+        child: Center(child: Text("development on progress...")),
+      ),
     ];
 
     final List<String> icons = [
@@ -38,13 +47,29 @@ class BottomNavbarScreen extends StatelessWidget {
 
     return Obx(
       () => Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         body: pages[controller.currentIndex.value],
         bottomNavigationBar: Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: const EdgeInsets.only(bottom: 20, top: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.elliptical(430, 65),
+              topRight: Radius.elliptical(430, 65),
+            ),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                //color: Colors.red,
+                color: Color(0xFFAFB8C6).withValues(alpha: .18),
+                spreadRadius: 0,
+                blurRadius: 16,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.only(bottom: 40, top: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: List.generate(icons.length, (index) {
               bool isSelected = controller.currentIndex.value == index;
               return GestureDetector(
@@ -52,14 +77,32 @@ class BottomNavbarScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      icons[index],
+                    // Image.asset(
+                    //   icons[index],
 
-                      width: 28,
-                      height: 28,
-                      color: isSelected ? Colors.blue : Colors.grey,
+                    //   height: index == 2 ? 50 : 25,
+                    //   width: index == 2 ? 50 : 25,
+
+                    //   // width: 28,
+                    //   // height: 28,
+                    //   color: index == 2
+                    //       ? null
+                    //       : (isSelected ? Colors.blue : Colors.grey),
+                    // ),
+                    SizedBox(
+                      height: index == 2 ? 50 : 25,
+                      width: index == 2 ? 50 : 25,
+                      child: Image.asset(
+                        icons[index],
+                        fit: BoxFit
+                            .contain, // ensures the image scales to the size
+                        color: index == 2
+                            ? null
+                            : (isSelected ? Colors.blue : Colors.grey),
+                      ),
                     ),
-                    const SizedBox(height: 4),
+
+                    // const SizedBox(height: 4),
                     Text(
                       labels[index],
                       style: TextStyle(
