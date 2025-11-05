@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/features/home/model/garage_model.dart';
+import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 
 
 class HomeController extends GetxController {

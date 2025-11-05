@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
-import 'package:yousef1234321/features/home/controller/home_controller.dart';
+import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
 
 class BrandMarqueeView extends StatelessWidget {
   BrandMarqueeView({super.key});
