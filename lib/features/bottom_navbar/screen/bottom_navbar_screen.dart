@@ -5,6 +5,8 @@ import 'package:yousef1234321/features/home/home_page/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
 
+import '../../service/screen/find_service.dart';
+
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});
 
@@ -13,10 +15,7 @@ class BottomNavbarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      Padding(
-        padding: EdgeInsetsGeometry.all(50),
-        child: Center(child: Text("development on progress...")),
-      ),
+      FindService(),
       SparePartsScreen(),
       HomeScreen(),
       Padding(
@@ -102,7 +101,7 @@ class BottomNavbarScreen extends StatelessWidget {
                       ),
                     ),
 
-                     const SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       labels[index],
                       style: TextStyle(
