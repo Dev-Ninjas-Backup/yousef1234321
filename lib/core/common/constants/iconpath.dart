@@ -23,4 +23,6 @@ class Iconpath {
 
   static String arrowback = "assets/icons/backIcon.png";
   static String filtericon = 'assets/icons/filter.png';
+  static String callIcon = "assets/icons/call.png";
+  static String messageIcon = "assets/icons/message.png";
 }
