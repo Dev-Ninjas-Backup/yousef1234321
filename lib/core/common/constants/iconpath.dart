@@ -25,4 +25,5 @@ class Iconpath {
   static String filtericon = 'assets/icons/filter.png';
   static String callIcon = "assets/icons/call.png";
   static String messageIcon = "assets/icons/message.png";
+  static String tire="assets/icons/tire.png";
 }

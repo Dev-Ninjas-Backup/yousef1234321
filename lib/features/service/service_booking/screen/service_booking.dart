@@ -1,158 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
-
+import '../../../../core/common/constants/app_colors.dart';
+import '../widgets/operation_houre.dart';
+import '../widgets/service_booking_middle_section.dart';
 import '../widgets/service_booking_upper_section.dart';
+import '../widgets/serviced_offered.dart';
 
 class ServiceBooking extends StatelessWidget {
   final controller = Get.put(ServiceBookingController());
-
   ServiceBooking({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ServiceBookingUpperSection(controller: controller),
             SizedBox(height: 24),
-
-            //2nd
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header Row
+                  ServiceBookingMiddleSection(),
+                  SizedBox(height: 24),
+                  ServiceOffered(controller: controller),
+                  SizedBox(height: 24),
+
+                  OperationHour(controller: controller),
+
+                  const SizedBox(height: 24),
+
+                  // --- Location ---
+                  Text(
+                    "Location & Map",
+                    style: getTextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
                     children: [
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Al Majid Auto Service",
-                              style: getTextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            SizedBox(height: 4),
-                            Row(
-                              children: [
-                                Icon(Icons.star, size: 14, color: Colors.amber),
-                                SizedBox(width: 4),
-                                Text(
-                                  "4.8 (127)",
-                                  style: getTextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.subTextColor,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  "• 0.3 km",
-                                  style: getTextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.subTextColor,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.circle,
-                                  size: 8,
-                                  color: Colors.green,
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Wrap(
-                              spacing: 6,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                    horizontal: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.withValues(alpha: .1),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Text(
-                                    "Towing",
-                                    style: getTextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-
-                                Text(
-                                  "AC • Engine • Brakes",
-                                  style: getTextStyle(
-                                    fontSize: 16,
-                                    color: AppColors.subTextColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                        child: Text(
+                          "Al Qusais Industrial Area 2, Dubai, UAE",
+                          style: getTextStyle(fontSize: 12),
                         ),
                       ),
-                      Row(
-                        children: [
-                          Image.asset(Iconpath.callIcon, height: 36, width: 36),
-                          SizedBox(width: 10),
-                          Image.asset(
-                            Iconpath.messageIcon,
-                            height: 36,
-                            width: 36,
+                      GestureDetector(
+                        onTap: () {},
+                        child: Text(
+                          "See location",
+                          style: getTextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
+                  SizedBox(height: 12),
+                  //map
+                  Image.asset("assets/images/image 2.png"),
+                  SizedBox(height: 24),
 
-                  const SizedBox(height: 12),
-                  // Location button
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+
+                  Center(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 14,
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 14,
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.mode_edit_outline_outlined,
+                        size: 18,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        "Write review",
+                        style: getTextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.location_on_outlined,
-                      color: Colors.white,
-                    ),
-                    label: const Text(
-                      "See location",
-                      style: TextStyle(color: Colors.white),
-                    ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Garage Overview
-                  Text(
-                    "Garage Overview",
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    "Established in 2015, Al Noor Auto Garage is a certified multi-brand car service provider in Dubai. "
-                    "Our expert mechanics handle everything from diagnostics to full repairs using advanced equipment and genuine parts.",
-                    style: TextStyle(color: Colors.black87, height: 1.4),
-                  ),
+                  SizedBox(height: 80),
                 ],
               ),
             ),
