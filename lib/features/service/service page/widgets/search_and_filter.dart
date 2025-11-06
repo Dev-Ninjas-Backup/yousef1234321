@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/common/constants/app_colors.dart';
-import '../../../core/common/style/global_text_style.dart';
+import '../../../../core/common/constants/app_colors.dart';
+import '../../../../core/common/style/global_text_style.dart';
 import '../controller/service_controller.dart';
 
 class SearchAndFilter extends StatelessWidget {

@@ -5,7 +5,7 @@ import 'package:yousef1234321/features/home/home_page/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
 
-import '../../service/screen/find_service.dart';
+import '../../service/service page/screen/find_service.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});
