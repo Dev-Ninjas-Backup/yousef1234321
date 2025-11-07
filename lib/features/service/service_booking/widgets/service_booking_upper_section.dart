@@ -1,45 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-
+import 'package:get/get.dart';
+import '../../../../core/common/constants/iconpath.dart';
 import '../controller/service_booking_controller.dart';
-
 class ServiceBookingUpperSection extends StatelessWidget {
   const ServiceBookingUpperSection({super.key, required this.controller});
-
   final ServiceBookingController controller;
-
   @override
   Widget build(BuildContext context) {
     return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //  Large Top Image — scrollable
-        Obx(
-          () => SizedBox(
-            height: 263,
-            width: double.infinity,
-            child: PageView.builder(
-              controller: controller.pageController,
-              onPageChanged: (index) {
-                controller.currentIndex.value = index;
-              },
-              itemCount: controller.images.length,
-              itemBuilder: (context, index) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  child: Image.asset(
-                    controller.images[index],
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                  ),
-                );
-              },
+        Stack(
+          children: [
+            Obx(
+              () => SizedBox(
+                height: 263,
+                width: double.infinity,
+                child: PageView.builder(
+                  controller: controller.pageController,
+                  onPageChanged: (index) {
+                    controller.currentIndex.value = index;
+                  },
+                  itemCount: controller.images.length,
+                  itemBuilder: (context, index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      child: Image.asset(
+                        controller.images[index],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            Positioned(
+              left: 20,
+              top: 40,
+              child: GestureDetector(
+              onTap: () {
+                Get.back();
+              }
+              ,
+              child: Image.asset(Iconpath.arrowback, height: 44, width: 44)),
+            ),
+          ],
         ),
-
         const SizedBox(height: 12),
-
         // Thumbnails Row
         Obx(() {
           int maxVisible = 4;

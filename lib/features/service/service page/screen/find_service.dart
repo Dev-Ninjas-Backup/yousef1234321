@@ -68,6 +68,7 @@ class FindService extends StatelessWidget {
                     },
 
                     child: Container(
+                    margin: EdgeInsets.only(bottom: 16),
                       padding: EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 16,
