@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/features/service/rate_service/screen/service_review_scree.dart'
+    show ServiceReviewScreen;
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../widgets/operation_houre.dart';
@@ -24,7 +26,7 @@ class ServiceBooking extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ServiceBookingMiddleSection(),
                   SizedBox(height: 24),
@@ -73,7 +75,6 @@ class ServiceBooking extends StatelessWidget {
                   Image.asset("assets/images/image 2.png"),
                   SizedBox(height: 24),
 
-
                   Center(
                     child: ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
@@ -86,7 +87,9 @@ class ServiceBooking extends StatelessWidget {
                           horizontal: 14,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.to(ServiceReviewScreen());
+                      },
                       icon: const Icon(
                         Icons.mode_edit_outline_outlined,
                         size: 18,
