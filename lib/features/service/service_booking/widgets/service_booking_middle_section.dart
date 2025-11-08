@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/call_dialog.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/constants/iconpath.dart';
 import '../../../../core/common/style/global_text_style.dart';
@@ -88,7 +91,9 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.toNamed(Approute.getServiceMessage());
+                  },
                   child: Image.asset(
                     Iconpath.messageIcon,
                     height: 36,
