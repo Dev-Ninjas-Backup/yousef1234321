@@ -15,18 +15,20 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70,
-      padding: const EdgeInsets.all(10),
+    width: 80,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
-          Icon(icon, size: 28, color: Colors.black87),
+          Icon(icon, size: 24,),
           const SizedBox(height: 6),
           Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           ),
         ],

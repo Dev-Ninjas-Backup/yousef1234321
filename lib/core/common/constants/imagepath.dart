@@ -16,6 +16,7 @@ class Imagepath {
   static String drive='assets/images/drive.png';
   static String find='assets/images/Find.png';
   static String fix='assets/images/fix.png';
+  static String addBg="assets/images/add_bg.png";
 
 
 }
