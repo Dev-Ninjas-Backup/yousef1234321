@@ -1,7 +1,10 @@
 // service_review_controller.dart
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ServiceReviewController extends GetxController {
   // Star Ratings
@@ -29,6 +32,27 @@ class ServiceReviewController extends GetxController {
         break;
     }
   }
+
+
+
+
+  final ImagePicker _picker = ImagePicker();
+  final Rxn<File> image = Rxn<File>();
+
+  Future<void> pickImage() async {
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      image.value = File(pickedFile.path);
+    }
+  }
+    void removeImage() {
+    image.value = null;
+  }
+
+
+
+
 
   void submitReview() {
     if (overallRating.value == 0 ||
