@@ -20,7 +20,7 @@ class SearchSection extends StatelessWidget {
         color: AppColors.primaryColor,
         borderRadius: BorderRadius.circular(24),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

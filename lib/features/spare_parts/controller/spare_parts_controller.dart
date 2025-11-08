@@ -1,10 +1,42 @@
+//import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SparePartsController extends GetxController{
+class SparePartsController extends GetxController {
   var selectedModel = RxnString();
   var selectedCategory = RxnString();
+
+  // final ScrollController scrollController = ScrollController();
+  // late Timer timer;
+
+  // double speed = 1.0;
+
+  // startScroll() {
+  //   timer = Timer.periodic(const Duration(milliseconds: 16), (t) {
+  //     if (scrollController.hasClients) {
+  //       scrollController.jumpTo(scrollController.offset + speed);
+
+  //       if (scrollController.offset >=
+  //           scrollController.position.maxScrollExtent) {
+  //         scrollController.jumpTo(0);
+  //       }
+  //     }
+  //   });
+  // }
+
+  // @override
+  // void onInit() {
+  //   super.onInit();
+  //   startScroll();
+  // }
+
+  // @override
+  // void onClose() {
+  //   timer.cancel();
+  //   scrollController.dispose();
+  //   super.onClose();
+  // }
 
   final models = [
     "AC Repair",
@@ -36,14 +68,16 @@ class SparePartsController extends GetxController{
       'desc': 'Premium Quality',
       'price': 89.99,
       'rating': 4.8,
-      'image': 'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
+      'image':
+          'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
     },
     {
       'name': 'Oil Filter',
       'desc': 'OEM Standard',
       'price': 24.99,
       'rating': 4.9,
-      'image': 'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
+      'image':
+          'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
     },
   ];
 

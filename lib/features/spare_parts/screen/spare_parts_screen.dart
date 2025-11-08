@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/spare_parts/controller/spare_parts_controller.dart';
 import 'package:yousef1234321/features/spare_parts/widget/category_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.dart';
+
+import '../../../core/common/style/global_text_style.dart';
 
 class SparePartsScreen extends StatelessWidget {
   SparePartsScreen({super.key});
@@ -14,33 +17,69 @@ class SparePartsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Row(
-          children: [
-            Icon(Icons.directions_car, color: Colors.blue),
-            SizedBox(width: 8),
-            Text("SayaraHub", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        actions: [
-          CircleAvatar(
-            backgroundColor: Colors.black.withValues(alpha: 0.1),
-            child: Icon(Icons.notifications_none),
-          ),
-          SizedBox(width: 12),
-          CircleAvatar(
-            backgroundImage: NetworkImage(
-              "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-            ),
-          ),
-          SizedBox(width: 12),
-        ],
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.white,
+      //   title: Row(
+      //     children: [
+      //       Icon(Icons.directions_car, color: Colors.blue),
+      //       SizedBox(width: 8),
+      //       Text("SayaraHub", style: TextStyle(fontWeight: FontWeight.bold)),
+      //     ],
+      //   ),
+      //   actions: [
+      //     CircleAvatar(
+      //       backgroundColor: Colors.black.withValues(alpha: 0.1),
+      //       child: Icon(Icons.notifications_none),
+      //     ),
+      //     SizedBox(width: 12),
+      //     CircleAvatar(
+      //       backgroundImage: NetworkImage(
+      //         "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+      //       ),
+      //     ),
+      //     SizedBox(width: 12),
+      //   ],
+      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
+                    SizedBox(width: 8),
+                    Text(
+                      "SayaraHub",
+                      style: getTextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      child: Image.asset(Iconpath.notification, scale: 2),
+                    ),
+                    SizedBox(width: 12),
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
             PartsSearchSection(),
             const SizedBox(height: 16),
             // Category section
