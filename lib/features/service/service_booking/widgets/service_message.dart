@@ -55,133 +55,111 @@ class ServiceMessage extends StatelessWidget {
           ),
           Divider(),
 
-
-
-
-
-
-
-
-
-
-
-
-Expanded(
-  child: Obx(
-    () => ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      itemCount: controller.messages.length,
-      itemBuilder: (context, index) {
-        final message = controller.messages[index];
-        final isUser = message['isUser'] ?? false;
-
-        // 🧩 Message Row (with optional avatar)
-        return Row(
-          mainAxisAlignment:
-              isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // 👤 Profile image (only for receiver)
-            if (!isUser) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8), // or Circle if you prefer
-                child: Image.asset(
-                  Imagepath.profile,
-                  height: 32,
-                  width: 32,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-
-            // 💬 Message bubble
-            Flexible(
-              child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 6),
+          Expanded(
+            child: Obx(
+              () => ListView.builder(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: 16,
+                  vertical: 10,
                 ),
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * 0.75,
-                ),
-                decoration: BoxDecoration(
-                  color:
-                      isUser ? Colors.blue.shade50 : Colors.grey.shade100,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(16),
-                    topRight: const Radius.circular(16),
-                    bottomLeft: Radius.circular(isUser ? 16 : 0),
-                    bottomRight: Radius.circular(isUser ? 0 : 16),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // 📝 Message Text
-                    Text(
-                      message['text'] ?? '',
-                      style: getTextStyle(
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ),
+                itemCount: controller.messages.length,
+                itemBuilder: (context, index) {
+                  final message = controller.messages[index];
+                  final isUser = message['isUser'] ?? false;
 
-                    const SizedBox(height: 6),
-
-                    // ⏱️ Time + Delivered Icon
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: isUser
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          message['time'] ?? '',
-                          style: getTextStyle(
-                            fontSize: 11,
-                            color: Colors.grey.shade600,
+                  // 🧩 Message Row (with optional avatar)
+                  return Row(
+                    mainAxisAlignment: isUser
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // 👤 Profile image (only for receiver)
+                      if (!isUser) ...[
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            8,
+                          ), // or Circle if you prefer
+                          child: Image.asset(
+                            Imagepath.profile,
+                            height: 32,
+                            width: 32,
+                            fit: BoxFit.cover,
                           ),
                         ),
-                        if (isUser) ...[
-                          const SizedBox(width: 4),
-                          const Icon(
-                            Icons.done_all,
-                            size: 14,
-                            color: Colors.blue,
-                          ),
-                        ],
+                        const SizedBox(width: 8),
                       ],
-                    ),
-                  ],
-                ),
+
+                      // 💬 Message bubble
+                      Flexible(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.75,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isUser
+                                ? Colors.blue.shade50
+                                : Colors.grey.shade100,
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(16),
+                              topRight: const Radius.circular(16),
+                              bottomLeft: Radius.circular(isUser ? 16 : 0),
+                              bottomRight: Radius.circular(isUser ? 0 : 16),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              // 📝 Message Text
+                              Text(
+                                message['text'] ?? '',
+                                style: getTextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black87,
+                                ),
+                              ),
+
+                              const SizedBox(height: 6),
+
+                              // ⏱️ Time + Delivered Icon
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: isUser
+                                    ? MainAxisAlignment.end
+                                    : MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    message['time'] ?? '',
+                                    style: getTextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                  if (isUser) ...[
+                                    const SizedBox(width: 4),
+                                    const Icon(
+                                      Icons.done_all,
+                                      size: 14,
+                                      color: Colors.blue,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-          ],
-        );
-      },
-    ),
-  ),
-),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          ),
 
           // Typing indicator
           // Obx(
@@ -254,6 +232,7 @@ Expanded(
               ],
             ),
           ),
+          SizedBox(height: 30),
         ],
       ),
     );
