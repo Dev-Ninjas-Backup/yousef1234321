@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/spare_parts/controller/spare_parts_controller.dart';
 import 'package:yousef1234321/features/spare_parts/widget/category_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
@@ -17,29 +18,7 @@ class SparePartsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.white,
-      //   title: Row(
-      //     children: [
-      //       Icon(Icons.directions_car, color: Colors.blue),
-      //       SizedBox(width: 8),
-      //       Text("SayaraHub", style: TextStyle(fontWeight: FontWeight.bold)),
-      //     ],
-      //   ),
-      //   actions: [
-      //     CircleAvatar(
-      //       backgroundColor: Colors.black.withValues(alpha: 0.1),
-      //       child: Icon(Icons.notifications_none),
-      //     ),
-      //     SizedBox(width: 12),
-      //     CircleAvatar(
-      //       backgroundImage: NetworkImage(
-      //         "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-      //       ),
-      //     ),
-      //     SizedBox(width: 12),
-      //   ],
-      // ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -93,7 +72,8 @@ class SparePartsScreen extends StatelessWidget {
                   physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 12,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 9,
                   ),
 
                   scrollDirection: Axis.horizontal,
@@ -116,48 +96,55 @@ class SparePartsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Blue ad section
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade700,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Have Spare Parts to Sell?",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "List your car parts in just a few steps and connect with customers directly from the app.",
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+            Stack(
+              children: [
+                Image.asset(Imagepath.addBg),
+
+                Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+
+                      const Text(
+                        "Have Spare Parts to Sell?",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    onPressed: () {},
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text("Sell Now", style: TextStyle(color: Colors.blue)),
-                        SizedBox(width: 5),
-                        Icon(Icons.arrow_forward, color: Colors.blue),
-                      ],
-                    ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "List your car parts in just a few steps and connect with customers directly from the app.",
+                        style: TextStyle(color: Colors.white70),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {},
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Sell Now",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                            SizedBox(width: 5),
+                            Icon(Icons.arrow_forward, color: Colors.blue),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 20),
