@@ -9,6 +9,7 @@ import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
 import '../features/home/find_garage/screen/find_garage_page.dart';
 import '../features/service/service_booking/screen/service_booking.dart';
+import '../features/service/service_booking/widgets/service_message.dart';
 
 class Approute {
   static String splashScreen = '/splashScreen';
@@ -21,6 +22,7 @@ class Approute {
   static String findGaragePage = '/home/findGaragePage';
   //service
   static String serviceBooking = "/service/serviceBooking";
+  static String serviceMessage = "/service/ServiceMessage";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -31,6 +33,7 @@ class Approute {
   static String getfindGaragePage() => findGaragePage;
   //service
   static String getServiceBooking() => serviceBooking;
+  static String getServiceMessage() => serviceMessage;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -43,5 +46,6 @@ class Approute {
     GetPage(name: findGaragePage, page: () => FindGaragePage()),
     //service
     GetPage(name: serviceBooking, page: () => ServiceBooking()),
+    GetPage(name: serviceMessage, page: () => ServiceMessage()),
   ];
 }
