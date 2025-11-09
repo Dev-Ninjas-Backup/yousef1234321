@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -14,6 +13,7 @@ class BrakePadsScreen extends StatelessWidget {
     Widget badge(String text, Color color) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
       ),
@@ -114,6 +114,7 @@ class BrakePadsScreen extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
+                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.4),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -319,6 +320,7 @@ class BrakePadsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(14),
         ),
@@ -342,6 +344,7 @@ class BrakePadsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
@@ -432,7 +435,7 @@ class BrakePadsScreen extends StatelessWidget {
 
 class _FeatureItem extends StatelessWidget {
   final String text;
-  const _FeatureItem(this.text, {super.key});
+  const _FeatureItem(this.text);
 
   @override
   Widget build(BuildContext context) => Padding(
