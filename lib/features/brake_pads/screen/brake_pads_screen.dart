@@ -13,7 +13,6 @@ class BrakePadsScreen extends StatelessWidget {
     Widget badge(String text, Color color) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        // ignore: deprecated_member_use
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(6),
       ),
@@ -33,7 +32,6 @@ class BrakePadsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 🔹 Top Bar
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -64,8 +62,6 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 12),
-
-                // 🔹 Main Image with discount + counter
                 Stack(
                   children: [
                     AspectRatio(
@@ -103,8 +99,6 @@ class BrakePadsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    // 🔹 Counter (1/4)
                     Positioned(
                       bottom: 10,
                       right: 10,
@@ -114,7 +108,6 @@ class BrakePadsScreen extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          // ignore: deprecated_member_use
                           color: Colors.black.withOpacity(0.4),
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -132,8 +125,6 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 8),
-
-                // 🔹 Thumbnail list
                 SizedBox(
                   height: 70,
                   child: ListView.separated(
@@ -166,8 +157,6 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 25),
-
-                // 🔹 Stock & Rating
                 Row(
                   children: [
                     badge("In Stock", Colors.green),
@@ -236,8 +225,6 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 30),
-
-                // 🔹 Vehicle Compatibility
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -309,7 +296,6 @@ class BrakePadsScreen extends StatelessWidget {
     );
   }
 
-  // 🔹 Contact Button
   static Widget _contactButton(
     IconData icon,
     Color color, {
@@ -320,7 +306,6 @@ class BrakePadsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          // ignore: deprecated_member_use
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(14),
         ),
@@ -329,7 +314,6 @@ class BrakePadsScreen extends StatelessWidget {
     );
   }
 
-  // 🔹 Confirm Call Dialog (Figma Style)
   static void _showConfirmCallDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -344,7 +328,6 @@ class BrakePadsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  // ignore: deprecated_member_use
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
