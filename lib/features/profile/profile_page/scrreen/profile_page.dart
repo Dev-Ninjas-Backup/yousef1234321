@@ -94,7 +94,13 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Icon(Icons.arrow_forward_ios_outlined, size: 24),
+                            GestureDetector(
+                              onTap: controller.profileItem[index].ontap,
+                              child: Icon(
+                                Icons.arrow_forward_ios_outlined,
+                                size: 24,
+                              ),
+                            ),
                           ],
                         ),
                         Divider(thickness: .8),
