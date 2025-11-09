@@ -5,7 +5,7 @@ import 'package:yousef1234321/features/home/home_page/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
 import 'package:yousef1234321/features/support/screen/support_page.dart';
-
+import '../../profile/profile_page/scrreen/profile_page.dart';
 import '../../service/service page/screen/find_service.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
@@ -20,10 +20,7 @@ class BottomNavbarScreen extends StatelessWidget {
       SparePartsScreen(),
       HomeScreen(),
       ChatPage(),
-      Padding(
-        padding: EdgeInsetsGeometry.all(50),
-        child: Center(child: Text("development on progress...")),
-      ),
+      ProfilePage(),
     ];
 
     final List<String> icons = [
