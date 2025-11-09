@@ -83,6 +83,7 @@ class SparePartsScreen extends StatelessWidget {
                     final cat = controller.categories[index];
                     return Padding(
                       padding: const EdgeInsets.only(right: 10),
+
                       child: CategoryItem(
                         icon: cat['icon'] as IconData,
                         title: cat['name'] as String,
@@ -154,6 +155,7 @@ class SparePartsScreen extends StatelessWidget {
 
             // All Parts
             sectionHeader("All Parts"),
+
             const SizedBox(height: 10),
             partsList(),
 
@@ -177,7 +179,12 @@ class SparePartsScreen extends StatelessWidget {
           title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        TextButton(onPressed: () {}, child: const Text("See All")),
+        TextButton(
+          onPressed: () {
+            Get.toNamed(Approute.helpSupportScreen);
+          },
+          child: const Text("See All"),
+        ),
       ],
     );
   }
