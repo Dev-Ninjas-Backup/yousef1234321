@@ -228,7 +228,7 @@ class PartsDetailsScreen extends StatelessWidget {
               ],
             ),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Obx(
                   () => Checkbox(
