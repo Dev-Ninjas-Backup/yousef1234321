@@ -4,6 +4,8 @@ import 'package:yousef1234321/features/auth/forget_password/screen/forget_passwo
 import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
+import 'package:yousef1234321/features/contact_us/screen/contact_us_screen.dart';
+import 'package:yousef1234321/features/help_support/screen/help_support_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/parts_details/screen/parts_details_screen.dart';
 import 'package:yousef1234321/features/profile/recent_gaeage/screen/recent_garage_page.dart';
@@ -29,6 +31,11 @@ class Approute {
   //parts details
   static String partsDetailsScreen = '/partsDetailsScreen';
   static String brakePadsScreen = '/brakePadsScreen';
+
+  //helpSupport
+  static String helpSupportScreen = '/helpSupportScreen';
+  //contact_us
+  static String contractUsScreen = '/contact_us_screen';
   // profile
   static String recentGaragePage = "/profile/recentGaragePage";
 
@@ -46,6 +53,11 @@ class Approute {
   //parts ddeatais
   static String getPartsDetailsScreen() => partsDetailsScreen;
   static String getBrakePadsScreen() => brakePadsScreen;
+  // help support
+  static String getHelpSupportScreen() => helpSupportScreen;
+  //contract us
+  static String GetContractUsScreen() => contractUsScreen;
+
   //profile
   static String getrecentGaragePage() => recentGaragePage;
 
@@ -65,7 +77,16 @@ class Approute {
     //PARTS DEATAILS
     GetPage(name: partsDetailsScreen, page: () => const PartsDetailsScreen()),
     GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
+
+
+    // help support
+    GetPage(name: helpSupportScreen, page: () => const HelpSupportScreen()),
+
+    //contract us
+    GetPage(name: contractUsScreen, page: () => const ContactUsScreen()),
+
     //profuile
     GetPage(name: recentGaragePage, page: () => RecentGaragePage()),
+
   ];
 }
