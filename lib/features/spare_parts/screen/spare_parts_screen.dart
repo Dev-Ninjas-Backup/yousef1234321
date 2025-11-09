@@ -6,6 +6,7 @@ import 'package:yousef1234321/features/spare_parts/controller/spare_parts_contro
 import 'package:yousef1234321/features/spare_parts/widget/category_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 import '../../../core/common/style/global_text_style.dart';
 
@@ -128,7 +129,9 @@ class SparePartsScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Get.toNamed(Approute.partsDetailsScreen);
+                        },
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -187,12 +190,18 @@ class SparePartsScreen extends StatelessWidget {
         itemCount: controller.allParts.length,
         itemBuilder: (context, index) {
           final item = controller.allParts[index];
-          return PartItem(
-            image: item['image']! as String,
-            name: item['name']! as String,
-            desc: item['desc']! as String,
-            price: item['price']! as double,
-            rating: item['rating']! as double,
+          return GestureDetector(
+            onTap: () {
+              Get.toNamed(Approute.brakePadsScreen);
+            },
+
+            child: PartItem(
+              image: item['image']! as String,
+              name: item['name']! as String,
+              desc: item['desc']! as String,
+              price: item['price']! as double,
+              rating: item['rating']! as double,
+            ),
           );
         },
       ),
