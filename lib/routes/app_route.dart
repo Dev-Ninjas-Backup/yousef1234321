@@ -6,6 +6,7 @@ import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/parts_details/screen/parts_details_screen.dart';
+import 'package:yousef1234321/features/profile/my_listing/screen/my_listing_page.dart';
 import 'package:yousef1234321/features/profile/recent_gaeage/screen/recent_garage_page.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
@@ -31,6 +32,7 @@ class Approute {
   static String brakePadsScreen = '/brakePadsScreen';
   // profile
   static String recentGaragePage = "/profile/recentGaragePage";
+  static String myListingPage="/profile/myListingPage";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -48,6 +50,7 @@ class Approute {
   static String getBrakePadsScreen() => brakePadsScreen;
   //profile
   static String getrecentGaragePage() => recentGaragePage;
+  static String getmyListingPage()=>myListingPage;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -67,5 +70,6 @@ class Approute {
     GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
     //profuile
     GetPage(name: recentGaragePage, page: () => RecentGaragePage()),
+    GetPage(name: myListingPage, page: ()=>MyListingPage())
   ];
 }
