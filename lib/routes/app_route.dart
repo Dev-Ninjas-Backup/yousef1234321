@@ -8,6 +8,7 @@ import 'package:yousef1234321/features/contact_us/screen/contact_us_screen.dart'
 import 'package:yousef1234321/features/help_support/screen/help_support_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/parts_details/screen/parts_details_screen.dart';
+import 'package:yousef1234321/features/profile/recent_gaeage/screen/recent_garage_page.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
 import '../features/brake_pads/screen/brake_pads_screen.dart';
@@ -30,10 +31,13 @@ class Approute {
   //parts details
   static String partsDetailsScreen = '/partsDetailsScreen';
   static String brakePadsScreen = '/brakePadsScreen';
+
   //helpSupport
   static String helpSupportScreen = '/helpSupportScreen';
   //contact_us
   static String contractUsScreen = '/contact_us_screen';
+  // profile
+  static String recentGaragePage = "/profile/recentGaragePage";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -54,6 +58,9 @@ class Approute {
   //contract us
   static String GetContractUsScreen() => contractUsScreen;
 
+  //profile
+  static String getrecentGaragePage() => recentGaragePage;
+
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
@@ -71,10 +78,15 @@ class Approute {
     GetPage(name: partsDetailsScreen, page: () => const PartsDetailsScreen()),
     GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
 
+
     // help support
     GetPage(name: helpSupportScreen, page: () => const HelpSupportScreen()),
 
     //contract us
     GetPage(name: contractUsScreen, page: () => const ContactUsScreen()),
+
+    //profuile
+    GetPage(name: recentGaragePage, page: () => RecentGaragePage()),
+
   ];
 }
