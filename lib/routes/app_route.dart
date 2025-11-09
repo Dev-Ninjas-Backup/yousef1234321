@@ -5,8 +5,10 @@ import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
+import 'package:yousef1234321/features/parts_details/screen/parts_details_screen.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
 
+import '../features/brake_pads/screen/brake_pads_screen.dart';
 import '../features/home/find_garage/screen/find_garage_page.dart';
 import '../features/service/service_booking/screen/service_booking.dart';
 import '../features/service/service_booking/widgets/service_message.dart';
@@ -23,6 +25,9 @@ class Approute {
   //service
   static String serviceBooking = "/service/serviceBooking";
   static String serviceMessage = "/service/ServiceMessage";
+  //parts details
+  static String partsDetailsScreen = '/partsDetailsScreen';
+  static String brakePadsScreen = '/brakePadsScreen';
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -34,6 +39,10 @@ class Approute {
   //service
   static String getServiceBooking() => serviceBooking;
   static String getServiceMessage() => serviceMessage;
+
+  //parts ddeatais
+  static String getPartsDetailsScreen() => partsDetailsScreen;
+  static String getBrakePadsScreen() => brakePadsScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -47,5 +56,9 @@ class Approute {
     //service
     GetPage(name: serviceBooking, page: () => ServiceBooking()),
     GetPage(name: serviceMessage, page: () => ServiceMessage()),
+
+    //PARTS DEATAILS
+    GetPage(name: partsDetailsScreen, page: () => const PartsDetailsScreen()),
+    GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
   ];
 }
