@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/contact_us/controller/contact_us_controller.dart';
-import 'package:yousef1234321/routes/app_route.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -89,7 +88,7 @@ class ContactUsScreen extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 onPressed: () {
-                  Get.toNamed(Approute.locationPageScreen);
+                 
                 },
 
                 //controller.sendMessage,

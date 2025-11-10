@@ -79,7 +79,7 @@ class Approute {
   static String getrecentGaragePage() => recentGaragePage;
 
   //location_page
-  static String GetlocationPageScreen() => locationPageScreen;
+  static String getlocationPageScreen() => locationPageScreen;
   //edit profile
   static String getEditProfileScreen() => editProfileScreen;
 
