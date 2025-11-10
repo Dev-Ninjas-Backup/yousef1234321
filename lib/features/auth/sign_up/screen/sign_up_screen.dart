@@ -71,8 +71,8 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 40),
                     TextField(
-                      controller: controller.emailController,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: controller.nameController,
+                      keyboardType: TextInputType.name,
                       decoration: InputDecoration(
                         hintText: "Name",
                         prefixIcon: const Icon(Icons.person_outline),
@@ -149,7 +149,8 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 63),
-                    CustomButton(title: 'Sign Up', onPressed: () {}),
+                    CustomButton(title: 'Sign Up', onPressed: () {
+                    }),
                     SizedBox(height: 48),
                     RichText(
                       textAlign: TextAlign.center,
