@@ -181,13 +181,6 @@ class SparePartsScreen extends StatelessWidget {
         ),
 
         TextButton(onPressed: () {}, child: const Text("See All")),
-        TextButton(
-          onPressed: () {
-            
-          },
-          child: const Text("See All"),
-        ),
-
       ],
     );
   }
