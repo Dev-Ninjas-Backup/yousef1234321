@@ -51,8 +51,6 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // 🔵 Button
               SizedBox(
                 width: 200,
                 child: ElevatedButton.icon(
