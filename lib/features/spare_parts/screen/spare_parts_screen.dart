@@ -181,7 +181,7 @@ class SparePartsScreen extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Get.toNamed(Approute.helpSupportScreen);
+            
           },
           child: const Text("See All"),
         ),

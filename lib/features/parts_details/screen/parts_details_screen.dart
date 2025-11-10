@@ -1,7 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/parts_details/controller/parts_details_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class PartsDetailsScreen extends StatelessWidget {
   const PartsDetailsScreen({super.key});
@@ -69,20 +72,22 @@ class PartsDetailsScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Color(0xFFFFFFFF),
-        leading: IconButton(
-          onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-        ),
-        title: const Text('Create Listing'),
-        centerTitle: true,
-      ),
+      // appBar: AppBar(
+      //   backgroundColor:  Colors.white,
+      //   leading: IconButton(
+      //     onPressed: () => Get.back(),
+      //     icon: const Icon(Icons.arrow_back_ios_new_rounded),
+      //   ),
+      //   title: const Text('Create Listing'),
+      //   centerTitle: true,
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 52),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            CustomAppBar(title: "Create listing"),
+
             const SizedBox(height: 27),
             const Text(
               "Part Information",
@@ -258,10 +263,12 @@ class PartsDetailsScreen extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (!c.isConfirmed.value) {
-                    Get.snackbar("Error", "Please confirm part information.");
+                    EasyLoading.showError(
+                      "Error, Please confirm part information.",
+                    );
                     return;
                   }
-                  Get.snackbar("Success", "Part listed successfully!");
+                  Get.toNamed(Approute.payment);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -280,6 +287,7 @@ class PartsDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 50),
           ],
         ),
       ),
