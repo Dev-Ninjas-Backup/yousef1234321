@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
           initialBinding: ControllerBinder(),
           themeMode: ThemeMode.system,
           // theme: AppTheme.lightTheme,
+          
           // darkTheme: AppTheme.darkTheme,
         );
       },
