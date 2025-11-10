@@ -70,7 +70,7 @@ class PartsSearchSection extends StatelessWidget {
                               borderSide: BorderSide(color: Color(0xFFE5E7EB)),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 10,
+                              horizontal: 8,
                               vertical: 8,
                             ),
                           ),
@@ -103,7 +103,7 @@ class PartsSearchSection extends StatelessWidget {
                               borderSide: BorderSide(color: Color(0xFFE5E7EB)),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 10,
+                              horizontal: 8,
                               vertical: 8,
                             ),
                           ),
