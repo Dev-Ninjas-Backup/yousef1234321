@@ -6,6 +6,7 @@ import 'package:yousef1234321/routes/app_route.dart';
 
 class ProfileController extends GetxController {
   var profileItem = [
+
     ProfileModel(
       icon: Icons.person_2_outlined,
       title: "Profile",
@@ -21,6 +22,17 @@ class ProfileController extends GetxController {
         Get.toNamed(Approute.locationPageScreen);
       },
     ),
+
+    ProfileModel(icon: Icons.person_2_outlined, title: "Profile", ontap: () {}),
+    ProfileModel(
+      icon: Icons.list,
+      title: "My Listing",
+      ontap: () {
+        Get.toNamed(Approute.myListingPage);
+      },
+    ),
+    ProfileModel(icon: Icons.location_on_outlined, title: "Location"),
+
     ProfileModel(
       icon: Icons.directions,
       title: "Recent Garage",
