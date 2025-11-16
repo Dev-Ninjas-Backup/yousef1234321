@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
+import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/home_page/widget/brand_marque.dart';
 
@@ -53,11 +54,21 @@ class SearchSection extends StatelessWidget {
                       child: Obx(
                         () => DropdownButtonFormField<String>(
                           value: controller.selectedLocation.value,
+                          isExpanded: true,
+
                           items: controller.locations
                               .map(
                                 (location) => DropdownMenuItem(
                                   value: location,
-                                  child: Text(location),
+                                  child: Text(
+                                    location,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               )
                               .toList(),
@@ -90,7 +101,13 @@ class SearchSection extends StatelessWidget {
                               .map(
                                 (service) => DropdownMenuItem(
                                   value: service,
-                                  child: Text(service),
+                                  child: Text(
+                                    service,
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
                               )
                               .toList(),
