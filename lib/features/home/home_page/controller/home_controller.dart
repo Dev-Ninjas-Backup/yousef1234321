@@ -82,7 +82,7 @@ class HomeController extends GetxController {
     "Body Work",
   ];
 
-  final locations = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"];
+  final locations = ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Fujairah", "Ras Al Khaimah", "Umm Al Quwain"];
 }
 
 
