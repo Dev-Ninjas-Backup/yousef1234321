@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
@@ -95,7 +93,11 @@ class ProfilePage extends StatelessWidget {
                               ],
                             ),
                             GestureDetector(
-                              onTap: controller.profileItem[index].ontap,
+                              onTap: () {
+                                controller.profileItem[index].ontap?.call();
+                                controller.selectedIndex.value =
+                                    index; // Update selected index
+                              },
                               child: Icon(
                                 Icons.arrow_forward_ios_outlined,
                                 size: 24,

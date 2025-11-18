@@ -35,7 +35,7 @@ class BottomNavbarScreen extends StatelessWidget {
       "Service",
       "Spare Parts",
       "Home",
-      "Support",
+      "Chat",
       "Profile",
     ];
 
