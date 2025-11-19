@@ -18,6 +18,7 @@ import 'package:yousef1234321/features/profile/my_listing/screen/my_listing_page
 
 import 'package:yousef1234321/features/profile/recent_gaeage/screen/recent_garage_page.dart';
 import 'package:yousef1234321/features/splash/screen/splash_screen.dart';
+import 'package:yousef1234321/features/support/screen/support_page.dart';
 
 import '../features/brake_pads/screen/brake_pads_screen.dart';
 import '../features/home/find_garage/screen/find_garage_page.dart';
@@ -56,6 +57,8 @@ class Approute {
   static String myListingPage = "/profile/myListingPage";
   //language
   static String languageScreen = "/profile/languageScreen";
+  //chatlist
+  static String chatScreen = "/chatScreen";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -88,6 +91,8 @@ class Approute {
   static String getmyListingPage() => myListingPage;
   //language
   static String getLanguageScreen() => languageScreen;
+  //chatlist
+  static String getChatScreen() => chatScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -125,5 +130,8 @@ class Approute {
     GetPage(name: myListingPage, page: () => MyListingPage()),
     //language
     GetPage(name: languageScreen, page: () => LanguageScreen()),
+
+    //chatlist
+    GetPage(name: chatScreen, page: () => ChatPage()),
   ];
 }
