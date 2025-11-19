@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/features/chat/screen/chat_screen_list.dart';
 import 'package:yousef1234321/features/home/home_page/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
@@ -19,7 +20,7 @@ class BottomNavbarScreen extends StatelessWidget {
       FindService(),
       SparePartsScreen(),
       HomeScreen(),
-      ChatPage(),
+      ChatScreen(),
       ProfilePage(),
     ];
 
@@ -35,7 +36,7 @@ class BottomNavbarScreen extends StatelessWidget {
       "Service",
       "Spare Parts",
       "Home",
-      "Support",
+      "Chat",
       "Profile",
     ];
 
