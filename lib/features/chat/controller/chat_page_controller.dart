@@ -38,7 +38,7 @@ class ChatPageController extends GetxController {
       ),
     ];
 
-    filteredChatList.value = chatList;
+    filteredChatList.value = chatList; // check list
   }
 
   void filterChats(String query) {
