@@ -35,8 +35,9 @@ class PartsSearchSection extends StatelessWidget {
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
+
           Container(
-            padding: EdgeInsets.all(13),
+            padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -46,15 +47,20 @@ class PartsSearchSection extends StatelessWidget {
                 Row(
                   spacing: 5,
                   children: [
+                    // FIRST DROPDOWN
                     Expanded(
                       child: Obx(
                         () => DropdownButtonFormField<String>(
+                          isExpanded: true, // <-- FIXED
                           initialValue: controller.selectedModel.value,
                           items: controller.models
                               .map(
                                 (location) => DropdownMenuItem(
                                   value: location,
-                                  child: Text(location),
+                                  child: Text(
+                                    location,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               )
                               .toList(),
@@ -67,7 +73,9 @@ class PartsSearchSection extends StatelessWidget {
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE5E7EB),
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -81,12 +89,16 @@ class PartsSearchSection extends StatelessWidget {
                     Expanded(
                       child: Obx(
                         () => DropdownButtonFormField<String>(
+                          isExpanded: true, // <-- FIXED
                           initialValue: controller.selectedCategory.value,
                           items: controller.dropDownCategories
                               .map(
                                 (service) => DropdownMenuItem(
                                   value: service,
-                                  child: Text(service),
+                                  child: Text(
+                                    service,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               )
                               .toList(),
@@ -95,12 +107,13 @@ class PartsSearchSection extends StatelessWidget {
                           decoration: InputDecoration(
                             hintText: "Category type",
                             hintStyle: getTextStyle(),
-
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Color(0xFFE5E7EB)),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE5E7EB),
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 8,
@@ -112,27 +125,24 @@ class PartsSearchSection extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 const SizedBox(height: 12),
+
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 45),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(8),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {
-                    // Get.toNamed(Approute.getfindGaragePage());
-                  },
+                  onPressed: () {},
                   child: const Text("Search Parts"),
                 ),
               ],
             ),
           ),
-
-          // const SizedBox(height: 8),
-          // BrandMarqueeView(),
         ],
       ),
     );
