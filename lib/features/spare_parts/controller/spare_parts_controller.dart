@@ -7,37 +7,6 @@ class SparePartsController extends GetxController {
   var selectedModel = RxnString();
   var selectedCategory = RxnString();
 
-  // final ScrollController scrollController = ScrollController();
-  // late Timer timer;
-
-  // double speed = 1.0;
-
-  // startScroll() {
-  //   timer = Timer.periodic(const Duration(milliseconds: 16), (t) {
-  //     if (scrollController.hasClients) {
-  //       scrollController.jumpTo(scrollController.offset + speed);
-
-  //       if (scrollController.offset >=
-  //           scrollController.position.maxScrollExtent) {
-  //         scrollController.jumpTo(0);
-  //       }
-  //     }
-  //   });
-  // }
-
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   startScroll();
-  // }
-
-  // @override
-  // void onClose() {
-  //   timer.cancel();
-  //   scrollController.dispose();
-  //   super.onClose();
-  // }
-
   final models = [
     "AC Repair",
     "Battery",
@@ -49,7 +18,15 @@ class SparePartsController extends GetxController {
     "Body Work",
   ];
 
-  final dropDownCategories = ["Dubai", "Abu Dhabi", "Sharjah", "Ajman"];
+  final dropDownCategories = [
+    "Abu Dhabi",
+    "Dubai",
+    "Sharjah",
+    "Ajman",
+    "Fujairah",
+    "Ras Al Khaimah",
+    "Umm Al Quwain",
+  ];
 
   final categories = [
     {'name': 'Engine', 'icon': Icons.settings},

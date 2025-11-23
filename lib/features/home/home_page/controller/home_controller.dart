@@ -84,7 +84,6 @@ class HomeController extends GetxController {
 
   final locations = [
     "Abu Dhabi",
-    "LA",
     "Dubai",
     "Sharjah",
     "Ajman",
