@@ -26,7 +26,7 @@ class ChatPage extends StatelessWidget {
                   spacing: 2,
                   children: [
                     Text(
-                      "Support",
+                      "Chat",
                       style: getTextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
@@ -224,7 +224,7 @@ class ChatPage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 30,)
+          SizedBox(height: 30),
         ],
       ),
     );

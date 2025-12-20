@@ -70,4 +70,6 @@ class ChatController extends GetxController {
       });
     });
   }
+
+  navigateToIndividualChat(chat) {}
 }

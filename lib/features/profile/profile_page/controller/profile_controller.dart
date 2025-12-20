@@ -5,8 +5,8 @@ import 'package:yousef1234321/features/profile/profile_page/model/profile_model.
 import 'package:yousef1234321/routes/app_route.dart';
 
 class ProfileController extends GetxController {
+  var selectedIndex = (-1).obs;
   var profileItem = [
-
     ProfileModel(
       icon: Icons.person_2_outlined,
       title: "Profile",
@@ -14,7 +14,7 @@ class ProfileController extends GetxController {
         Get.toNamed(Approute.editProfileScreen);
       },
     ),
-       ProfileModel(
+    ProfileModel(
       icon: Icons.list,
       title: "My Listing",
       ontap: () {
@@ -28,17 +28,15 @@ class ProfileController extends GetxController {
         Get.toNamed(Approute.locationPageScreen);
       },
     ),
-
- 
+    ProfileModel(icon: Icons.settings, title: "App Settings"),
 
     ProfileModel(
-      icon: Icons.directions,
-      title: "Recent Garage",
+      icon: Icons.language,
+      title: "Language",
       ontap: () {
-        Get.toNamed(Approute.recentGaragePage);
+        Get.toNamed(Approute.languageScreen);
       },
     ),
-    ProfileModel(icon: Icons.settings, title: "App Settings"),
     ProfileModel(
       icon: Icons.contact_support_rounded,
       title: "Help & Support",
