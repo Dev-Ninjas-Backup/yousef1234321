@@ -96,6 +96,7 @@ class SearchSection extends StatelessWidget {
                     Expanded(
                       child: Obx(
                         () => DropdownButtonFormField<String>(
+                          isExpanded: true,
                           value: controller.selectedService.value,
                           items: controller.serviceTypes
                               .map(

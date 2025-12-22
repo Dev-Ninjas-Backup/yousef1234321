@@ -18,15 +18,7 @@ class SparePartsController extends GetxController {
     "Body Work",
   ];
 
-  final dropDownCategories = [
-    "Abu Dhabi",
-    "Dubai",
-    "Sharjah",
-    "Ajman",
-    "Fujairah",
-    "Ras Al Khaimah",
-    "Umm Al Quwain",
-  ];
+  final dropDownCategories = ["Brake Pads", "Oil Filter"];
 
   final categories = [
     {'name': 'Engine', 'icon': Icons.settings},

@@ -97,7 +97,7 @@ void showCallDialog() {
                           Text(
                             "Call Now",
                             style: getTextStyle(
-                              fontSize: 12,
+                              fontSize: 10,
                               fontWeight: FontWeight.w500,
                               color: Colors.white,
                             ),
