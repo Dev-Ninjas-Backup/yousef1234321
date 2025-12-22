@@ -74,7 +74,7 @@ class SignUpScreen extends StatelessWidget {
                       controller: controller.nameController,
                       keyboardType: TextInputType.name,
                       decoration: InputDecoration(
-                        hintText: "Name",
+                        hintText: "Full Name",
                         prefixIcon: const Icon(Icons.person_outline),
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 18,
@@ -136,6 +136,228 @@ class SignUpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(height: 24),
+                    Obx(
+                      () => TextField(
+                        controller: controller.confirmPasswordController,
+                        obscureText: !controller.isConfirmPasswordVisible.value,
+                        decoration: InputDecoration(
+                          hintText: "Confirm Password",
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isConfirmPasswordVisible.value
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed:
+                                controller.toggleConfirmPasswordVisibility,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 20,
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFFF7F7F9),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    TextField(
+                      controller: controller.garageNameController,
+                      decoration: InputDecoration(
+                        hintText: "Garage Name",
+                        prefixIcon: const Icon(Icons.business),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    TextField(
+                      controller: controller.addressController,
+                      decoration: InputDecoration(
+                        hintText: "Address",
+                        prefixIcon: const Icon(Icons.location_on_outlined),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    TextField(
+                      controller: controller.cityController,
+                      decoration: InputDecoration(
+                        hintText: "City",
+                        prefixIcon: const Icon(Icons.location_city),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    TextField(
+                      controller: controller.emirateController,
+                      decoration: InputDecoration(
+                        hintText: "Emirate",
+                        prefixIcon: const Icon(Icons.map_outlined),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    TextField(
+                      controller: controller.serviceCategoriesController,
+                      decoration: InputDecoration(
+                        hintText: "Service Categories",
+                        prefixIcon: const Icon(Icons.category_outlined),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: controller.pickGarageLogo,
+                      child: Obx(
+                        () => Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 20,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF7F7F9),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.image_outlined),
+                              SizedBox(width: 12),
+                              Text(
+                                controller.garageLogoFile.value?.path
+                                        .split('/')
+                                        .last ??
+                                    "Garage Logo",
+                                style: TextStyle(
+                                  color: controller.garageLogoFile.value == null
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: controller.pickTradeLicense,
+                      child: Obx(
+                        () => Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 20,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF7F7F9),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.description_outlined),
+                              SizedBox(width: 12),
+                              Text(
+                                controller.tradeLicenseFile.value?.path
+                                        .split('/')
+                                        .last ??
+                                    "Trade License",
+                                style: TextStyle(
+                                  color:
+                                      controller.tradeLicenseFile.value == null
+                                      ? Colors.grey
+                                      : Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Obx(
+                      () => DropdownButtonFormField<String>(
+                        initialValue: controller.selectedRole.value,
+                        items: controller.roles
+                            .map(
+                              (role) => DropdownMenuItem(
+                                value: role,
+                                child: Text(role),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            controller.selectedRole.value = value;
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Role",
+                          prefixIcon: const Icon(Icons.person_outline),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                            horizontal: 20,
+                          ),
+                          filled: true,
+                          fillColor: Color(0xFFF7F7F9),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerLeft,
@@ -149,8 +371,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 63),
-                    CustomButton(title: 'Sign Up', onPressed: () {
-                    }),
+                    CustomButton(title: 'Sign Up', onPressed: () {}),
                     SizedBox(height: 48),
                     RichText(
                       textAlign: TextAlign.center,
