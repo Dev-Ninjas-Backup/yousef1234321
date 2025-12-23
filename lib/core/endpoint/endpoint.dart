@@ -15,4 +15,5 @@ class Endpoint {
   static const String otpVerification = '/auth/signup-verify-otp';
   static const String login = '/auth/login';
   static const String profile = '/user/me/profile';
+  static const String forgetPassword = '/auth/forget-password';
 }

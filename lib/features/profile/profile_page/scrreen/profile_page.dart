@@ -110,6 +110,40 @@ class ProfilePage extends StatelessWidget {
                             ],
                           ),
                   ),
+
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 52),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomAppBar(title: "Profile"),
+              SizedBox(height: 30),
+              Center(
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        Imagepath.profile,
+                        height: 96,
+                        width: 96,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Leonardo",
+                      style: getTextStyle(
+                        fontSize: 24,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    Text(
+                      "Leonardo@gmail.com",
+                      style: getTextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 25),
                 Container(

@@ -1,12 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/edit_profile/controller/edit_profile_controller.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+  EditProfileScreen({super.key});
+
+  final Rx<File?> selectedImage = Rx<File?>(null);
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = File(image.path);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +36,36 @@ class EditProfileScreen extends StatelessWidget {
             SizedBox(height: 24),
 
             // Profile Avatar
-            CircleAvatar(radius: 50, child: Image.asset(Imagepath.profile)),
+            Center(
+              child: Stack(
+                children: [
+                  Obx(
+                    () => CircleAvatar(
+                      radius: 50,
+                      backgroundImage: selectedImage.value != null
+                          ? FileImage(selectedImage.value!)
+                          : AssetImage(Imagepath.profile) as ImageProvider,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: pickImage,
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: AppColors.primaryColor,
+                        child: Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 12),
 
             // Name
