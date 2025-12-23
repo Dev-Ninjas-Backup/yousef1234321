@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class SignInController extends GetxController {
   final emailController = TextEditingController();
@@ -39,30 +40,48 @@ class SignInController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Login response is nested inside "result"
-        if (response.body is Map && response.body['result'] != null) {
+        if (response.body != null &&
+            response.body is Map &&
+            response.body['result'] != null &&
+            response.body['result']['data'] != null) {
           final resultData = response.body['result']['data'];
-          if (resultData != null) {
-            String accessToken = resultData['token'] ?? "";
-            if (accessToken.isNotEmpty) {
-              await ApiClient.to.setToken(accessToken);
-            }
-            // Handle resetToken if it exists in the login response
-            String resetToken = resultData['resetToken'] ?? "";
-            if (resetToken.isNotEmpty) {
-              await ApiClient.to.setResetToken(resetToken);
-            }
-          }
-        }
+          String accessToken = resultData['token'] ?? "";
 
+          if (accessToken.isNotEmpty) {
+            await ApiClient.to.setToken(accessToken);
+
+            Get.snackbar(
+              "Success",
+              "Login Successful",
+              backgroundColor: Colors.green,
+              colorText: Colors.white,
+            );
+
+            // Navigate to Home/Dashboard
+            Get.offAllNamed(Approute.bottomNavBarScreen);
+          } else {
+            Get.snackbar(
+              "Error",
+              "Invalid token received",
+              backgroundColor: Colors.redAccent,
+              colorText: Colors.white,
+            );
+          }
+        } else {
+          Get.snackbar(
+            "Error",
+            "Invalid response format",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
+        }
+      } else {
         Get.snackbar(
-          "Success",
-          "Login Successful",
-          backgroundColor: Colors.green,
+          "Error",
+          "Login failed with status code: ${response.statusCode}",
+          backgroundColor: Colors.redAccent,
           colorText: Colors.white,
         );
-
-        // Navigate to Home/Dashboard
-        Get.offAllNamed('/bottomNavbarScreen');
       }
     } catch (e) {
       Get.snackbar(
