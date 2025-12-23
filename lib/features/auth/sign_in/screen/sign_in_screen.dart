@@ -13,7 +13,7 @@ class SignInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ApiClient(sharedPreferences: Get.find()));
+    Get.put(ApiClient(sharedPreferences: Get.find()), permanent: true);
     final controller = Get.put(SignInController());
 
     return Scaffold(

@@ -38,21 +38,19 @@ class SignInController extends GetxController {
       final response = await ApiClient.to.post('auth/login', body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        // Extract and save tokens from login response
-        if (response.body is Map) {
-          String accessToken = response.body['data']?['accessToken'] ??
-              response.body['accessToken'] ??
-              response.body['token'] ??
-              "";
-          String resetToken = response.body['data']?['resetToken'] ??
-              response.body['verifyToken'] ??
-              "";
-
-          if (accessToken.isNotEmpty) {
-            await ApiClient.to.setToken(accessToken);
-          }
-          if (resetToken.isNotEmpty) {
-            await ApiClient.to.setResetToken(resetToken);
+        // Login response is nested inside "result"
+        if (response.body is Map && response.body['result'] != null) {
+          final resultData = response.body['result']['data'];
+          if (resultData != null) {
+            String accessToken = resultData['token'] ?? "";
+            if (accessToken.isNotEmpty) {
+              await ApiClient.to.setToken(accessToken);
+            }
+            // Handle resetToken if it exists in the login response
+            String resetToken = resultData['resetToken'] ?? "";
+            if (resetToken.isNotEmpty) {
+              await ApiClient.to.setResetToken(resetToken);
+            }
           }
         }
 
