@@ -1,11 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/profile/profile_page/model/profile_model.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class ProfileController extends GetxController {
   var selectedIndex = (-1).obs;
+  final isLoggingOut = false.obs;
+
+  /// Logout user - clear tokens and navigate to sign in
+  Future<void> logout() async {
+    try {
+      isLoggingOut.value = true;
+
+      // Clear tokens from shared preferences
+      await ApiClient.to.logout();
+
+      // Show success message
+      Get.snackbar(
+        "Success",
+        "Logged out successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Navigate to sign in screen and clear navigation stack
+      Get.offAllNamed(Approute.signInScreen);
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Failed to logout: $e",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoggingOut.value = false;
+    }
+  }
+
   var profileItem = [
     ProfileModel(
       icon: Icons.person_2_outlined,

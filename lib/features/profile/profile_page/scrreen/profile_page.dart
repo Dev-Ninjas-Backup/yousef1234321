@@ -5,7 +5,6 @@ import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
-import 'package:yousef1234321/routes/app_route.dart';
 
 import '../widgets/delete_dialog.dart';
 
@@ -119,37 +118,52 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Get.offAllNamed(Approute.signInScreen);
+                      controller.logout();
                     },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryColor,
-                        border: Border.all(color: Colors.transparent, width: 1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        spacing: 4,
-                        children: [
-                          Text(
-                            "Log Out",
-                            textAlign: TextAlign.center,
-
-                            style: getTextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                    child: Obx(
+                      () => Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 10,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          border: Border.all(
+                            color: Colors.transparent,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          spacing: 4,
+                          children: [
+                            if (controller.isLoggingOut.value)
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            else
+                              Text(
+                                "Log Out",
+                                textAlign: TextAlign.center,
+                                style: getTextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            SizedBox(width: 4),
+                            Icon(
+                              Icons.logout_sharp,
+                              size: 24,
                               color: Colors.white,
                             ),
-                          ),
-                          Icon(
-                            Icons.logout_sharp,
-                            size: 24,
-                            color: Colors.white,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

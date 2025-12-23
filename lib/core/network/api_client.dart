@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 
 class ApiClient extends GetConnect {
   static ApiClient get to => Get.find();
@@ -15,7 +16,9 @@ class ApiClient extends GetConnect {
     if (token == null) {
       return await sharedPreferences.remove('token');
     }
-    return await sharedPreferences.setString('token', token);
+    final result = await sharedPreferences.setString('token', token);
+    print("Token saved: $result, Token: ${token.substring(0, 20)}..."); // Debug
+    return result;
   }
 
   Future<bool> setResetToken(String? token) async {
@@ -25,10 +28,20 @@ class ApiClient extends GetConnect {
     return await sharedPreferences.setString('resetToken', token);
   }
 
+  /// Logout - Clear all tokens from shared preferences
+  Future<void> logout() async {
+    await sharedPreferences.remove('token');
+    await sharedPreferences.remove('resetToken');
+    print("User logged out - tokens cleared");
+  }
+
+  /// Check if user is logged in
+  bool get isLoggedIn => token != null && token!.isNotEmpty;
+
   @override
   void onInit() {
     // Set your Swagger API Base URL here
-    httpClient.baseUrl = "https://yousef-server.saikat.com.bd/";
+    httpClient.baseUrl = Endpoint.baseUrl;
     httpClient.timeout = const Duration(seconds: 30);
 
     // Request Modifier

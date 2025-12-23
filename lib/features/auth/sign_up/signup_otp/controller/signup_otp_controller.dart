@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 
 class SignupOtpController extends GetxController {
@@ -49,7 +50,7 @@ class SignupOtpController extends GetxController {
 
     isLoading.value = true;
     try {
-      final response = await ApiClient.to.post('auth/signup-verify-otp', {
+      final response = await ApiClient.to.post(Endpoint.otpVerification, {
         'email': email,
         'emailOtp': otp,
         'resetToken': ApiClient.to.resetToken ?? '',

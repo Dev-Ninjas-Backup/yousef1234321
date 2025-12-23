@@ -199,51 +199,7 @@ class SignUpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    Obx(() {
-                      final displayedRoles = controller.roles
-                          .where(
-                            (role) => role != 'SUPER_ADMIN' && role != 'MEMBER',
-                          )
-                          .toList();
-                      return DropdownButtonFormField<String>(
-                        initialValue:
-                            displayedRoles.contains(
-                              controller.selectedRole.value,
-                            )
-                            ? controller.selectedRole.value
-                            : null,
-                        items: displayedRoles
-                            .map(
-                              (role) => DropdownMenuItem(
-                                value: role,
-                                child: Text(role),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            controller.selectedRole.value = value;
-                          }
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Role",
-                          prefixIcon: const Icon(Icons.person_outline),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 18,
-                            horizontal: 20,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF7F7F9),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      );
-                    }),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 40),
                     CustomButton(
                       title: 'Sign Up',
                       onPressed: () {

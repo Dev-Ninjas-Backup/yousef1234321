@@ -79,7 +79,7 @@ class SplashScreen extends StatelessWidget {
 
           const SizedBox(height: 50),
 
-          /// Bottom Button Section
+          /// Bottom Section - Auto navigates based on login status
           Container(
             height: 92,
             width: double.infinity,
@@ -90,35 +90,8 @@ class SplashScreen extends StatelessWidget {
                 topRight: Radius.circular(30),
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Let's Go",
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Get.offAllNamed('/onboardingScreen');
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 16),
-                    padding: const EdgeInsets.all(5),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: AppColors.splashButtonColor,
-                    ),
-                  ),
-                ),
-              ],
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
             ),
           ),
         ],

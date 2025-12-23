@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -18,6 +20,24 @@ class SplashController extends GetxController
     super.onInit();
 
     _startImageRotation();
+    _checkAuthStatus();
+  }
+
+  /// Check if user is already logged in
+  void _checkAuthStatus() {
+    Future.delayed(const Duration(seconds: 3), () {
+      if (ApiClient.to.isLoggedIn) {
+        print(
+          "User is logged in, token: ${ApiClient.to.token?.substring(0, 20)}...",
+        );
+        // User is logged in, navigate to home
+        Get.offAllNamed(Approute.bottomNavBarScreen);
+      } else {
+        print("User is not logged in");
+        // User is not logged in, show onboarding
+        Get.offAllNamed('/onboardingScreen');
+      }
+    });
   }
 
   void _startImageRotation() {
