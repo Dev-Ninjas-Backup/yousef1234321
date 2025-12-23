@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
@@ -14,16 +11,6 @@ import '../widgets/delete_dialog.dart';
 class ProfilePage extends StatelessWidget {
   final controller = Get.put(ProfileController());
   ProfilePage({super.key});
-
-  final Rx<File?> selectedImage = Rx<File?>(null);
-
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedImage.value = File(image.path);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,43 +28,14 @@ class ProfilePage extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    Stack(
-                      children: [
-                        Obx(
-                          () => ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: selectedImage.value != null
-                                ? Image.file(
-                                    selectedImage.value!,
-                                    height: 96,
-                                    width: 96,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    Imagepath.profile,
-                                    height: 96,
-                                    width: 96,
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: pickImage,
-                            child: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: AppColors.primaryColor,
-                              child: Icon(
-                                Icons.camera_alt,
-                                size: 18,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.asset(
+                        Imagepath.profile,
+                        height: 96,
+                        width: 96,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     SizedBox(height: 8),
                     Text(

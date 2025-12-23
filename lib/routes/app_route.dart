@@ -97,7 +97,6 @@ class Approute {
   static String getChatScreen() => chatScreen;
   static String getSignupOtpScreen() => getsignupOtpScreen;
 
-
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
@@ -129,7 +128,7 @@ class Approute {
     // location_page
     GetPage(name: locationPageScreen, page: () => LocationPageScreen()),
     //edit profile
-    GetPage(name: editProfileScreen, page: () => const EditProfileScreen()),
+    GetPage(name: editProfileScreen, page: () => EditProfileScreen()),
 
     GetPage(name: myListingPage, page: () => MyListingPage()),
     //language
