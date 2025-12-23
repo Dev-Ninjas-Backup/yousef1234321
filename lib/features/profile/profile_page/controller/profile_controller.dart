@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/profile/profile_page/model/profile_model.dart';
 import 'package:yousef1234321/routes/app_route.dart';
@@ -8,6 +9,72 @@ import 'package:yousef1234321/routes/app_route.dart';
 class ProfileController extends GetxController {
   var selectedIndex = (-1).obs;
   final isLoggingOut = false.obs;
+  final isLoadingProfile = false.obs;
+
+  // Profile data
+  final fullName = ''.obs;
+  final email = ''.obs;
+  final profilePhoto = Rx<String?>(null);
+  final phone = ''.obs;
+  final role = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchProfile();
+  }
+
+  /// Fetch user profile from API
+  Future<void> fetchProfile() async {
+    try {
+      isLoadingProfile.value = true;
+
+      final response = await ApiClient.to.get(Endpoint.profile);
+
+      print("Profile Response: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.body != null &&
+            response.body is Map &&
+            response.body['data'] != null) {
+          final data = response.body['data'];
+
+          // Update profile data
+          fullName.value = data['fullName'] ?? '';
+          email.value = data['email'] ?? '';
+          phone.value = data['phone'] ?? '';
+          role.value = data['role'] ?? '';
+          profilePhoto.value = data['profilePhoto']; // Can be null
+
+          print("Profile loaded: ${fullName.value}, ${email.value}");
+        } else {
+          Get.snackbar(
+            "Error",
+            "Invalid profile data format",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
+        }
+      } else {
+        Get.snackbar(
+          "Error",
+          "Failed to load profile",
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print("Profile fetch error: $e");
+      Get.snackbar(
+        "Error",
+        "Failed to fetch profile: $e",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoadingProfile.value = false;
+    }
+  }
 
   /// Logout user - clear tokens and navigate to sign in
   Future<void> logout() async {
