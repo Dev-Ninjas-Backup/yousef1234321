@@ -52,7 +52,7 @@ class ApiClient extends GetConnect {
   }
 
   void handleGlobalStatus(Response response) {
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // Global Success Logic (Optional)
       // Usually 200 is handled locally, but you can log it here.
     } else if (response.statusCode == 400) {

@@ -80,7 +80,7 @@ class SignUpController extends GetxController {
 
     try {
       final formData = FormData({
-        'name': nameController.text,
+        'fullName': nameController.text,
         'email': emailController.text,
         'phone': phoneController.text,
         'password': passwordController.text,
