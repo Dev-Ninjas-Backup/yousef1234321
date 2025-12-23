@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
@@ -36,7 +37,7 @@ class SignInController extends GetxController {
         'password': passwordController.text.trim(),
       };
 
-      final response = await ApiClient.to.post('auth/login', body);
+      final response = await ApiClient.to.post(Endpoint.login, body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Login response is nested inside "result"
