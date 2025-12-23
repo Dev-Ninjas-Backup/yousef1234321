@@ -7,6 +7,7 @@ import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -121,7 +122,7 @@ class SignInScreen extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {
-                          // Navigate to Forgot Password
+                          Get.toNamed(Approute.forgetPasswordScreen);
                         },
                         child: const Text(
                           "Forget Password?",
