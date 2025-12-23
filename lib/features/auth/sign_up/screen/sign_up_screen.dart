@@ -6,6 +6,7 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -13,6 +14,7 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ApiClient(sharedPreferences: Get.find()));
     final controller = Get.put(SignUpController());
     return Scaffold(
       backgroundColor: Colors.white,
@@ -108,6 +110,25 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 24),
+                    TextField(
+                      controller: controller.phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        hintText: "Phone Number",
+                        prefixIcon: const Icon(Icons.phone_outlined),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 18,
+                          horizontal: 20,
+                        ),
+                        filled: true,
+                        fillColor: Color(0xFFF7F7F9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 24),
                     Obx(
                       () => TextField(
                         controller: controller.passwordController,
@@ -158,7 +179,7 @@ class SignUpScreen extends StatelessWidget {
                             horizontal: 20,
                           ),
                           filled: true,
-                          fillColor: Color(0xFFF7F7F9),
+                          fillColor: const Color(0xFFF7F7F9),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                             borderSide: BorderSide.none,
@@ -166,170 +187,34 @@ class SignUpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: controller.garageNameController,
-                      decoration: InputDecoration(
-                        hintText: "Garage Name",
-                        prefixIcon: const Icon(Icons.business),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 18,
-                          horizontal: 20,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                    const SizedBox(height: 8),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Password must be at least 8 characters",
+                        style: TextStyle(
+                          color: AppColors.subTextColor,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
                         ),
                       ),
                     ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: controller.addressController,
-                      decoration: InputDecoration(
-                        hintText: "Address",
-                        prefixIcon: const Icon(Icons.location_on_outlined),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 18,
-                          horizontal: 20,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: controller.cityController,
-                      decoration: InputDecoration(
-                        hintText: "City",
-                        prefixIcon: const Icon(Icons.location_city),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 18,
-                          horizontal: 20,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: controller.emirateController,
-                      decoration: InputDecoration(
-                        hintText: "Emirate",
-                        prefixIcon: const Icon(Icons.map_outlined),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 18,
-                          horizontal: 20,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    TextField(
-                      controller: controller.serviceCategoriesController,
-                      decoration: InputDecoration(
-                        hintText: "Service Categories",
-                        prefixIcon: const Icon(Icons.category_outlined),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 18,
-                          horizontal: 20,
-                        ),
-                        filled: true,
-                        fillColor: Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    GestureDetector(
-                      onTap: controller.pickGarageLogo,
-                      child: Obx(
-                        () => Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 18,
-                            horizontal: 20,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF7F7F9),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.image_outlined),
-                              SizedBox(width: 12),
-                              Text(
-                                controller.garageLogoFile.value?.path
-                                        .split('/')
-                                        .last ??
-                                    "Garage Logo",
-                                style: TextStyle(
-                                  color: controller.garageLogoFile.value == null
-                                      ? Colors.grey
-                                      : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    GestureDetector(
-                      onTap: controller.pickTradeLicense,
-                      child: Obx(
-                        () => Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 18,
-                            horizontal: 20,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF7F7F9),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.description_outlined),
-                              SizedBox(width: 12),
-                              Text(
-                                controller.tradeLicenseFile.value?.path
-                                        .split('/')
-                                        .last ??
-                                    "Trade License",
-                                style: TextStyle(
-                                  color:
-                                      controller.tradeLicenseFile.value == null
-                                      ? Colors.grey
-                                      : Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 24),
-                    Obx(
-                      () => DropdownButtonFormField<String>(
-                        initialValue: controller.selectedRole.value,
-                        items: controller.roles
+                    const SizedBox(height: 24),
+
+                    Obx(() {
+                      final displayedRoles = controller.roles
+                          .where(
+                            (role) => role != 'SUPER_ADMIN' && role != 'MEMBER',
+                          )
+                          .toList();
+                      return DropdownButtonFormField<String>(
+                        initialValue:
+                            displayedRoles.contains(
+                              controller.selectedRole.value,
+                            )
+                            ? controller.selectedRole.value
+                            : null,
+                        items: displayedRoles
                             .map(
                               (role) => DropdownMenuItem(
                                 value: role,
@@ -350,28 +235,21 @@ class SignUpScreen extends StatelessWidget {
                             horizontal: 20,
                           ),
                           filled: true,
-                          fillColor: Color(0xFFF7F7F9),
+                          fillColor: const Color(0xFFF7F7F9),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                             borderSide: BorderSide.none,
                           ),
                         ),
-                      ),
+                      );
+                    }),
+                    const SizedBox(height: 30),
+                    CustomButton(
+                      title: 'Sign Up',
+                      onPressed: () {
+                        controller.signUp();
+                      },
                     ),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        "Password must be at least 8 characters",
-                        style: TextStyle(
-                          color: AppColors.subTextColor,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 63),
-                    CustomButton(title: 'Sign Up', onPressed: () {}),
                     SizedBox(height: 48),
                     RichText(
                       textAlign: TextAlign.center,
