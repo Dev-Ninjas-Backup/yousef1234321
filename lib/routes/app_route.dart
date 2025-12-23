@@ -3,6 +3,7 @@ import 'package:get/route_manager.dart';
 import 'package:yousef1234321/features/auth/forget_password/screen/forget_password_screen.dart';
 import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
+import 'package:yousef1234321/features/auth/sign_up/signup_otp/screen/otp_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:yousef1234321/features/contact_us/screen/contact_us_screen.dart';
 import 'package:yousef1234321/features/help_support/screen/help_support_screen.dart';
@@ -59,6 +60,7 @@ class Approute {
   static String languageScreen = "/profile/languageScreen";
   //chatlist
   static String chatScreen = "/chatScreen";
+  static String getsignupOtpScreen = "/signupOtpScreen";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -93,6 +95,8 @@ class Approute {
   static String getLanguageScreen() => languageScreen;
   //chatlist
   static String getChatScreen() => chatScreen;
+  static String getSignupOtpScreen() => getsignupOtpScreen;
+
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
@@ -133,5 +137,6 @@ class Approute {
 
     //chatlist
     GetPage(name: chatScreen, page: () => ChatPage()),
+    GetPage(name: getsignupOtpScreen, page: () => SignupOtpScreen()),
   ];
 }

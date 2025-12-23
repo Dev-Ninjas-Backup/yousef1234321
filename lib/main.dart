@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yousef1234321/app.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize SharedPreferences & ApiClient
+  final sharedPreferences = await SharedPreferences.getInstance();
+  Get.put<SharedPreferences>(sharedPreferences, permanent: true);
+  Get.put<ApiClient>(ApiClient(sharedPreferences: Get.find()), permanent: true);
+
   configEasyLoading();
   runApp(const MyApp());
 }
