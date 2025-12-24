@@ -10,7 +10,7 @@ class OtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(OtpController());
-    final focusNodes = List.generate(4, (_) => FocusNode());
+    final focusNodes = List.generate(6, (_) => FocusNode());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -59,7 +59,7 @@ class OtpScreen extends StatelessWidget {
                     SizedBox(height: 16),
                     Center(
                       child: Text(
-                        'Enter the 4-digit code sent to your email',
+                        'Enter the 6-digit code sent to your email',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
@@ -83,9 +83,9 @@ class OtpScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
-                        4,
+                        6,
                         (index) => SizedBox(
-                          width: 60,
+                          width: 45,
                           height: 70,
                           child: TextField(
                             controller: controller.otpControllers[index],
@@ -110,7 +110,7 @@ class OtpScreen extends StatelessWidget {
                             onChanged: (value) {
                               controller.onOtpChanged(index, value);
 
-                              if (value.isNotEmpty && index < 3) {
+                              if (value.isNotEmpty && index < 5) {
                                 FocusScope.of(
                                   context,
                                 ).requestFocus(focusNodes[index + 1]);
@@ -129,9 +129,13 @@ class OtpScreen extends StatelessWidget {
 
                     Obx(
                       () => CustomButton(
-                        title: "Verify OTP",
-                        onPressed: controller.isOtpComplete.value
-                            ? controller.verifyOtp
+                        title: controller.isLoading.value
+                            ? "Loading..."
+                            : "Verify OTP",
+                        onPressed:
+                            (controller.isOtpComplete.value &&
+                                !controller.isLoading.value)
+                            ? () => controller.verifyOtp()
                             : null,
                       ),
                     ),

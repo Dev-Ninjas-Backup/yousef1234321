@@ -115,7 +115,7 @@ class ForgetPasswordController extends GetxController {
                     height: 44,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.to(OtpScreen());
+                        Get.to(() => OtpScreen(), arguments: email);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.splashButtonColor,

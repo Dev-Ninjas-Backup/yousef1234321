@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
@@ -10,16 +10,6 @@ import 'package:yousef1234321/features/profile/edit_profile/controller/edit_prof
 
 class EditProfileScreen extends StatelessWidget {
   EditProfileScreen({super.key});
-
-  final Rx<File?> selectedImage = Rx<File?>(null);
-
-  Future<void> pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedImage.value = File(image.path);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +32,8 @@ class EditProfileScreen extends StatelessWidget {
                   Obx(
                     () => CircleAvatar(
                       radius: 50,
-                      backgroundImage: selectedImage.value != null
-                          ? FileImage(selectedImage.value!)
+                      backgroundImage: controller.selectedImage.value != null
+                          ? FileImage(controller.selectedImage.value!)
                           : AssetImage(Imagepath.profile) as ImageProvider,
                     ),
                   ),
@@ -51,7 +41,7 @@ class EditProfileScreen extends StatelessWidget {
                     bottom: 0,
                     right: 0,
                     child: GestureDetector(
-                      onTap: pickImage,
+                      onTap: controller.pickImage,
                       child: CircleAvatar(
                         radius: 16,
                         backgroundColor: AppColors.primaryColor,
@@ -87,9 +77,10 @@ class EditProfileScreen extends StatelessWidget {
 
             _buildField("First Name", controller.firstNameController),
             _buildField("Last Name", controller.lastNameController),
-            _buildField("Location", controller.locationController),
+            _buildField("Address", controller.addressController),
+            _buildField("City", controller.cityController),
             _buildPhoneField(controller),
-            _buildField("Email", controller.emailController),
+            _buildField("Emirate", controller.emirateController),
 
             const SizedBox(height: 25),
 
@@ -135,9 +126,11 @@ class EditProfileScreen extends StatelessWidget {
           TextField(
             controller: controller,
             decoration: InputDecoration(
+              hintText: label,
+              hintStyle: const TextStyle(color: Colors.grey),
               // suffixIcon: const Icon(Icons.check_circle, color: Colors.blue),
               filled: true,
-              fillColor: const Color(0xFFF1F5FF),
+              fillColor: const Color(0xFFF9FAFB),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
@@ -168,17 +161,25 @@ class EditProfileScreen extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 16,
-                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F5FF),
+                  color: const Color(0xFFF9FAFB),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
-                  "+88",
-                  style: TextStyle(fontSize: 14, color: Colors.black87),
+                child: CountryCodePicker(
+                  onChanged: (country) {
+                    controller.countryCode.value = country.dialCode ?? "+880";
+                  },
+                  initialSelection: 'BD',
+                  favorite: const ['+880', 'BD'],
+                  showCountryOnly: false,
+                  showOnlyCountryWhenClosed: false,
+                  alignLeft: false,
+                  showFlag: true,
+                  padding: EdgeInsets.zero,
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -186,12 +187,14 @@ class EditProfileScreen extends StatelessWidget {
                 child: TextField(
                   controller: controller.phoneController,
                   decoration: InputDecoration(
+                    hintText: "Mobile Number",
+                    hintStyle: const TextStyle(color: Colors.grey),
                     // suffixIcon: const Icon(
                     //   Icons.check_circle,
                     //   color: Colors.blue,
                     // ),
                     filled: true,
-                    fillColor: const Color(0xFFF1F5FF),
+                    fillColor: const Color(0xFFF9FAFB),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                       borderSide: BorderSide.none,
