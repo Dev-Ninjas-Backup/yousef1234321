@@ -64,14 +64,20 @@ class ContactUsScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             // TextFields
-            TextField(
-              controller: controller.nameController,
-              decoration: fieldDecoration("Your name"),
+            Obx(
+              () => TextField(
+                controller: controller.nameController,
+                decoration: fieldDecoration("Your name"),
+                enabled: !controller.isLoadingProfile.value,
+              ),
             ),
             const SizedBox(height: 14),
-            TextField(
-              controller: controller.emailController,
-              decoration: fieldDecoration("Your email address"),
+            Obx(
+              () => TextField(
+                controller: controller.emailController,
+                decoration: fieldDecoration("Your email address"),
+                enabled: !controller.isLoadingProfile.value,
+              ),
             ),
             const SizedBox(height: 14),
             TextField(
@@ -86,25 +92,36 @@ class ContactUsScreen extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: ElevatedButton(
-                onPressed: () {
-                 
-                },
-
-                //controller.sendMessage,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+              child: Obx(
+                () => ElevatedButton(
+                  onPressed: controller.isSending.value
+                      ? null
+                      : () {
+                          controller.sendMessage();
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  "Send Message",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  child: controller.isSending.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          "Send Message",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                 ),
               ),
             ),
