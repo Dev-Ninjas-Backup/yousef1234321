@@ -1,37 +1,46 @@
-import 'package:get/get.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfileController extends GetxController {
-  final TextEditingController firstNameController = TextEditingController(
-    text: "Leonardo",
-  );
-  final TextEditingController lastNameController = TextEditingController(
-    text: "Ahmed",
-  );
-  final TextEditingController locationController = TextEditingController(
-    text: "Sylhet Bangladesh",
-  );
-  final TextEditingController phoneController = TextEditingController(
-    text: "1700-212121",
-  );
-  final TextEditingController emailController = TextEditingController(
-    text: "leonardo@gmail.com",
-  );
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final addressController = TextEditingController();
+  final cityController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emirateController = TextEditingController();
 
-  void saveProfile() async {
-    EasyLoading.show(status: "Saving profile...");
-    await Future.delayed(const Duration(seconds: 1));
-    EasyLoading.showSuccess("Profile updated successfully!");
+  final Rx<File?> selectedImage = Rx<File?>(null);
+  final countryCode = '+880'.obs;
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      selectedImage.value = File(image.path);
+    }
+  }
+
+  void saveProfile() {
+    // Add API call logic here
+    Get.back();
+    Get.snackbar(
+      "Success",
+      "Profile updated successfully",
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
   }
 
   @override
   void onClose() {
     firstNameController.dispose();
     lastNameController.dispose();
-    locationController.dispose();
+    addressController.dispose();
+    cityController.dispose();
     phoneController.dispose();
-    emailController.dispose();
+    emirateController.dispose();
     super.onClose();
   }
 }

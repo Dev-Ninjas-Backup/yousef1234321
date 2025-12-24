@@ -1,5 +1,6 @@
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/route_manager.dart';
+import 'package:yousef1234321/features/auth/forget_password/reset_password/reset_password_screen.dart';
 import 'package:yousef1234321/features/auth/forget_password/screen/forget_password_screen.dart';
 import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
@@ -32,6 +33,7 @@ class Approute {
   static String signInScreen = '/signInScreen';
   static String signUpScreen = '/signUpScreen';
   static String forgetPasswordScreen = '/forgetPasswordScreen';
+  static String resetPasswordScreen = '/resetPasswordScreen';
   static String bottomNavBarScreen = '/bottomNavBarScreen';
   //home
   static String findGaragePage = '/home/findGaragePage';
@@ -67,6 +69,7 @@ class Approute {
   static String getSignInScreen() => signInScreen;
   static String getSignUpScreen() => signUpScreen;
   static String getForgetPasswordScreen() => forgetPasswordScreen;
+  static String getResetPasswordScreen() => resetPasswordScreen;
   //home
   static String getfindGaragePage() => findGaragePage;
   //service
@@ -103,6 +106,7 @@ class Approute {
     GetPage(name: signInScreen, page: () => SignInScreen()),
     GetPage(name: signUpScreen, page: () => SignUpScreen()),
     GetPage(name: forgetPasswordScreen, page: () => ForgetPasswordScreen()),
+    GetPage(name: resetPasswordScreen, page: () => const ResetPasswordScreen()),
     GetPage(name: bottomNavBarScreen, page: () => BottomNavbarScreen()),
     //home
     GetPage(name: findGaragePage, page: () => FindGaragePage()),
