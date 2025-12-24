@@ -15,6 +15,9 @@ class ProfilePage extends StatelessWidget {
     // Display API profile photo or default avatar
     if (controller.profilePhoto.value != null &&
         controller.profilePhoto.value!.isNotEmpty) {
+      // Show the default avatar until the network image has at least one frame.
+      // This avoids showing a spinner first — the avatar is displayed until
+      // the image data is available, then the image fades in.
       return Image.network(
         controller.profilePhoto.value!,
         height: 96,
@@ -23,21 +26,30 @@ class ProfilePage extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) {
           return _buildDefaultAvatar();
         },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return SizedBox(
-            height: 96,
-            width: 96,
-            child: Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded /
-                          loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            ),
-          );
-        },
+        // frameBuilder lets us control what is shown while the image loads.
+        frameBuilder:
+            (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child; // already available
+              }
+
+              if (frame == null) {
+                // Image is still loading — show default avatar (no spinner)
+                return _buildDefaultAvatar();
+              }
+
+              // Image has loaded (at least one frame) — fade it in for a smooth effect
+              return AnimatedOpacity(
+                opacity: 1.0,
+                duration: const Duration(milliseconds: 300),
+                child: child,
+              );
+            },
       );
     } else {
       return _buildDefaultAvatar();
@@ -110,40 +122,6 @@ class ProfilePage extends StatelessWidget {
                             ],
                           ),
                   ),
-
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 52),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomAppBar(title: "Profile"),
-              SizedBox(height: 30),
-              Center(
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.asset(
-                        Imagepath.profile,
-                        height: 96,
-                        width: 96,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Leonardo",
-                      style: getTextStyle(
-                        fontSize: 24,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                    Text(
-                      "Leonardo@gmail.com",
-                      style: getTextStyle(fontSize: 14),
-                    ),
-                  ],
                 ),
                 const SizedBox(height: 25),
                 Container(
