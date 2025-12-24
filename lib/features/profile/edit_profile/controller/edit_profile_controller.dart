@@ -19,7 +19,6 @@ class EditProfileController extends GetxController {
   final emirateController = TextEditingController();
 
   final Rx<File?> selectedImage = Rx<File?>(null);
-  final countryCode = '+971'.obs;
   final fullName = ''.obs;
   final email = ''.obs;
   final profilePhotoUrl = Rx<String?>(null);
@@ -68,20 +67,8 @@ class EditProfileController extends GetxController {
           addressController.text = data['address'] ?? '';
           cityController.text = data['city'] ?? '';
           emirateController.text = data['emirate'] ?? '';
-          final phoneStr = (data['phone'] ?? '').toString();
-          if (phoneStr.startsWith('+')) {
-            // Extract country code (1-4 digits) and local number
-            final match = RegExp(r'^\+(\d{1,4})(\d+)$').firstMatch(phoneStr);
-            if (match != null) {
-              countryCode.value = '+${match.group(1)}';
-              phoneController.text = match.group(2) ?? '';
-            } else {
-              // Fallback: keep whole string but attempt to strip leading +
-              phoneController.text = phoneStr.replaceFirst('+', '');
-            }
-          } else {
-            phoneController.text = phoneStr;
-          }
+          // Load phone number as-is from API
+          phoneController.text = (data['phone'] ?? '').toString();
         }
       }
     } catch (e, st) {
@@ -100,20 +87,13 @@ class EditProfileController extends GetxController {
           '${firstNameController.text.trim()} ${lastNameController.text.trim()}'
               .trim();
 
-      // Build phone with selected country code if needed
-      String phoneFull;
-      final rawPhone = phoneController.text.trim();
-      if (rawPhone.startsWith('+')) {
-        phoneFull = rawPhone;
-      } else {
-        final local = rawPhone.replaceFirst(RegExp(r'^0+'), '');
-        phoneFull = '${countryCode.value}$local';
-      }
+      // Use phone number as-is from the text field
+      final phoneNumber = phoneController.text.trim();
 
       final extraFields = <String, String>{
         'fullName': combinedName,
         'bio': '',
-        'phoneNumber': phoneFull,
+        'phoneNumber': phoneNumber,
         'address': addressController.text.trim(),
         'city': cityController.text.trim(),
         'emirate': emirateController.text.trim(),
@@ -160,7 +140,7 @@ class EditProfileController extends GetxController {
         final body = {
           'fullName': combinedName,
           'bio': '',
-          'phoneNumber': phoneFull,
+          'phoneNumber': phoneNumber,
           'address': addressController.text.trim(),
           'city': cityController.text.trim(),
           'emirate': emirateController.text.trim(),

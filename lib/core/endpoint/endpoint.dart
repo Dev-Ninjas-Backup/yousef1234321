@@ -21,4 +21,6 @@ class Endpoint {
   static const String resetPassword = '/auth/reset-password';
   static const String verifyOtp = '/auth/verify-otp';
   static const String contactUs = '/contact';
+  static const String getService = '/services';
+  static const String findGarage = '/garages';
 }

@@ -28,7 +28,7 @@ class SplashController extends GetxController
     Future.delayed(const Duration(seconds: 3), () {
       if (ApiClient.to.isLoggedIn) {
         print(
-          "User is logged in, token: ${ApiClient.to.token?.substring(0, 20)}...",
+          "User is logged in, token: ${ApiClient.to.token}",
         );
         // User is logged in, navigate to home
         Get.offAllNamed(Approute.bottomNavBarScreen);
