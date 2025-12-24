@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:logger/web.dart';
 import 'package:yousef1234321/core/service/local_service.dart';
 import 'package:yousef1234321/core/service/network_service/network_response.dart';
-
+import 'package:yousef1234321/core/network/api_client.dart';
 
 class NetworkClient {
   final String _defaultErrorMsg = 'Something went wrong';
@@ -24,16 +24,33 @@ class NetworkClient {
 
   NetworkClient({required this.onUnAuthorize});
 
+  Future<String> _getAuthToken() async {
+    var token = await sharedPreferencesHelper.getAccessToken() ?? '';
+    if (token.trim().isEmpty) {
+      try {
+        if (Get.isRegistered<ApiClient>()) {
+          final apiClient = Get.find<ApiClient>();
+          if (apiClient.token != null && apiClient.token!.isNotEmpty) {
+            token = apiClient.token!.startsWith('Bearer ')
+                ? apiClient.token!
+                : 'Bearer ${apiClient.token!}';
+          }
+        }
+      } catch (_) {}
+    }
+    return token;
+  }
+
   // get request method
 
   Future<NetworkResponse> getRequest({required String url}) async {
-    final token = await sharedPreferencesHelper.getAccessToken();
+    final token = await _getAuthToken();
     if (url.contains('bookmark')) {
       print('🔐 [NetworkClient] Bookmark request - Token: $token');
     }
     Map<String, String> commonHeaders = {
       'Content-Type': 'application/json',
-      'authorization': token ?? '',
+      'Authorization': token,
     };
     try {
       Uri uri = Uri.parse(url);
@@ -83,9 +100,10 @@ class NetworkClient {
     required String url,
     required Map<String, dynamic>? body,
   }) async {
+    final token = await _getAuthToken();
     Map<String, String> commonHeaders = {
       'content-type': 'application/json',
-      'authorization': await sharedPreferencesHelper.getAccessToken() ?? '',
+      'Authorization': token,
     };
     try {
       Uri uri = Uri.parse(url);
@@ -133,9 +151,10 @@ class NetworkClient {
     required String url,
     Map<String, dynamic>? body,
   }) async {
+    final token = await _getAuthToken();
     Map<String, String> commonHeaders = {
       'content-type': 'application/json',
-      'authorization': await sharedPreferencesHelper.getAccessToken() ?? '',
+      'Authorization': token,
     };
 
     try {
@@ -187,9 +206,10 @@ class NetworkClient {
     required String url,
     required Map<String, dynamic>? body,
   }) async {
+    final token = await _getAuthToken();
     Map<String, String> commonHeaders = {
       'content-type': 'application/json',
-      'authorization': await sharedPreferencesHelper.getAccessToken() ?? '',
+      'Authorization': token,
     };
     try {
       Uri uri = Uri.parse(url);
@@ -284,12 +304,30 @@ class NetworkClient {
     required File file,
     String fieldName = 'file',
     Map<String, String>? extraFields,
+    String method = 'POST',
   }) async {
     try {
-      final token = await sharedPreferencesHelper.getAccessToken() ?? '';
+      var token = await sharedPreferencesHelper.getAccessToken() ?? '';
 
-      var request = http.MultipartRequest('POST', Uri.parse(url));
-      request.headers['authorization'] = token;
+      // Fallback to ApiClient token if local helper has none
+      try {
+        if (token.trim().isEmpty) {
+          // Import ApiClient lazily to avoid circular import at top-level
+          final apiClient = Get.isRegistered<ApiClient>()
+              ? Get.find<ApiClient>()
+              : null;
+          if (apiClient != null &&
+              apiClient.token != null &&
+              apiClient.token!.isNotEmpty) {
+            token = apiClient.token!.startsWith('Bearer ')
+                ? apiClient.token!
+                : 'Bearer ${apiClient.token!}';
+          }
+        }
+      } catch (_) {}
+
+      var request = http.MultipartRequest(method, Uri.parse(url));
+      if (token.isNotEmpty) request.headers['Authorization'] = token;
       request.headers['accept'] = 'application/json';
 
       if (extraFields != null) request.fields.addAll(extraFields);
@@ -380,10 +418,24 @@ class NetworkClient {
     String fieldName = 'files',
   }) async {
     try {
-      final token = await sharedPreferencesHelper.getAccessToken() ?? '';
+      var token = await sharedPreferencesHelper.getAccessToken() ?? '';
+      try {
+        if (token.trim().isEmpty) {
+          final apiClient = Get.isRegistered<ApiClient>()
+              ? Get.find<ApiClient>()
+              : null;
+          if (apiClient != null &&
+              apiClient.token != null &&
+              apiClient.token!.isNotEmpty) {
+            token = apiClient.token!.startsWith('Bearer ')
+                ? apiClient.token!
+                : 'Bearer ${apiClient.token!}';
+          }
+        }
+      } catch (_) {}
 
       var request = http.MultipartRequest('POST', Uri.parse(url));
-      request.headers['authorization'] = token;
+      if (token.isNotEmpty) request.headers['Authorization'] = token;
       request.headers['accept'] = 'application/json';
 
       // Add all files to the request
