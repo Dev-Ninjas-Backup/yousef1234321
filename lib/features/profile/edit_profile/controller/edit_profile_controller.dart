@@ -19,7 +19,7 @@ class EditProfileController extends GetxController {
   final emirateController = TextEditingController();
 
   final Rx<File?> selectedImage = Rx<File?>(null);
-  final countryCode = '+880'.obs;
+  final countryCode = '+971'.obs;
   final fullName = ''.obs;
   final email = ''.obs;
   final profilePhotoUrl = Rx<String?>(null);

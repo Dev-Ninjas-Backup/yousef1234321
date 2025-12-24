@@ -22,19 +22,22 @@ class BuildPhoneField extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              Obx(
-                () => Container(
+              Obx(() {
+                // Force rebuild when countryCode changes
+                final currentCode = controller.countryCode.value;
+                return Container(
                   decoration: BoxDecoration(
                     color: const Color(0xFFF9FAFB),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: CountryCodePicker(
+                    key: ValueKey(currentCode), // Force rebuild on change
                     onChanged: (country) {
                       controller.countryCode.value = country.dialCode ?? "+880";
                     },
                     // Use controller value so picker reflects API/previous selection
-                    initialSelection: controller.countryCode.value,
-                    favorite: [controller.countryCode.value, 'BD'],
+                    initialSelection: currentCode,
+                    favorite: [currentCode, 'BD'],
                     showCountryOnly: false,
                     showOnlyCountryWhenClosed: false,
                     alignLeft: false,
@@ -45,12 +48,13 @@ class BuildPhoneField extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-                ),
-              ),
+                );
+              }),
               const SizedBox(width: 10),
               Expanded(
                 child: TextField(
                   controller: controller.phoneController,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     hintText: "Mobile Number",
                     hintStyle: const TextStyle(color: Colors.grey),
