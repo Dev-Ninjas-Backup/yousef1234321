@@ -1,15 +1,14 @@
-import 'dart:io';
-
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/edit_profile/controller/edit_profile_controller.dart';
+import 'package:yousef1234321/features/profile/edit_profile/widgets/build_field.dart';
+import 'package:yousef1234321/features/profile/edit_profile/widgets/build_phone_field.dart';
 
 class EditProfileScreen extends StatelessWidget {
-  EditProfileScreen({super.key});
+  const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,12 @@ class EditProfileScreen extends StatelessWidget {
                       radius: 50,
                       backgroundImage: controller.selectedImage.value != null
                           ? FileImage(controller.selectedImage.value!)
-                          : AssetImage(Imagepath.profile) as ImageProvider,
+                          : (controller.profilePhotoUrl.value != null
+                                    ? NetworkImage(
+                                        controller.profilePhotoUrl.value!,
+                                      )
+                                    : AssetImage(Imagepath.profile))
+                                as ImageProvider,
                     ),
                   ),
                   Positioned(
@@ -59,28 +63,49 @@ class EditProfileScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Name
-            const Text(
-              "Leonardo",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryColor,
+            Obx(
+              () => Text(
+                controller.fullName.value.isNotEmpty
+                    ? controller.fullName.value
+                    : '${controller.firstNameController.text} ${controller.lastNameController.text}'
+                          .trim(),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              "leonardo@gmail.com",
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+            Obx(
+              () => Text(
+                controller.email.value.isNotEmpty
+                    ? controller.email.value
+                    : 'No email',
+                style: const TextStyle(fontSize: 14, color: Colors.black54),
+              ),
             ),
 
             const SizedBox(height: 35),
 
-            _buildField("First Name", controller.firstNameController),
-            _buildField("Last Name", controller.lastNameController),
-            _buildField("Address", controller.addressController),
-            _buildField("City", controller.cityController),
-            _buildPhoneField(controller),
-            _buildField("Emirate", controller.emirateController),
+            BuildField(
+              label: "First Name",
+              controller: controller.firstNameController,
+            ),
+            BuildField(
+              label: "Last Name",
+              controller: controller.lastNameController,
+            ),
+            BuildField(
+              label: "Address",
+              controller: controller.addressController,
+            ),
+            BuildField(label: "City", controller: controller.cityController),
+            BuildPhoneField(controller: controller),
+            BuildField(
+              label: "Emirate",
+              controller: controller.emirateController,
+            ),
 
             const SizedBox(height: 25),
 
@@ -107,108 +132,6 @@ class EditProfileScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // Common Input Field
-  Widget _buildField(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 18, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: label,
-              hintStyle: const TextStyle(color: Colors.grey),
-              // suffixIcon: const Icon(Icons.check_circle, color: Colors.blue),
-              filled: true,
-              fillColor: const Color(0xFFF9FAFB),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide.none,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Phone Field with country code
-  Widget _buildPhoneField(EditProfileController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Mobile Number",
-            style: TextStyle(fontSize: 18, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: CountryCodePicker(
-                  onChanged: (country) {
-                    controller.countryCode.value = country.dialCode ?? "+880";
-                  },
-                  initialSelection: 'BD',
-                  favorite: const ['+880', 'BD'],
-                  showCountryOnly: false,
-                  showOnlyCountryWhenClosed: false,
-                  alignLeft: false,
-                  showFlag: true,
-                  padding: EdgeInsets.zero,
-                  textStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: TextField(
-                  controller: controller.phoneController,
-                  decoration: InputDecoration(
-                    hintText: "Mobile Number",
-                    hintStyle: const TextStyle(color: Colors.grey),
-                    // suffixIcon: const Icon(
-                    //   Icons.check_circle,
-                    //   color: Colors.blue,
-                    // ),
-                    filled: true,
-                    fillColor: const Color(0xFFF9FAFB),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
