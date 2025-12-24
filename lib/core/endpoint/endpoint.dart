@@ -8,7 +8,8 @@
 /// ApiClient.to.post(Endpoint.login, body);
 /// ```
 class Endpoint {
-  static const String baseUrl = 'https://yousef-server-bk.saikat.com.bd';
+  static const String baseUrl =
+      'https://impracticably-sclerometric-niki.ngrok-free.dev';
 
   // Auth endpoints
   static const String register = '/auth/register';
