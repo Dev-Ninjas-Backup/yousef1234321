@@ -42,7 +42,8 @@ class ResetPasswordController extends GetxController {
 
     try {
       final response = await ApiClient.to.post(Endpoint.resetPassword, {
-        'newPassword': password,
+        'resetToken': ApiClient.to.resetToken ?? '',
+        'password': password,
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {

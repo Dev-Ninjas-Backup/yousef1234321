@@ -9,7 +9,7 @@ class OtpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(OtpController());
+    final controller = Get.find<OtpController>();
     final focusNodes = List.generate(6, (_) => FocusNode());
 
     return Scaffold(
@@ -23,14 +23,14 @@ class OtpScreen extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => Get.back(),
                   child: Container(
-                    margin: EdgeInsets.only(left: 24, top: 24),
+                    margin: const EdgeInsets.only(left: 24, top: 24),
                     height: 44,
                     width: 44,
                     decoration: BoxDecoration(
-                      color: Color(0xFFE8F1FD),
+                      color: const Color(0xFFE8F1FD),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Icon(
                         Icons.arrow_back_ios,
                         color: AppColors.splashButtonColor,
@@ -39,14 +39,13 @@ class OtpScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 47),
+                padding: const EdgeInsets.symmetric(horizontal: 47),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 40),
-                    Center(
+                    const SizedBox(height: 40),
+                    const Center(
                       child: Text(
                         'OTP Verification',
                         style: TextStyle(
@@ -56,8 +55,8 @@ class OtpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Center(
+                    const SizedBox(height: 16),
+                    const Center(
                       child: Text(
                         'Enter the 6-digit code sent to your email',
                         style: TextStyle(
@@ -68,9 +67,8 @@ class OtpScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(height: 32),
-
-                    Text(
+                    const SizedBox(height: 32),
+                    const Text(
                       "OTP Code",
                       style: TextStyle(
                         fontSize: 16,
@@ -78,8 +76,7 @@ class OtpScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 12),
-
+                    const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(
@@ -96,13 +93,13 @@ class OtpScreen extends StatelessWidget {
                             decoration: InputDecoration(
                               counterText: "",
                               filled: true,
-                              fillColor: Color(0xFFF7F7F9),
+                              fillColor: const Color(0xFFF7F7F9),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide.none,
                               ),
                             ),
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
@@ -124,9 +121,7 @@ class OtpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-                    SizedBox(height: 40),
-
+                    const SizedBox(height: 40),
                     Obx(
                       () => CustomButton(
                         title: controller.isLoading.value
@@ -139,8 +134,7 @@ class OtpScreen extends StatelessWidget {
                             : null,
                       ),
                     ),
-                    SizedBox(height: 20),
-
+                    const SizedBox(height: 20),
                     Obx(() {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,7 +143,7 @@ class OtpScreen extends StatelessWidget {
                             onPressed: controller.remainingSeconds.value == 0
                                 ? controller.resendOtp
                                 : null,
-                            child: Text(
+                            child: const Text(
                               "Resend Code",
                               style: TextStyle(
                                 color: AppColors.splashButtonColor,
@@ -160,7 +154,7 @@ class OtpScreen extends StatelessWidget {
                           if (controller.remainingSeconds.value > 0)
                             Text(
                               "00:${controller.remainingSeconds.value.toString().padLeft(2, '0')}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppColors.splashButtonColor,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,

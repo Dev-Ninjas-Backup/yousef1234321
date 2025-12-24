@@ -2,6 +2,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:get/route_manager.dart';
 import 'package:yousef1234321/features/auth/forget_password/reset_password/reset_password_screen.dart';
 import 'package:yousef1234321/features/auth/forget_password/screen/forget_password_screen.dart';
+import 'package:yousef1234321/features/auth/sign_in/binding/sign_in_binding.dart';
 import 'package:yousef1234321/features/auth/sign_in/screen/sign_in_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/screen/sign_up_screen.dart';
 import 'package:yousef1234321/features/auth/sign_up/signup_otp/screen/otp_screen.dart';
@@ -103,7 +104,10 @@ class Approute {
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
-    GetPage(name: signInScreen, page: () => SignInScreen()),
+    GetPage(
+        name: signInScreen,
+        page: () => const SignInScreen(),
+        binding: SignInBinding()),
     GetPage(name: signUpScreen, page: () => SignUpScreen()),
     GetPage(name: forgetPasswordScreen, page: () => ForgetPasswordScreen()),
     GetPage(name: resetPasswordScreen, page: () => const ResetPasswordScreen()),

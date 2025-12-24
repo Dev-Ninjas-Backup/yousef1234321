@@ -4,6 +4,7 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/auth/otp/binding/otp_binding.dart';
 import 'package:yousef1234321/features/auth/otp/screen/otp_screen.dart';
 
 class ForgetPasswordController extends GetxController {
@@ -55,6 +56,11 @@ class ForgetPasswordController extends GetxController {
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.body != null &&
+            response.body['data'] != null &&
+            response.body['data']['resetToken'] != null) {
+          await ApiClient.to.setResetToken(response.body['data']['resetToken']);
+        }
         Get.dialog(
           Dialog(
             shape: RoundedRectangleBorder(
@@ -115,7 +121,8 @@ class ForgetPasswordController extends GetxController {
                     height: 44,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.to(() => OtpScreen(), arguments: email);
+                        Get.to(() => const OtpScreen(),
+                            binding: OtpBinding(), arguments: email);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.splashButtonColor,
