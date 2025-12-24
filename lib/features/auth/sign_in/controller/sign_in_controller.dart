@@ -15,11 +15,13 @@ class SignInController extends GetxController {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  Future<void> signIn() async {
+  Future<void> signIn({String? email, String? password}) async {
     if (isLoading.value) return;
 
-    if (emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty) {
+    final emailValue = (email ?? emailController.text).trim();
+    final passwordValue = (password ?? passwordController.text).trim();
+
+    if (emailValue.isEmpty || passwordValue.isEmpty) {
       Get.snackbar(
         "Error",
         "Please enter email and password",
@@ -32,10 +34,7 @@ class SignInController extends GetxController {
     isLoading.value = true;
 
     try {
-      final body = {
-        'email': emailController.text.trim(),
-        'password': passwordController.text.trim(),
-      };
+      final body = {'email': emailValue, 'password': passwordValue};
 
       final response = await ApiClient.to.post(Endpoint.login, body);
 

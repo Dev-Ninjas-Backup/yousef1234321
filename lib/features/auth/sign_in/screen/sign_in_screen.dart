@@ -5,17 +5,42 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/core/common/widgets/social_button.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
   @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+
+    // Ensure controller exists and keep it permanent to avoid accidental disposal.
+    if (!Get.isRegistered<SignInController>()) {
+      Get.put(SignInController(), permanent: true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Get.put(ApiClient(sharedPreferences: Get.find()), permanent: true);
-    final controller = Get.put(SignInController());
+    final controller = Get.find<SignInController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -70,8 +95,10 @@ class SignInScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 40),
+
+                    // Use widget-local controllers instead of controller.emailController
                     TextField(
-                      controller: controller.emailController,
+                      controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: "Email address",
@@ -91,7 +118,7 @@ class SignInScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Obx(
                       () => TextField(
-                        controller: controller.passwordController,
+                        controller: _passwordController,
                         obscureText: !controller.isPasswordVisible.value,
                         decoration: InputDecoration(
                           hintText: "Password",
@@ -138,7 +165,12 @@ class SignInScreen extends StatelessWidget {
                     CustomButton(
                       title: 'Sign In',
                       onPressed: () {
-                        controller.signIn();
+                        // Pass local controller values to avoid relying on possibly
+                        // disposed controllers inside the SignInController.
+                        controller.signIn(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        );
                       },
                     ),
                     const SizedBox(height: 48),

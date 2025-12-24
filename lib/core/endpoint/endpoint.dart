@@ -19,6 +19,6 @@ class Endpoint {
   static const String editProfile = '/user/profile';
   static const String forgetPassword = '/auth/forget-password';
   static const String resetPassword = '/auth/reset-password';
-  static const String verifyOtp = '/auth/verify-otp';
+  static const String verifyOtp = '/auth/reset-verify-otp';
   static const String contactUs = '/contact';
 }

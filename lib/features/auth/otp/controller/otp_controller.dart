@@ -14,10 +14,12 @@ class OtpController extends GetxController {
   final remainingSeconds = 60.obs;
   final isLoading = false.obs;
   Timer? _timer;
+  late String email;
 
   @override
   void onInit() {
     super.onInit();
+    email = Get.arguments as String;
     startTimer();
   }
 
@@ -42,21 +44,16 @@ class OtpController extends GetxController {
     if (isLoading.value) return;
 
     String otp = otpControllers.map((e) => e.text).join();
-    final email = Get.arguments;
 
     isLoading.value = true;
 
     try {
       final response = await ApiClient.to.post(Endpoint.verifyOtp, {
-        "email": email,
-        "otp": otp,
+        "resetToken": ApiClient.to.resetToken ?? '',
+        "emailOtp": otp,
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.body['data'] != null &&
-            response.body['data']['token'] != null) {
-          await ApiClient.to.setToken(response.body['data']['token']);
-        }
         Get.toNamed(Approute.resetPasswordScreen);
       }
     } catch (e) {
@@ -72,8 +69,28 @@ class OtpController extends GetxController {
   }
 
   Future<void> resendOtp() async {
-    startTimer();
-    Get.snackbar("Sent", "OTP Resent successfully");
+    try {
+      final response = await ApiClient.to.post(Endpoint.forgetPassword, {
+        'email': email,
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.body != null &&
+            response.body['data'] != null &&
+            response.body['data']['resetToken'] != null) {
+          await ApiClient.to.setResetToken(response.body['data']['resetToken']);
+        }
+        startTimer();
+        Get.snackbar("Sent", "OTP Resent successfully");
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Error",
+        "Something went wrong while resending OTP: $e",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   @override
