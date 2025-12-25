@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
+import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
 import 'package:yousef1234321/features/spare_parts/controller/spare_parts_controller.dart';
 import 'package:yousef1234321/features/spare_parts/widget/category_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
@@ -180,7 +181,64 @@ class SparePartsScreen extends StatelessWidget {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
 
-        TextButton(onPressed: () {}, child: const Text("See All")),
+        TextButton(
+          onPressed: () async {
+            // Navigate to products list page with API call (page=1, limit=10)
+            // Create ProductsController and fetch products
+            final productsCtrl = Get.put(
+              ProductsController(),
+              tag: 'productsList',
+            );
+            await productsCtrl.fetchProducts(page: 1, limit: 10);
+
+            // Open a new simple screen to display fetched products
+            Get.to(
+              () => Scaffold(
+                appBar: AppBar(title: const Text('All Spare Parts')),
+                body: Obx(() {
+                  if (productsCtrl.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (productsCtrl.products.isEmpty) {
+                    return const Center(child: Text('No products'));
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(12),
+                    itemCount: productsCtrl.products.length,
+                    itemBuilder: (_, idx) {
+                      final p = productsCtrl.products[idx];
+                      // Keep UI simple: show name/price if available, others null
+                      final name = (p is Map && p['partName'] != null)
+                          ? p['partName'].toString()
+                          : 'Product ${idx + 1}';
+                      final price = (p is Map && p['price'] != null)
+                          ? p['price'].toString()
+                          : '-';
+                      return ListTile(
+                        leading: p is Map && p['image'] != null
+                            ? Image.network(
+                                p['image'].toString(),
+                                width: 56,
+                                height: 56,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                Iconpath.carHomeIcon,
+                                width: 56,
+                                height: 56,
+                              ),
+                        title: Text(name),
+                        subtitle: Text('Price: $price'),
+                        onTap: () {},
+                      );
+                    },
+                  );
+                }),
+              ),
+            );
+          },
+          child: const Text("See All"),
+        ),
       ],
     );
   }
