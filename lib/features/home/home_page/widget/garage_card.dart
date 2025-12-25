@@ -159,7 +159,7 @@ class GarageCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isOpen
                                 ? AppColors.greenOpacity
-                                : Colors.red.withOpacity(0.1),
+                                : Colors.red.withValues(alpha:  0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(

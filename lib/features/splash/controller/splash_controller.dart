@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
@@ -27,9 +29,7 @@ class SplashController extends GetxController
   void _checkAuthStatus() {
     Future.delayed(const Duration(seconds: 3), () {
       if (ApiClient.to.isLoggedIn) {
-        print(
-          "User is logged in, token: ${ApiClient.to.token}",
-        );
+        print("User is logged in, token: ${ApiClient.to.token}");
         // User is logged in, navigate to home
         Get.offAllNamed(Approute.bottomNavBarScreen);
       } else {
