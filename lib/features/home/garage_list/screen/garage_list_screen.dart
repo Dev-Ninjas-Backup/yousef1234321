@@ -194,106 +194,106 @@ class GarageListScreen extends StatelessWidget {
     );
   }
 
-  void _showCityPicker(BuildContext context, GarageListController controller) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Select City',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ...controller.cities.map(
-              (city) => ListTile(
-                title: Text(city),
-                onTap: () {
-                  controller.selectedCity.value = city;
-                  controller.applyFilters();
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // void _showCityPicker(BuildContext context, GarageListController controller) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => Container(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const Text(
+  //             'Select City',
+  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //           ),
+  //           const SizedBox(height: 16),
+  //           ...controller.cities.map(
+  //             (city) => ListTile(
+  //               title: Text(city),
+  //               onTap: () {
+  //                 controller.selectedCity.value = city;
+  //                 controller.applyFilters();
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void _showEmiratePicker(
-    BuildContext context,
-    GarageListController controller,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Select Emirate',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ...controller.emirates.map(
-              (emirate) => ListTile(
-                title: Text(emirate),
-                onTap: () {
-                  controller.selectedEmirate.value = emirate;
-                  controller.applyFilters();
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // void _showEmiratePicker(
+  //   BuildContext context,
+  //   GarageListController controller,
+  // ) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => Container(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const Text(
+  //             'Select Emirate',
+  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //           ),
+  //           const SizedBox(height: 16),
+  //           ...controller.emirates.map(
+  //             (emirate) => ListTile(
+  //               title: Text(emirate),
+  //               onTap: () {
+  //                 controller.selectedEmirate.value = emirate;
+  //                 controller.applyFilters();
+  //                 Navigator.pop(context);
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  void _showServicePicker(
-    BuildContext context,
-    GarageListController controller,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Select Service',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: Obx(
-                () => ListView(
-                  children: controller.serviceTypes
-                      .map(
-                        (service) => ListTile(
-                          title: Text(service),
-                          onTap: () {
-                            controller.selectedService.value = service;
-                            controller.applyFilters();
-                            Navigator.pop(context);
-                          },
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // void _showServicePicker(
+  //   BuildContext context,
+  //   GarageListController controller,
+  // ) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     builder: (context) => Container(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           const Text(
+  //             'Select Service',
+  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //           ),
+  //           const SizedBox(height: 16),
+  //           Expanded(
+  //             child: Obx(
+  //               () => ListView(
+  //                 children: controller.serviceTypes
+  //                     .map(
+  //                       (service) => ListTile(
+  //                         title: Text(service),
+  //                         onTap: () {
+  //                           controller.selectedService.value = service;
+  //                           controller.applyFilters();
+  //                           Navigator.pop(context);
+  //                         },
+  //                       ),
+  //                     )
+  //                     .toList(),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _showStatusPicker(
     BuildContext context,

@@ -55,7 +55,14 @@ class SearchSection extends StatelessWidget {
                         () => DropdownButtonFormField<String>(
                           value: controller.selectedLocation.value,
                           isExpanded: true,
-
+                          hint: Text(
+                            "Location",
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
                           items: controller.locations
                               .map(
                                 (location) => DropdownMenuItem(
@@ -75,7 +82,6 @@ class SearchSection extends StatelessWidget {
                           onChanged: (value) =>
                               controller.selectedLocation.value = value,
                           decoration: InputDecoration(
-                            hintText: "Location",
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
@@ -94,28 +100,50 @@ class SearchSection extends StatelessWidget {
 
                     /// 🔹 Service Type Dropdown
                     Expanded(
-                      child: Obx(
-                        () => DropdownButtonFormField<String>(
+                      child: Obx(() {
+                        // Debug print
+                        print(
+                          'Service Types available: ${controller.serviceTypes}',
+                        );
+                        print(
+                          'Service Types length: ${controller.serviceTypes.length}',
+                        );
+                        print(
+                          'Selected service: ${controller.selectedService.value}',
+                        );
+
+                        return DropdownButtonFormField<String>(
                           isExpanded: true,
                           value: controller.selectedService.value,
-                          items: controller.serviceTypes
-                              .map(
-                                (service) => DropdownMenuItem(
-                                  value: service,
-                                  child: Text(
-                                    service,
-                                    style: getTextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) =>
-                              controller.selectedService.value = value,
+                          hint: Text(
+                            "Service type",
+                            style: getTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          items: controller.serviceTypes.isEmpty
+                              ? null
+                              : controller.serviceTypes
+                                    .map(
+                                      (service) => DropdownMenuItem(
+                                        value: service,
+                                        child: Text(
+                                          service,
+                                          style: getTextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                          onChanged: controller.serviceTypes.isEmpty
+                              ? null
+                              : (value) =>
+                                    controller.selectedService.value = value,
                           decoration: InputDecoration(
-                            hintText: "Service type",
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
@@ -127,8 +155,8 @@ class SearchSection extends StatelessWidget {
                               vertical: 8,
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ],
                 ),

@@ -181,14 +181,28 @@ class HomeController extends GetxController {
   Future<void> fetchServices() async {
     try {
       isLoadingServices.value = true;
+      print('HomeController: Fetching services...');
+
       final response = await ApiClient.to.get(Endpoint.getService);
+      print('HomeController: Services response status=${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
+        print('HomeController: Services response body=$body');
+
         if (body != null && body['serviceCategories'] != null) {
           final List<dynamic> categories = body['serviceCategories'];
           serviceTypes.value = categories.map((e) => e.toString()).toList();
+          print(
+            'HomeController: Loaded ${serviceTypes.length} services: $serviceTypes',
+          );
+        } else {
+          print('HomeController: Invalid response structure for services');
         }
+      } else {
+        print(
+          'HomeController: Services fetch failed with status ${response.statusCode}',
+        );
       }
     } catch (e) {
       print('Failed to fetch services: $e');
@@ -203,6 +217,7 @@ class HomeController extends GetxController {
         "Brakes",
         "Body Work",
       ];
+      print('HomeController: Using fallback services: $serviceTypes');
     } finally {
       isLoadingServices.value = false;
     }
