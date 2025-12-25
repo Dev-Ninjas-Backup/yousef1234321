@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/call_dialog.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 import '../../../../core/common/constants/app_colors.dart';
@@ -8,10 +9,14 @@ import '../../../../core/common/constants/iconpath.dart';
 import '../../../../core/common/style/global_text_style.dart';
 
 class ServiceBookingMiddleSection extends StatelessWidget {
-  const ServiceBookingMiddleSection({super.key});
+  final ServiceBookingController controller;
+
+  const ServiceBookingMiddleSection({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    final garage = controller.garageDetail.value;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -23,7 +28,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Al Majid Auto Service",
+                    garage?.name ?? "Loading...",
                     style: getTextStyle(fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 4),
@@ -32,7 +37,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                       Icon(Icons.star, size: 14, color: Colors.amber),
                       SizedBox(width: 4),
                       Text(
-                        "4.8 (127)",
+                        "${garage?.averageRating.toStringAsFixed(1) ?? '0.0'} (${garage?.totalReviews ?? 0})",
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.subTextColor,
@@ -40,7 +45,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                       ),
                       SizedBox(width: 8),
                       Text(
-                        "• 0.3 km",
+                        "• ${garage?.city ?? ''}",
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.subTextColor,
@@ -51,33 +56,37 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 8),
-                  Wrap(
-                    spacing: 6,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4,
-                          horizontal: 6,
+                  if (garage != null && garage.services.isNotEmpty)
+                    Wrap(
+                      spacing: 6,
+                      children: [
+                        if (garage.brandExpertise.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withValues(alpha: .1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              garage.brandExpertise.first,
+                              style: getTextStyle(
+                                color: Colors.blue,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        Text(
+                          garage.services.take(3).join(" • "),
+                          style: getTextStyle(
+                            fontSize: 16,
+                            color: AppColors.subTextColor,
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withValues(alpha: .1),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          "Towing",
-                          style: getTextStyle(color: Colors.blue, fontSize: 12),
-                        ),
-                      ),
-
-                      Text(
-                        "AC • Engine • Brakes",
-                        style: getTextStyle(
-                          fontSize: 16,
-                          color: AppColors.subTextColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -85,7 +94,10 @@ class ServiceBookingMiddleSection extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    showCallDialog();
+                    showCallDialog(
+                      garageName: garage?.name,
+                      phoneNumber: garage?.garagePhone,
+                    );
                   },
                   child: Image.asset(Iconpath.callIcon, height: 36, width: 36),
                 ),
@@ -140,10 +152,45 @@ class ServiceBookingMiddleSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Text(
-          "Established in 2015, Al Noor Auto Garage is a certified multi-brand car service provider in Dubai. "
-          "Our expert mechanics handle everything from diagnostics to full repairs using advanced equipment and genuine parts.",
+          garage?.description ??
+              "Established in 2015, Al Noor Auto Garage is a certified multi-brand car service provider in Dubai. "
+                  "Our expert mechanics handle everything from diagnostics to full repairs using advanced equipment and genuine parts.",
           style: getTextStyle(color: AppColors.subTextColor, fontSize: 12),
         ),
+
+        // Show certifications if available
+        if (garage != null && garage.certifications.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: garage.certifications.map((cert) {
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: .1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green.withValues(alpha: .3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.verified, size: 14, color: Colors.green),
+                    SizedBox(width: 4),
+                    Text(
+                      cert,
+                      style: getTextStyle(
+                        fontSize: 12,
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ],
     );
   }

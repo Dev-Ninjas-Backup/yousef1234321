@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/constants/iconpath.dart';
 import '../controller/service_booking_controller.dart';
+
 class ServiceBookingUpperSection extends StatelessWidget {
   const ServiceBookingUpperSection({super.key, required this.controller});
   final ServiceBookingController controller;
@@ -24,13 +25,65 @@ class ServiceBookingUpperSection extends StatelessWidget {
                   },
                   itemCount: controller.images.length,
                   itemBuilder: (context, index) {
+                    final imageUrl = controller.images[index];
+                    final isNetworkImage =
+                        imageUrl.startsWith('http://') ||
+                        imageUrl.startsWith('https://');
+
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
-                      child: Image.asset(
-                        controller.images[index],
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      ),
+                      child: isNetworkImage
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value:
+                                            loadingProgress
+                                                    .expectedTotalBytes !=
+                                                null
+                                            ? loadingProgress
+                                                      .cumulativeBytesLoaded /
+                                                  loadingProgress
+                                                      .expectedTotalBytes!
+                                            : null,
+                                      ),
+                                    );
+                                  },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey.shade300,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.garage,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Image.asset(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey.shade300,
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.garage,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                     );
                   },
                 ),
@@ -40,11 +93,11 @@ class ServiceBookingUpperSection extends StatelessWidget {
               left: 20,
               top: 40,
               child: GestureDetector(
-              onTap: () {
-                Get.back();
-              }
-              ,
-              child: Image.asset(Iconpath.arrowback, height: 44, width: 44)),
+                onTap: () {
+                  Get.back();
+                },
+                child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+              ),
             ),
           ],
         ),
@@ -83,11 +136,53 @@ class ServiceBookingUpperSection extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            controller.images[index],
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
+                          child: Builder(
+                            builder: (context) {
+                              final imageUrl = controller.images[index];
+                              final isNetworkImage =
+                                  imageUrl.startsWith('http://') ||
+                                  imageUrl.startsWith('https://');
+
+                              return isNetworkImage
+                                  ? Image.network(
+                                      imageUrl,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Container(
+                                              width: 60,
+                                              height: 60,
+                                              color: Colors.grey.shade300,
+                                              child: const Icon(
+                                                Icons.garage,
+                                                size: 30,
+                                                color: Colors.grey,
+                                              ),
+                                            );
+                                          },
+                                    )
+                                  : Image.asset(
+                                      imageUrl,
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return Container(
+                                              width: 60,
+                                              height: 60,
+                                              color: Colors.grey.shade300,
+                                              child: const Icon(
+                                                Icons.garage,
+                                                size: 30,
+                                                color: Colors.grey,
+                                              ),
+                                            );
+                                          },
+                                    );
+                            },
                           ),
                         ),
                       ),

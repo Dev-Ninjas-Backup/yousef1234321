@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class GarageCard extends StatelessWidget {
   final GarageModel garage;
@@ -81,108 +83,116 @@ class GarageCard extends StatelessWidget {
     final isOpen = openStatus['isOpen'] as bool;
     final statusLabel = openStatus['label'] as String;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      color: AppColors.containerFillColor,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: garage.imageUrl.isNotEmpty
-                  ? Image.network(
-                      garage.imageUrl,
-                      width: 70,
-                      height: 70,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(
+          Approute.getServiceBooking(),
+          arguments: {'garageId': garage.id},
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 12),
+        color: AppColors.containerFillColor,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: garage.imageUrl.isNotEmpty
+                    ? Image.network(
+                        garage.imageUrl,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 70,
+                          height: 70,
+                          color: Colors.grey.shade300,
+                          child: const Icon(Icons.garage, size: 40),
+                        ),
+                      )
+                    : Container(
                         width: 70,
                         height: 70,
                         color: Colors.grey.shade300,
                         child: const Icon(Icons.garage, size: 40),
                       ),
-                    )
-                  : Container(
-                      width: 70,
-                      height: 70,
-                      color: Colors.grey.shade300,
-                      child: const Icon(Icons.garage, size: 40),
-                    ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    garage.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 16, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          "${garage.rating} (${garage.reviews})",
-                          overflow: TextOverflow.ellipsis,
-                        ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      garage.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
-                      const SizedBox(width: 10),
-                      Text("${garage.distance} km"),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isOpen
-                              ? AppColors.greenOpacity
-                              : Colors.red.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          statusLabel,
-                          style: TextStyle(
-                            color: isOpen ? Colors.green : Colors.red,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.star, size: 16, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            "${garage.rating} (${garage.reviews})",
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Wrap(
-                          spacing: 6,
-                          children: garage.tags
-                              .map(
-                                (tag) => Text(
-                                  "$tag ",
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                              )
-                              .toList(),
+                        const SizedBox(width: 10),
+                        Text("${garage.distance} km"),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isOpen
+                                ? AppColors.greenOpacity
+                                : Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            statusLabel,
+                            style: TextStyle(
+                              color: isOpen ? Colors.green : Colors.red,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Wrap(
+                            spacing: 6,
+                            children: garage.tags
+                                .map(
+                                  (tag) => Text(
+                                    "$tag ",
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Column(children: [const Icon(Icons.more_vert, size: 20)]),
-          ],
+              Column(children: [const Icon(Icons.more_vert, size: 20)]),
+            ],
+          ),
         ),
       ),
     );
