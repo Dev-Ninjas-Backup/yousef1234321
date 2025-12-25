@@ -9,6 +9,7 @@ import 'package:yousef1234321/features/auth/sign_up/signup_otp/screen/otp_screen
 import 'package:yousef1234321/features/bottom_navbar/screen/bottom_navbar_screen.dart';
 import 'package:yousef1234321/features/contact_us/screen/contact_us_screen.dart';
 import 'package:yousef1234321/features/help_support/screen/help_support_screen.dart';
+import 'package:yousef1234321/features/home/garage_list/screen/garage_list_screen.dart';
 import 'package:yousef1234321/features/onboarding/screen/onboarding_screen.dart';
 import 'package:yousef1234321/features/parts_details/screen/parts_details_screen.dart';
 
@@ -38,6 +39,7 @@ class Approute {
   static String bottomNavBarScreen = '/bottomNavBarScreen';
   //home
   static String findGaragePage = '/home/findGaragePage';
+  static String garageListPage = '/home/garageListPage';
   //service
   static String serviceBooking = "/service/serviceBooking";
   static String serviceMessage = "/service/ServiceMessage";
@@ -73,6 +75,7 @@ class Approute {
   static String getResetPasswordScreen() => resetPasswordScreen;
   //home
   static String getfindGaragePage() => findGaragePage;
+  static String getGarageListPage() => garageListPage;
   //service
   static String getServiceBooking() => serviceBooking;
   static String getServiceMessage() => serviceMessage;
@@ -114,6 +117,7 @@ class Approute {
     GetPage(name: bottomNavBarScreen, page: () => BottomNavbarScreen()),
     //home
     GetPage(name: findGaragePage, page: () => FindGaragePage()),
+    GetPage(name: garageListPage, page: () => const GarageListScreen()),
     //service
     GetPage(name: serviceBooking, page: () => ServiceBooking()),
     GetPage(name: serviceMessage, page: () => ServiceMessage()),

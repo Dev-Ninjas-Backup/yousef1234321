@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/style/global_text_style.dart';
 
-void showCallDialog() {
+void showCallDialog({String? garageName, String? phoneNumber}) {
   Get.dialog(
     Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
@@ -37,9 +38,9 @@ void showCallDialog() {
 
             // Subtitle
             Text(
-              "You're about to call All Mijaju Auto Service",
+              "You're about to call ${garageName ?? 'this garage'}",
               overflow: TextOverflow.ellipsis,
-              maxLines: 1,
+              maxLines: 2,
               textAlign: TextAlign.center,
               style: getTextStyle(fontSize: 15),
             ),
@@ -75,8 +76,46 @@ void showCallDialog() {
                   child: SizedBox(
                     height: 36,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Add call logic here
+                      onPressed: () async {
+                        if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                          final Uri telUri = Uri(
+                            scheme: 'tel',
+                            path: phoneNumber,
+                          );
+                          try {
+                            if (await canLaunchUrl(telUri)) {
+                              await launchUrl(telUri);
+                              Get.back(); // Close dialog after initiating call
+                            } else {
+                              Get.back();
+                              Get.snackbar(
+                                'Error',
+                                'Cannot make phone calls on this device',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                              );
+                            }
+                          } catch (e) {
+                            Get.back();
+                            Get.snackbar(
+                              'Error',
+                              'Failed to make call: $e',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                            );
+                          }
+                        } else {
+                          Get.back();
+                          Get.snackbar(
+                            'Error',
+                            'Phone number not available',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryColor,

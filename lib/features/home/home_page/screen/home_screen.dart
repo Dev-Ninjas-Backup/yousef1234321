@@ -6,6 +6,7 @@ import 'package:yousef1234321/features/home/home_page/controller/home_controller
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -159,16 +160,40 @@ class HomeScreen extends StatelessWidget {
                   "Top Rated Garages",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                TextButton(onPressed: () {}, child: const Text("View All")),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed(Approute.getGarageListPage());
+                  },
+                  child: const Text("View All"),
+                ),
               ],
             ),
-            Obx(
-              () => Column(
+            Obx(() {
+              if (controller.isLoadingGarages.value) {
+                return const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              if (controller.garages.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Center(
+                    child: Text(
+                      'No garages available',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                );
+              }
+
+              return Column(
                 children: controller.garages
                     .map((garage) => GarageCard(garage: garage))
                     .toList(),
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

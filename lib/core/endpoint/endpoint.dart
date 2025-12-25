@@ -22,4 +22,7 @@ class Endpoint {
   static const String verifyOtp = '/auth/reset-verify-otp';
   static const String contactUs = '/contact';
   static const String products = '/products';
+  static const String getService = '/services';
+  static const String findGarage = '/garages';
+  static const String garageDetails = '/garages/single-garage';
 }
