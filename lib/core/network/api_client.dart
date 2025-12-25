@@ -34,8 +34,26 @@ class ApiClient extends GetConnect {
   Future<void> logout() async {
     await sharedPreferences.remove('token');
     await sharedPreferences.remove('resetToken');
+    await sharedPreferences.remove('id');
     print("User logged out - tokens cleared");
   }
+
+
+
+String? get userId => sharedPreferences.getString('id');
+
+  Future<bool> setUserId(String? id) async {
+    if (id == null || id.isEmpty) {
+      return await sharedPreferences.remove('id');
+    }
+    final result = await sharedPreferences.setString('id', id);
+    print("User ID saved: $result, ID: $id");
+    return result;
+  }
+
+
+
+  
 
   /// Check if user is logged in
   bool get isLoggedIn => token != null && token!.isNotEmpty;
