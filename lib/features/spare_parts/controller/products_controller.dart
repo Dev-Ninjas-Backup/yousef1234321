@@ -42,9 +42,10 @@ class ProductsController extends GetxController {
             items = List<dynamic>.from(body['items']);
           } else if (body.values.any((v) => v is List)) {
             // Fallback: pick the first list value
-            final lists = body.values.where((v) => v is List).toList();
-            if (lists.isNotEmpty)
-              items = List<dynamic>.from(lists.first as List);
+            final lists = body.values.whereType<List>().toList();
+            if (lists.isNotEmpty) {
+              items = List<dynamic>.from(lists.first);
+            }
           }
 
           // Parse pagination if present (either top-level or under data)
@@ -62,12 +63,12 @@ class ProductsController extends GetxController {
             this.limit.value = (pagination['limit'] is int)
                 ? pagination['limit']
                 : this.limit.value;
-            this.total.value = (pagination['total'] is int)
+            total.value = (pagination['total'] is int)
                 ? pagination['total']
-                : this.total.value;
-            this.totalPages.value = (pagination['totalPages'] is int)
+                : total.value;
+            totalPages.value = (pagination['totalPages'] is int)
                 ? pagination['totalPages']
-                : this.totalPages.value;
+                : totalPages.value;
           }
         }
         // If the body is directly a list
@@ -102,12 +103,13 @@ class ProductsController extends GetxController {
         List<dynamic> items = [];
 
         if (body is Map) {
-          if (body['data'] is List)
+          if (body['data'] is List) {
             items = List<dynamic>.from(body['data']);
-          else if (body['data'] is Map && body['data']['data'] is List)
+          } else if (body['data'] is Map && body['data']['data'] is List) {
             items = List<dynamic>.from(body['data']['data']);
-          else if (body['products'] is List)
+          } else if (body['products'] is List) {
             items = List<dynamic>.from(body['products']);
+          }
         } else if (body is List) {
           items = List<dynamic>.from(body);
         }
@@ -116,26 +118,27 @@ class ProductsController extends GetxController {
 
         // update pagination similar to fetchProducts
         Map? pagination;
-        if (body is Map && body['pagination'] is Map)
+        if (body is Map && body['pagination'] is Map) {
           pagination = Map<String, dynamic>.from(body['pagination']);
-        else if (body is Map &&
+        } else if (body is Map &&
             body['data'] is Map &&
-            body['data']['pagination'] is Map)
+            body['data']['pagination'] is Map) {
           pagination = Map<String, dynamic>.from(body['data']['pagination']);
+        }
 
         if (pagination != null) {
-          this.page.value = (pagination['page'] is int)
+          page.value = (pagination['page'] is int)
               ? pagination['page']
-              : this.page.value;
-          this.limit.value = (pagination['limit'] is int)
+              : page.value;
+          limit.value = (pagination['limit'] is int)
               ? pagination['limit']
-              : this.limit.value;
-          this.total.value = (pagination['total'] is int)
+              : limit.value;
+          total.value = (pagination['total'] is int)
               ? pagination['total']
-              : this.total.value;
-          this.totalPages.value = (pagination['totalPages'] is int)
+              : total.value;
+          totalPages.value = (pagination['totalPages'] is int)
               ? pagination['totalPages']
-              : this.totalPages.value;
+              : totalPages.value;
         }
       }
     } catch (_) {
