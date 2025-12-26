@@ -66,6 +66,8 @@ class Approute {
   //chatlist
   static String chatScreen = "/chatScreen";
   static String getsignupOtpScreen = "/signupOtpScreen";
+  //product details
+  static String productDetailsScreen = "/product/productDetailsScreen";
 
   static String getSplashScreen() => splashScreen;
   static String getOnboardingScreen() => onboardingScreen;
@@ -103,14 +105,17 @@ class Approute {
   //chatlist
   static String getChatScreen() => chatScreen;
   static String getSignupOtpScreen() => getsignupOtpScreen;
+  //product details
+  static String getProductDetailsScreen() => productDetailsScreen;
 
   static List<GetPage> routes = [
     GetPage(name: splashScreen, page: () => SplashScreen()),
     GetPage(name: onboardingScreen, page: () => OnboardingScreen()),
     GetPage(
-        name: signInScreen,
-        page: () => const SignInScreen(),
-        binding: SignInBinding()),
+      name: signInScreen,
+      page: () => const SignInScreen(),
+      binding: SignInBinding(),
+    ),
     GetPage(name: signUpScreen, page: () => SignUpScreen()),
     GetPage(name: forgetPasswordScreen, page: () => ForgetPasswordScreen()),
     GetPage(name: resetPasswordScreen, page: () => const ResetPasswordScreen()),
@@ -149,5 +154,7 @@ class Approute {
     //chatlist
     GetPage(name: chatScreen, page: () => ChatPage()),
     GetPage(name: getsignupOtpScreen, page: () => SignupOtpScreen()),
+    //product details
+    GetPage(name: productDetailsScreen, page: () => const PartsDetailsScreen()),
   ];
 }

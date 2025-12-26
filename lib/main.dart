@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yousef1234321/app.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/notification/controller/notification_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,6 +13,8 @@ void main() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.put<ApiClient>(ApiClient(sharedPreferences: Get.find()), permanent: true);
+  Get.put(NotificationController(),permanent: true);
+
 
   configEasyLoading();
   runApp(const MyApp());

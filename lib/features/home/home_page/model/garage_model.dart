@@ -29,7 +29,7 @@ class GarageModel {
   // For backward compatibility with current UI
   double get rating => averageRating;
   int get reviews => totalReviews;
-  double get distance => 0.0; // TODO: Calculate based on user location
+  double get distance => 0.0;
   List<String> get tags => services.take(3).toList();
   String get imageUrl => profileImage ?? coverPhoto ?? '';
 

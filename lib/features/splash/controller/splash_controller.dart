@@ -1,12 +1,16 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/notification/controller/notification_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late AnimationController animationController;
+  final notificationController = Get.find<NotificationController>();
 
   var currentImageIndex = 0.obs;
   final List<String> images = [Imagepath.find, Imagepath.fix, Imagepath.drive];
@@ -27,6 +31,9 @@ class SplashController extends GetxController
   void _checkAuthStatus() {
     Future.delayed(const Duration(seconds: 3), () {
       if (ApiClient.to.isLoggedIn) {
+        print("User is logged in, token: ${ApiClient.to.token}");
+        notificationController.connectSocket(ApiClient.to.token ?? '');
+
         // User is logged in, navigate to home
         Get.offAllNamed(Approute.bottomNavBarScreen);
       } else {
