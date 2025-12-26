@@ -47,6 +47,8 @@ dependencies:
   shared_preferences: ^2.5.4
   logger: ^2.6.2
   country_code_picker: ^3.0.0
+  #google_maps_flutter: ^2.14.0
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:

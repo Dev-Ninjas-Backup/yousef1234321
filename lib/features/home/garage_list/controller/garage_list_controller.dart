@@ -52,6 +52,16 @@ class GarageListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Check if a service was passed from home screen
+    final args = Get.arguments;
+    if (args != null && args is Map && args['selectedService'] != null) {
+      selectedService.value = args['selectedService'];
+      print(
+        'GarageListController: Service filter pre-selected: ${selectedService.value}',
+      );
+    }
+
     fetchGarages();
     fetchServices();
     scrollController.addListener(_scrollListener);

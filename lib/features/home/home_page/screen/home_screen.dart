@@ -11,6 +11,58 @@ import 'package:yousef1234321/routes/app_route.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  String _getIconForService(String serviceName) {
+    final lowerName = serviceName.toLowerCase().trim();
+
+    // AC & Air Conditioning
+    if (lowerName.contains('ac') ||
+        lowerName.contains('air') ||
+        lowerName.contains('conditioning') ||
+        lowerName.contains('cooling')) {
+      return Iconpath.acIcon;
+    }
+    // Battery
+    else if (lowerName.contains('battery') || lowerName.contains('batteries')) {
+      return Iconpath.batterryIcon;
+    }
+    // Tires & Wheels
+    else if (lowerName.contains('tire') ||
+        lowerName.contains('tyre') ||
+        lowerName.contains('wheel')) {
+      return Iconpath.wheelIcon;
+    }
+    // Engine
+    else if (lowerName.contains('engine') ||
+        lowerName.contains('motor') ||
+        lowerName.contains('diagnostic')) {
+      return Iconpath.engineIcon;
+    }
+    // Electrical
+    else if (lowerName.contains('electric') ||
+        lowerName.contains('wiring') ||
+        lowerName.contains('lighting')) {
+      return Iconpath.electricIcon;
+    }
+    // Brakes
+    else if (lowerName.contains('brake') || lowerName.contains('braking')) {
+      return Iconpath.wheelIcon;
+    }
+    // Oil
+    else if (lowerName.contains('oil') ||
+        lowerName.contains('fluid') ||
+        lowerName.contains('lubrication')) {
+      return Iconpath.engineIcon;
+    }
+    // Spare parts
+    else if (lowerName.contains('spare') || lowerName.contains('part')) {
+      return Iconpath.spareIcon;
+    }
+    // Default
+    else {
+      return Iconpath.acIcon;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
@@ -99,59 +151,70 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
-            Column(
-              spacing: 10,
-              children: [
-                Row(
-                  spacing: 10,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "AC Repair",
-                        icon: Iconpath.acIcon,
-                      ),
+            Obx(() {
+              // Get services from controller, limit to 6
+              final services = controller.serviceTypes.take(6).toList();
+
+              if (services.isEmpty) {
+                return const SizedBox(
+                  height: 80,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+
+              return Column(
+                spacing: 10,
+                children: [
+                  // First row: up to 3 services
+                  Row(
+                    spacing: 10,
+                    children: [
+                      ...services.take(3).map((service) {
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              // Navigate to garage list with this service filter
+                              Get.toNamed(
+                                Approute.getGarageListPage(),
+                                arguments: {'selectedService': service},
+                              );
+                            },
+                            child: ServiceChip(
+                              label: service,
+                              icon: _getIconForService(service),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                  // Second row: remaining services (if more than 3)
+                  if (services.length > 3)
+                    Row(
+                      spacing: 10,
+                      children: [
+                        ...services.skip(3).take(3).map((service) {
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                // Navigate to garage list with this service filter
+                                Get.toNamed(
+                                  Approute.getGarageListPage(),
+                                  arguments: {'selectedService': service},
+                                );
+                              },
+                              child: ServiceChip(
+                                label: service,
+                                icon: _getIconForService(service),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
                     ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Battery",
-                        icon: Iconpath.batterryIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Engine",
-                        icon: Iconpath.engineIcon,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  spacing: 10,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Tires",
-                        icon: Iconpath.wheelIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Electrical",
-                        icon: Iconpath.electricIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Spares",
-                        icon: Iconpath.spareIcon,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
             SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
