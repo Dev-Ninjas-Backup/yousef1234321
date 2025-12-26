@@ -3,7 +3,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/call_dialog.dart';
-import 'package:yousef1234321/routes/app_route.dart';
+import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/constants/iconpath.dart';
 import '../../../../core/common/style/global_text_style.dart';
@@ -104,7 +104,22 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 SizedBox(width: 10),
                 GestureDetector(
                   onTap: () {
-                    Get.toNamed(Approute.getServiceMessage());
+                    final garageOwnerId =
+                        controller.garageDetail.value?.user?.id;
+                    print(
+                      '📨 [Message Button] Navigating to ServiceMessage with garageOwnerId: $garageOwnerId',
+                    );
+
+                    if (garageOwnerId != null && garageOwnerId.isNotEmpty) {
+                      Get.to(ServiceMessage(recipientId: garageOwnerId));
+                    } else {
+                      print('❌ [Message Button] Garage owner ID not available');
+                      Get.snackbar(
+                        'Error',
+                        'Unable to open chat - garage owner information not loaded',
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
                   },
                   child: Image.asset(
                     Iconpath.messageIcon,
