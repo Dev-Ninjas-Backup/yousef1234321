@@ -27,13 +27,9 @@ class SplashController extends GetxController
   void _checkAuthStatus() {
     Future.delayed(const Duration(seconds: 3), () {
       if (ApiClient.to.isLoggedIn) {
-        print(
-          "User is logged in, token: ${ApiClient.to.token}",
-        );
         // User is logged in, navigate to home
         Get.offAllNamed(Approute.bottomNavBarScreen);
       } else {
-        print("User is not logged in");
         // User is not logged in, show onboarding
         Get.offAllNamed('/onboardingScreen');
       }

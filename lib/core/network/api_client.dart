@@ -17,7 +17,7 @@ class ApiClient extends GetConnect {
       return await sharedPreferences.remove('token');
     }
     final result = await sharedPreferences.setString('token', token);
-    print("Token saved: $result, Token: ${token}"); // Debug
+    // Debug
     return result;
   }
 
@@ -32,7 +32,6 @@ class ApiClient extends GetConnect {
   Future<void> logout() async {
     await sharedPreferences.remove('token');
     await sharedPreferences.remove('resetToken');
-    print("User logged out - tokens cleared");
   }
 
   /// Check if user is logged in

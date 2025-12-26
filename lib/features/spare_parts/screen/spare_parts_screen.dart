@@ -85,10 +85,105 @@ class SparePartsScreen extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.only(right: 10),
 
-                      child: CategoryItem(
-                        icon: cat['icon'] as IconData,
-                        title: cat['name'] as String,
-                        color: controller.getRandomColor(),
+                      child: GestureDetector(
+                        onTap: () async {
+                          // extract id and name safely
+                          final cid = (cat['id'] ?? '').toString();
+                          final cname = (cat['name'] ?? 'Category').toString();
+
+                          final productsCtrl = Get.put(
+                            ProductsController(),
+                            tag: 'productsList',
+                          );
+                          await productsCtrl.fetchProducts(
+                            page: 1,
+                            limit: 20,
+                            categoryId: cid,
+                          );
+
+                          // navigate to filtered All Parts screen
+                          Get.to(
+                            () => Scaffold(
+                              appBar: AppBar(title: Text(cname)),
+                              body: Obx(() {
+                                if (productsCtrl.isLoading.value)
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                if (productsCtrl.products.isEmpty)
+                                  return const Center(
+                                    child: Text('No products'),
+                                  );
+                                return ListView.builder(
+                                  padding: const EdgeInsets.all(12),
+                                  itemCount: productsCtrl.products.length,
+                                  itemBuilder: (_, idx) {
+                                    final p = productsCtrl.products[idx];
+                                    final name =
+                                        (p is Map && p['partName'] != null)
+                                        ? p['partName'].toString()
+                                        : 'Product ${idx + 1}';
+                                    final price =
+                                        (p is Map && p['price'] != null)
+                                        ? p['price'].toString()
+                                        : '-';
+                                    final photo =
+                                        (p is Map && p['profilePhoto'] != null)
+                                        ? p['profilePhoto'].toString()
+                                        : (p is Map &&
+                                                  p['photos'] is List &&
+                                                  p['photos'].isNotEmpty
+                                              ? p['photos'][0].toString()
+                                              : null);
+
+                                    return ListTile(
+                                      leading: photo != null
+                                          ? Image.network(
+                                              photo,
+                                              width: 56,
+                                              height: 56,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) =>
+                                                  Image.asset(
+                                                    Iconpath.carHomeIcon,
+                                                    width: 56,
+                                                    height: 56,
+                                                  ),
+                                            )
+                                          : Image.asset(
+                                              Iconpath.carHomeIcon,
+                                              width: 56,
+                                              height: 56,
+                                            ),
+                                      title: Text(name),
+                                      subtitle: Text('Price: $price'),
+                                      onTap: () {
+                                        String? id;
+                                        if (p is Map) {
+                                          if (p['id'] != null)
+                                            id = p['id'].toString();
+                                          else if (p['data'] is Map &&
+                                              p['data']['id'] != null)
+                                            id = p['data']['id'].toString();
+                                        }
+                                        if (id != null)
+                                          Get.toNamed(
+                                            Approute.getBrakePadsScreen(),
+                                            arguments: id,
+                                          );
+                                      },
+                                    );
+                                  },
+                                );
+                              }),
+                            ),
+                          );
+                        },
+                        child: CategoryItem(
+                          icon: cat['icon'] as IconData,
+                          title: cat['name'] as String,
+                          color: controller.getRandomColor(),
+                        ),
                       ),
                     );
                   },
@@ -157,15 +252,39 @@ class SparePartsScreen extends StatelessWidget {
             // All Parts
             sectionHeader("All Parts"),
 
+            const SizedBox(height: 8),
+            _sectionCard("All Parts"),
             const SizedBox(height: 10),
-            partsList(),
+            Obx(() {
+              final allPartsCtrl = Get.put(
+                ProductsController(),
+                tag: 'allParts',
+              );
+              if (allPartsCtrl.products.isEmpty &&
+                  !allPartsCtrl.isLoading.value) {
+                allPartsCtrl.fetchProducts(page: 1, limit: 10);
+              }
+              return partsList(allPartsCtrl);
+            }),
 
             const SizedBox(height: 20),
 
             // Today's Deals
             sectionHeader("Today's Deals"),
+            const SizedBox(height: 8),
+            _sectionCard("Today's Deals"),
             const SizedBox(height: 10),
-            partsList(),
+            Obx(() {
+              final todaysDealsCtrl = Get.put(
+                ProductsController(),
+                tag: 'todaysDeals',
+              );
+              if (todaysDealsCtrl.products.isEmpty &&
+                  !todaysDealsCtrl.isLoading.value) {
+                todaysDealsCtrl.fetchProducts(page: 1, limit: 10);
+              }
+              return partsList(todaysDealsCtrl);
+            }),
           ],
         ),
       ),
@@ -214,13 +333,29 @@ class SparePartsScreen extends StatelessWidget {
                       final price = (p is Map && p['price'] != null)
                           ? p['price'].toString()
                           : '-';
+                      // prefer normalized profilePhoto if present
+                      final photoUrl =
+                          (p is Map &&
+                              p['profilePhoto'] != null &&
+                              p['profilePhoto'].toString().isNotEmpty)
+                          ? p['profilePhoto'].toString()
+                          : (p is Map &&
+                                p['photos'] is List &&
+                                p['photos'].isNotEmpty)
+                          ? p['photos'][0].toString()
+                          : null;
                       return ListTile(
-                        leading: p is Map && p['image'] != null
+                        leading: photoUrl != null
                             ? Image.network(
-                                p['image'].toString(),
+                                photoUrl,
                                 width: 56,
                                 height: 56,
                                 fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  Iconpath.carHomeIcon,
+                                  width: 56,
+                                  height: 56,
+                                ),
                               )
                             : Image.asset(
                                 Iconpath.carHomeIcon,
@@ -229,7 +364,24 @@ class SparePartsScreen extends StatelessWidget {
                               ),
                         title: Text(name),
                         subtitle: Text('Price: $price'),
-                        onTap: () {},
+                        onTap: () {
+                          // robust id extraction for different response shapes
+                          String? id;
+                          if (p is Map) {
+                            if (p['id'] != null)
+                              id = p['id'].toString();
+                            else if (p['data'] is Map &&
+                                p['data']['id'] != null)
+                              id = p['data']['id'].toString();
+                          }
+                          if (id != null) {
+                            // navigate to details route and pass only the id
+                            Get.toNamed(
+                              Approute.getBrakePadsScreen(),
+                              arguments: id,
+                            );
+                          }
+                        },
                       );
                     },
                   );
@@ -243,28 +395,269 @@ class SparePartsScreen extends StatelessWidget {
     );
   }
 
-  Widget partsList() {
+  Widget partsList(ProductsController productsCtrl) {
     return SizedBox(
       height: 200,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: controller.allParts.length,
-        itemBuilder: (context, index) {
-          final item = controller.allParts[index];
-          return GestureDetector(
-            onTap: () {
-              Get.toNamed(Approute.brakePadsScreen);
-            },
+      child: Obx(() {
+        if (productsCtrl.isLoading.value && productsCtrl.products.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (productsCtrl.products.isEmpty) {
+          return const Center(child: Text('No products available'));
+        }
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: productsCtrl.products.length,
+          itemBuilder: (context, index) {
+            final item = productsCtrl.products[index];
+            // prefer profilePhoto (normalized) then first photos entry, then placeholder
+            final imageUrl =
+                (item is Map &&
+                    item['profilePhoto'] != null &&
+                    item['profilePhoto'].toString().isNotEmpty)
+                ? item['profilePhoto'].toString()
+                : (item is Map &&
+                      item['photos'] is List &&
+                      item['photos'].isNotEmpty)
+                ? item['photos'][0].toString()
+                : 'https://via.placeholder.com/150'; // fallback placeholder URL
+            final name = (item is Map && item['partName'] != null)
+                ? item['partName'].toString()
+                : 'N/A';
+            final desc = (item is Map && item['description'] != null)
+                ? item['description'].toString()
+                : 'N/A';
+            final price = (item is Map && item['price'] != null)
+                ? double.parse(item['price'].toString())
+                : 0.0;
+            final rating = (item is Map && item['rating'] != null)
+                ? double.parse(item['rating'].toString())
+                : 0.0; // Assuming rating might not be in the API response yet
 
-            child: PartItem(
-              image: item['image']! as String,
-              name: item['name']! as String,
-              desc: item['desc']! as String,
-              price: item['price']! as double,
-              rating: item['rating']! as double,
+            return GestureDetector(
+              onTap: () {
+                // extract id robustly and navigate to details
+                String? id;
+                if (item is Map) {
+                  if (item['id'] != null)
+                    id = item['id'].toString();
+                  else if (item['data'] is Map && item['data']['id'] != null)
+                    id = item['data']['id'].toString();
+                }
+                if (id != null) {
+                  Get.toNamed(Approute.getBrakePadsScreen(), arguments: id);
+                }
+              },
+              child: PartItem(
+                image: imageUrl,
+                name: name,
+                desc: desc,
+                price: price,
+                rating: rating,
+              ),
+            );
+          },
+        );
+      }),
+    );
+  }
+
+  // Small card shown above parts lists with quick CTA
+  Widget _sectionCard(String title) {
+    return GestureDetector(
+      onTap: () async {
+        // open the same 'See All' full list
+        final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
+        await productsCtrl.fetchProducts(page: 1, limit: 10);
+        Get.to(
+          () => Scaffold(
+            appBar: AppBar(title: Text(title)),
+            body: Obx(() {
+              if (productsCtrl.isLoading.value)
+                return const Center(child: CircularProgressIndicator());
+              if (productsCtrl.products.isEmpty)
+                return const Center(child: Text('No products'));
+              return ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: productsCtrl.products.length,
+                itemBuilder: (_, idx) {
+                  final p = productsCtrl.products[idx];
+                  final name = (p is Map && p['partName'] != null)
+                      ? p['partName'].toString()
+                      : 'Product ${idx + 1}';
+                  final price = (p is Map && p['price'] != null)
+                      ? p['price'].toString()
+                      : '-';
+                  final photo = (p is Map && p['profilePhoto'] != null)
+                      ? p['profilePhoto'].toString()
+                      : (p is Map &&
+                                p['photos'] is List &&
+                                p['photos'].isNotEmpty
+                            ? p['photos'][0].toString()
+                            : null);
+
+                  return ListTile(
+                    leading: photo != null
+                        ? Image.network(
+                            photo,
+                            width: 56,
+                            height: 56,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
+                              Iconpath.carHomeIcon,
+                              width: 56,
+                              height: 56,
+                            ),
+                          )
+                        : Image.asset(
+                            Iconpath.carHomeIcon,
+                            width: 56,
+                            height: 56,
+                          ),
+                    title: Text(name),
+                    subtitle: Text('Price: $price'),
+                    onTap: () {
+                      String? id;
+                      if (p is Map) {
+                        if (p['id'] != null)
+                          id = p['id'].toString();
+                        else if (p['data'] is Map && p['data']['id'] != null)
+                          id = p['data']['id'].toString();
+                      }
+                      if (id != null)
+                        Get.toNamed(
+                          Approute.getBrakePadsScreen(),
+                          arguments: id,
+                        );
+                    },
+                  );
+                },
+              );
+            }),
+          ),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 0),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: AssetImage(Imagepath.image2),
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-          );
-        },
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Explore $title',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Find the best spare parts from verified sellers.',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final productsCtrl = Get.put(
+                  ProductsController(),
+                  tag: 'productsList',
+                );
+                await productsCtrl.fetchProducts(page: 1, limit: 10);
+                Get.to(
+                  () => Scaffold(
+                    appBar: AppBar(title: Text(title)),
+                    body: Obx(() {
+                      if (productsCtrl.isLoading.value)
+                        return const Center(child: CircularProgressIndicator());
+                      if (productsCtrl.products.isEmpty)
+                        return const Center(child: Text('No products'));
+                      return ListView.builder(
+                        padding: const EdgeInsets.all(12),
+                        itemCount: productsCtrl.products.length,
+                        itemBuilder: (_, idx) {
+                          final p = productsCtrl.products[idx];
+                          final name = (p is Map && p['partName'] != null)
+                              ? p['partName'].toString()
+                              : 'Product ${idx + 1}';
+                          final price = (p is Map && p['price'] != null)
+                              ? p['price'].toString()
+                              : '-';
+                          final photo = (p is Map && p['profilePhoto'] != null)
+                              ? p['profilePhoto'].toString()
+                              : (p is Map &&
+                                        p['photos'] is List &&
+                                        p['photos'].isNotEmpty
+                                    ? p['photos'][0].toString()
+                                    : null);
+
+                          return ListTile(
+                            leading: photo != null
+                                ? Image.network(
+                                    photo,
+                                    width: 56,
+                                    height: 56,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset(
+                                      Iconpath.carHomeIcon,
+                                      width: 56,
+                                      height: 56,
+                                    ),
+                                  )
+                                : Image.asset(
+                                    Iconpath.carHomeIcon,
+                                    width: 56,
+                                    height: 56,
+                                  ),
+                            title: Text(name),
+                            subtitle: Text('Price: $price'),
+                            onTap: () {
+                              String? id;
+                              if (p is Map) {
+                                if (p['id'] != null)
+                                  id = p['id'].toString();
+                                else if (p['data'] is Map &&
+                                    p['data']['id'] != null)
+                                  id = p['data']['id'].toString();
+                              }
+                              if (id != null)
+                                Get.toNamed(
+                                  Approute.getBrakePadsScreen(),
+                                  arguments: id,
+                                );
+                            },
+                          );
+                        },
+                      );
+                    }),
+                  ),
+                );
+              },
+              child: const Text('See All'),
+            ),
+          ],
+        ),
       ),
     );
   }

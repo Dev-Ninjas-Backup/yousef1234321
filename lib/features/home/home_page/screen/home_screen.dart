@@ -146,6 +146,9 @@ class HomeScreen extends StatelessWidget {
                       child: ServiceChip(
                         label: "Spares",
                         icon: Iconpath.spareIcon,
+                        onTap: () {
+                          Get.toNamed(Approute.getBrakePadsScreen());
+                        },
                       ),
                     ),
                   ],

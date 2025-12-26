@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yousef1234321/core/common/constants/imagepath.dart';
 
 class PartItem extends StatelessWidget {
   final String image;
@@ -6,6 +7,7 @@ class PartItem extends StatelessWidget {
   final String desc;
   final double price;
   final double rating;
+  final String fallbackAsset;
 
   const PartItem({
     super.key,
@@ -14,6 +16,7 @@ class PartItem extends StatelessWidget {
     required this.desc,
     required this.price,
     required this.rating,
+    this.fallbackAsset = '',
   });
 
   @override
@@ -31,11 +34,46 @@ class PartItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Image.network(
-              image,
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            child: Builder(
+              builder: (context) {
+                final isNetwork = image.startsWith('http');
+                if (isNetwork) {
+                  return Image.network(
+                    image,
+                    height: 100,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Image.asset(
+                        fallbackAsset.isNotEmpty
+                            ? fallbackAsset
+                            : Imagepath.image2,
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        fallbackAsset.isNotEmpty
+                            ? fallbackAsset
+                            : Imagepath.image2,
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  );
+                }
+                // treat as asset path
+                return Image.asset(
+                  image,
+                  height: 100,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                );
+              },
             ),
           ),
           Padding(

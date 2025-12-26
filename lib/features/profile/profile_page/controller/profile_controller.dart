@@ -31,7 +31,6 @@ class ProfileController extends GetxController {
 
       final response = await ApiClient.to.get(Endpoint.profile);
 
-      print("Profile Response: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.body != null &&
@@ -46,7 +45,6 @@ class ProfileController extends GetxController {
           role.value = data['role'] ?? '';
           profilePhoto.value = data['profilePhoto']; // Can be null
 
-          print("Profile loaded: ${fullName.value}, ${email.value}");
         } else {
           Get.snackbar(
             "Error",
@@ -64,7 +62,6 @@ class ProfileController extends GetxController {
         );
       }
     } catch (e) {
-      print("Profile fetch error: $e");
       Get.snackbar(
         "Error",
         "Failed to fetch profile: $e",

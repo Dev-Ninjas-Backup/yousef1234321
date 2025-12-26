@@ -11,14 +11,30 @@ class ProductsController extends GetxController {
   final limit = 10.obs;
   final total = 0.obs;
   final totalPages = 1.obs;
+  final RxnString currentCategoryId = RxnString();
+  final RxnString currentSearch = RxnString();
 
   /// Fetch products from /products endpoint with pagination.
   /// Only page & limit are sent as query params.
-  Future<void> fetchProducts({int page = 1, int limit = 10}) async {
+  Future<void> fetchProducts({
+    int page = 1,
+    int limit = 10,
+    String? categoryId,
+    String? search,
+  }) async {
     try {
       isLoading.value = true;
 
-      final url = '${Endpoint.products}?page=$page&limit=$limit';
+      // remember current category for loadMore
+      currentCategoryId.value = categoryId;
+      // remember current search term
+      currentSearch.value = search;
+
+      var url = '${Endpoint.products}?page=$page&limit=$limit';
+      if (categoryId != null && categoryId.isNotEmpty)
+        url = '$url&categoryId=$categoryId';
+      if (search != null && search.isNotEmpty)
+        url = '$url&search=${Uri.encodeQueryComponent(search)}';
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -42,9 +58,10 @@ class ProductsController extends GetxController {
             items = List<dynamic>.from(body['items']);
           } else if (body.values.any((v) => v is List)) {
             // Fallback: pick the first list value
-            final lists = body.values.where((v) => v is List).toList();
-            if (lists.isNotEmpty)
-              items = List<dynamic>.from(lists.first as List);
+            final lists = body.values.whereType<List>().toList();
+            if (lists.isNotEmpty) {
+              items = List<dynamic>.from(lists.first);
+            }
           }
 
           // Parse pagination if present (either top-level or under data)
@@ -62,12 +79,12 @@ class ProductsController extends GetxController {
             this.limit.value = (pagination['limit'] is int)
                 ? pagination['limit']
                 : this.limit.value;
-            this.total.value = (pagination['total'] is int)
+            total.value = (pagination['total'] is int)
                 ? pagination['total']
-                : this.total.value;
-            this.totalPages.value = (pagination['totalPages'] is int)
+                : total.value;
+            totalPages.value = (pagination['totalPages'] is int)
                 ? pagination['totalPages']
-                : this.totalPages.value;
+                : totalPages.value;
           }
         }
         // If the body is directly a list
@@ -94,7 +111,12 @@ class ProductsController extends GetxController {
     final nextPage = page.value + 1;
     try {
       isLoading.value = true;
-      final url = '${Endpoint.products}?page=$nextPage&limit=${limit.value}';
+      var url = '${Endpoint.products}?page=$nextPage&limit=${limit.value}';
+      final cid = currentCategoryId.value;
+      final cs = currentSearch.value;
+      if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid';
+      if (cs != null && cs.isNotEmpty)
+        url = '$url&search=${Uri.encodeQueryComponent(cs)}';
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -102,12 +124,13 @@ class ProductsController extends GetxController {
         List<dynamic> items = [];
 
         if (body is Map) {
-          if (body['data'] is List)
+          if (body['data'] is List) {
             items = List<dynamic>.from(body['data']);
-          else if (body['data'] is Map && body['data']['data'] is List)
+          } else if (body['data'] is Map && body['data']['data'] is List) {
             items = List<dynamic>.from(body['data']['data']);
-          else if (body['products'] is List)
+          } else if (body['products'] is List) {
             items = List<dynamic>.from(body['products']);
+          }
         } else if (body is List) {
           items = List<dynamic>.from(body);
         }
@@ -116,26 +139,27 @@ class ProductsController extends GetxController {
 
         // update pagination similar to fetchProducts
         Map? pagination;
-        if (body is Map && body['pagination'] is Map)
+        if (body is Map && body['pagination'] is Map) {
           pagination = Map<String, dynamic>.from(body['pagination']);
-        else if (body is Map &&
+        } else if (body is Map &&
             body['data'] is Map &&
-            body['data']['pagination'] is Map)
+            body['data']['pagination'] is Map) {
           pagination = Map<String, dynamic>.from(body['data']['pagination']);
+        }
 
         if (pagination != null) {
-          this.page.value = (pagination['page'] is int)
+          page.value = (pagination['page'] is int)
               ? pagination['page']
-              : this.page.value;
-          this.limit.value = (pagination['limit'] is int)
+              : page.value;
+          limit.value = (pagination['limit'] is int)
               ? pagination['limit']
-              : this.limit.value;
-          this.total.value = (pagination['total'] is int)
+              : limit.value;
+          total.value = (pagination['total'] is int)
               ? pagination['total']
-              : this.total.value;
-          this.totalPages.value = (pagination['totalPages'] is int)
+              : total.value;
+          totalPages.value = (pagination['totalPages'] is int)
               ? pagination['totalPages']
-              : this.totalPages.value;
+              : totalPages.value;
         }
       }
     } catch (_) {

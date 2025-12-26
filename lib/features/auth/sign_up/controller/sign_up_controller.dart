@@ -63,15 +63,13 @@ class SignUpController extends GetxController {
       });
 
       // Debug: Print form data
-      print("Form Data Fields:");
+      // ignore: avoid_function_literals_in_foreach_calls
       formData.fields.forEach((field) {
-        print("${field.key}: ${field.value}");
       });
 
       final response = await ApiClient.to.post(Endpoint.register, formData);
 
       // Print API Response
-      print("SignUp Response: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Extract verifyToken from Response with null safety
