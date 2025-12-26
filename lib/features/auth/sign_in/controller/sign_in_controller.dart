@@ -46,9 +46,11 @@ class SignInController extends GetxController {
             response.body['result']['data'] != null) {
           final resultData = response.body['result']['data'];
           String accessToken = resultData['token'] ?? "";
+          String userId = resultData['user']['id'] ?? "";
 
           if (accessToken.isNotEmpty) {
             await ApiClient.to.setToken(accessToken);
+            await ApiClient.to.setUserId(userId);
 
             Get.snackbar(
               "Success",

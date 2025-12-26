@@ -6,6 +6,7 @@ import 'package:yousef1234321/features/home/home_page/controller/home_controller
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
+import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -66,6 +67,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
+    // ignore: unused_local_variable
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -95,7 +97,12 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       backgroundColor: Colors.black.withValues(alpha: 0.1),
-                      child: Image.asset(Iconpath.notification, scale: 2),
+                      child: GestureDetector(
+                        onTap: () {
+                          Get.to(() => NotificationScreen());
+                        },
+                        child: Image.asset(Iconpath.notification, scale: 2),
+                      ),
                     ),
                     SizedBox(width: 12),
                     CircleAvatar(

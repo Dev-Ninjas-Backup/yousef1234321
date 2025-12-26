@@ -25,6 +25,8 @@ class Endpoint {
   static const String getService = '/services';
   static const String findGarage = '/garages';
   static const String garageDetails = '/garages/single-garage';
+  static const String notificationIO='$baseUrl/notification';
+  static const String userNotifications="https://impracticably-sclerometric-niki.ngrok-free.dev/notification-setting/all-notifications";
   static const String myListing = '/products/my-products';
   static const String garageNearby = '/garages/nearby';
 }
