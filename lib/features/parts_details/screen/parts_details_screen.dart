@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/parts_details/controller/parts_details_controller.dart';
+import 'package:yousef1234321/features/parts_details/widgets/promotion_listing.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class PartsDetailsScreen extends StatelessWidget {
@@ -14,7 +15,11 @@ class PartsDetailsScreen extends StatelessWidget {
     final c = Get.put(PartsDetailsController());
 
     // 🔹 Reusable TextField
-    Widget textField(String label, {String? hint}) => Column(
+    Widget textField(
+      String label, {
+      required TextEditingController controller,
+      String? hint,
+    }) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -23,13 +28,10 @@ class PartsDetailsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         TextField(
+          controller: controller,
           decoration: InputDecoration(
             hintText: hint ?? "Type here",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-            ),
           ),
         ),
       ],
@@ -96,41 +98,88 @@ class PartsDetailsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: textField("Part Name *")),
+                Expanded(child: textField("Part Name *", controller: c.partNameCtrl)),
                 const SizedBox(width: 22.5),
-                Expanded(
-                  child: dropdown("Category *", [
-                    "Brake Pads",
-                    "Oil Filter",
-                    "Battery",
-                  ], c.category),
-                ),
+                // Expanded(
+                //   child: dropdown("Category *", [
+                //     "Brake Pads",
+                //     "Oil Filter",
+                //     "Battery",
+                //   ], c.categories),
+                // ),
+                Expanded(child: categoryDropdown(c)),
+
               ],
             ),
             const SizedBox(height: 30.5),
-            Row(
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child: textField("Compatible Vehicles *")),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: dropdown("Condition *", ["New", "Used"], c.condition),
+                const Text(
+                  'Listing Plan',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+
+                /// Monthly Subscription (Recommended)
+                Obx(
+                  () => _planTile(
+                    title: 'Monthly Subscription - 100 AED',
+                    subtitle:
+                        'Unlimited spare parts listings for 30 days. Best value for sellers with multiple parts.',
+                    value: 0,
+                    isRecommended: true,
+                    selectedValue: c.selectedPlan.value,
+                    onTap: () => c.selectPlan(0),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                /// Pay Per Listing
+                Obx(
+                  () => _planTile(
+                    title: 'Pay Per Listing',
+                    subtitle:
+                        'No subscription required. Use auto-renewal option below.',
+                    value: 1,
+                    isRecommended: false,
+                    selectedValue: c.selectedPlan.value,
+                    onTap: () => c.selectPlan(1),
+                  ),
                 ),
               ],
             ),
+
+            // Row(
+            //   children: [
+            //     Expanded(child: textField("Compatible Vehicles *")),
+            //     const SizedBox(width: 12),
+            //     Expanded(
+            //       child: dropdown("Condition *", ["New", "Used"], c.condition),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 22.5),
-            Row(
-              children: [
-                Expanded(
-                  child: dropdown("Brand *", [
-                    "Toyota",
-                    "Honda",
-                    "Nissan",
-                  ], c.brand),
-                ),
-                const SizedBox(width: 14),
-                Expanded(child: textField("Part Number / Code *")),
-              ],
-            ),
+
+            PromoteListingView(),
+            const SizedBox(height: 22.5),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: dropedown("Brand *", [
+            //         "Toyota",
+            //         "Honda",
+            //         "Nissan",
+            //       ], c.brand),
+            //     ),
+            //     const SizedBox(width: 14),
+            //  //   Expanded(child: textField("Part Number / Code *", controller: c.partNumberCtrl)),
+            //   ],
+            // ),
+
+            textField("Brand *", hint: "Type here...", controller: c.brand),
 
             const SizedBox(height: 24),
             const Text(
@@ -141,40 +190,41 @@ class PartsDetailsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: textField("Price [AED] *")),
+                Expanded(child: textField("Price [AED] *", controller: c.priceCtrl)),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: dropdown("Quantity Available *", [
-                    "1",
-                    "5",
-                    "10",
-                    "20",
-                  ], c.quantity),
-                ),
+                // Expanded(
+                //   child: dropdown("Quantity Available *", [
+                //     "1",
+                //     "5",
+                //     "10",
+                //     "20",
+                //   ], c.quantity),
+                // ),
               ],
             ),
+            SizedBox(height: 24,),
+             textField("Brand *", hint: "Type here...", controller: c.quantity),
             const SizedBox(height: 20),
 
-            textField("Description *", hint: "Type here..."),
+            textField("Description *", hint: "Type here...", controller: c.descriptionCtrl),
 
-            Row(
-              children: [
-                Expanded(
-                  child: dropdown("Warranty Info *", [
-                    "Yes",
-                    "No",
-                  ], c.warrantyInfo),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: dropdown("Delivery *", [
-                    "Pickup",
-                    "Delivery",
-                  ], c.deliveryOption),
-                ),
-              ],
-            ),
-
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: dropdown("Warranty Info *", [
+            //         "Yes",
+            //         "No",
+            //       ], c.warrantyInfo),
+            //     ),
+            //     const SizedBox(width: 20),
+            //     Expanded(
+            //       child: dropdown("Delivery *", [
+            //         "Pickup",
+            //         "Delivery",
+            //       ], c.deliveryOption),
+            //     ),
+            //   ],
+            // ),
             const SizedBox(height: 20),
             const Text(
               "Upload Photo *",
@@ -223,13 +273,13 @@ class PartsDetailsScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            textField("Seller Name *"),
+            textField("Seller Name *", controller: c.sellerNameCtrl),
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: textField("Location *")),
+                Expanded(child: textField("Email *", controller: c.emailCtrl)),
                 const SizedBox(width: 24),
-                Expanded(child: textField("Contact Number *")),
+                Expanded(child: textField("Contact Number *", controller: c.phoneCtrl)),
               ],
             ),
             Row(
@@ -293,4 +343,128 @@ class PartsDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _planTile({
+  required String title,
+  required String subtitle,
+  required int value,
+  required int selectedValue,
+  required VoidCallback onTap,
+  required bool isRecommended,
+}) {
+  final bool isSelected = value == selectedValue;
+
+  return GestureDetector(
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.blue.withOpacity(0.08) : Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isSelected ? Colors.blue : Colors.grey.shade300,
+          width: 1.2,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Radio<int>(
+            value: value,
+            groupValue: selectedValue,
+            onChanged: (_) => onTap(),
+            activeColor: Colors.blue,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    if (isRecommended)
+                      Container(
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text(
+                          'Recommended',
+                          style: TextStyle(fontSize: 11, color: Colors.white),
+                        ),
+                      ),
+                    Flexible(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget categoryDropdown(PartsDetailsController c) {
+  return Obx(() {
+    if (c.isLoadingCategories.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (c.errorMessageCategories.isNotEmpty) {
+      return Text(c.errorMessageCategories.value, style: const TextStyle(color: Colors.red));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Category *",
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
+        const SizedBox(height: 6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: DropdownButton<String>(
+            value: c.selectedCategoryId.value,
+            isExpanded: true,
+            hint: const Text("Select"),
+            underline: const SizedBox(),
+            items: c.categories.map((cat) {
+              return DropdownMenuItem<String>(
+                value: cat.id,       // store id
+                child: Text(cat.name), // show name
+              );
+            }).toList(),
+            onChanged: (value) {
+              c.selectedCategoryId.value = value;
+            },
+          ),
+        ),
+      ],
+    );
+  });
 }

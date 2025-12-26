@@ -1,12 +1,13 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/notification/notification_model.dart';
 
 class NotificationServiceRest {
   final String apiUrl =
-      "https://impracticably-sclerometric-niki.ngrok-free.dev/notification-setting/all-notifications";
+      "${Endpoint.baseUrl}/notification-setting/all-notifications";
   final String token = ApiClient.to.token ?? '';
 
   // Method to fetch notifications from the server
