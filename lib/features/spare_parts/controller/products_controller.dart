@@ -11,14 +11,30 @@ class ProductsController extends GetxController {
   final limit = 10.obs;
   final total = 0.obs;
   final totalPages = 1.obs;
+  final RxnString currentCategoryId = RxnString();
+  final RxnString currentSearch = RxnString();
 
   /// Fetch products from /products endpoint with pagination.
   /// Only page & limit are sent as query params.
-  Future<void> fetchProducts({int page = 1, int limit = 10}) async {
+  Future<void> fetchProducts({
+    int page = 1,
+    int limit = 10,
+    String? categoryId,
+    String? search,
+  }) async {
     try {
       isLoading.value = true;
 
-      final url = '${Endpoint.products}?page=$page&limit=$limit';
+      // remember current category for loadMore
+      currentCategoryId.value = categoryId;
+      // remember current search term
+      currentSearch.value = search;
+
+      var url = '${Endpoint.products}?page=$page&limit=$limit';
+      if (categoryId != null && categoryId.isNotEmpty)
+        url = '$url&categoryId=$categoryId';
+      if (search != null && search.isNotEmpty)
+        url = '$url&search=${Uri.encodeQueryComponent(search)}';
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -95,7 +111,12 @@ class ProductsController extends GetxController {
     final nextPage = page.value + 1;
     try {
       isLoading.value = true;
-      final url = '${Endpoint.products}?page=$nextPage&limit=${limit.value}';
+      var url = '${Endpoint.products}?page=$nextPage&limit=${limit.value}';
+      final cid = currentCategoryId.value;
+      final cs = currentSearch.value;
+      if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid';
+      if (cs != null && cs.isNotEmpty)
+        url = '$url&search=${Uri.encodeQueryComponent(cs)}';
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {

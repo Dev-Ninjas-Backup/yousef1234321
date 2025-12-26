@@ -52,7 +52,6 @@ class ContactUsController extends GetxController {
       }
     } catch (e) {
       // ignore errors — leave fields empty
-      print('Failed to load profile for contact us: $e');
     } finally {
       isLoadingProfile.value = false;
     }
@@ -95,7 +94,6 @@ class ContactUsController extends GetxController {
       };
 
       final response = await ApiClient.to.post(Endpoint.contactUs, body);
-      print('ContactUs response: ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         EasyLoading.showSuccess('Your message has been sent to ADMIN!');
@@ -123,7 +121,6 @@ class ContactUsController extends GetxController {
         );
       }
     } catch (e) {
-      print('ContactUs send error: $e');
       EasyLoading.showError('Something went wrong: $e');
     } finally {
       isSending.value = false;

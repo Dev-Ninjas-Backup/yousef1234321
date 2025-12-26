@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 import '../controller/spare_parts_controller.dart';
 
@@ -44,54 +47,58 @@ class PartsSearchSection extends StatelessWidget {
             ),
             child: Column(
               children: [
+                // Replaced Row(spacing: ...) with a proper layout and API-backed dropdown
                 Row(
-                  spacing: 5,
                   children: [
-                    // FIRST DROPDOWN
                     Expanded(
-                      child: Obx(
-                        () => DropdownButtonFormField<String>(
-                          isExpanded: true, // <-- FIXED
-                          initialValue: controller.selectedModel.value,
-                          items: controller.models
-                              .map(
-                                (location) => DropdownMenuItem(
-                                  value: location,
-                                  child: Text(
-                                    location,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) =>
-                              controller.selectedModel.value = value,
-                          decoration: InputDecoration(
-                            hintText: "Select Model",
-                            hintStyle: getTextStyle(),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE5E7EB),
-                              ),
+                      child: TextField(
+                        onChanged: (v) => controller.selectedModel.value = v,
+                        decoration: InputDecoration(
+                          hintText: "Search",
+                          hintStyle: getTextStyle(),
+                          filled: true,
+                          fillColor: Colors.white,
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE5E7EB),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
-                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 8,
                           ),
                         ),
                       ),
                     ),
 
+                    const SizedBox(width: 8),
+
                     Expanded(
-                      child: Obx(
-                        () => DropdownButtonFormField<String>(
-                          isExpanded: true, // <-- FIXED
-                          initialValue: controller.selectedCategory.value,
-                          items: controller.dropDownCategories
+                      child: Obx(() {
+                        // Build a simple list of names from the API categories
+                        final categoryNames = controller.categories
+                            .map((c) => c['name']?.toString() ?? '')
+                            .where((s) => s.isNotEmpty)
+                            .toList();
+
+                        final items = ["Select Category", ...categoryNames];
+
+                        return DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          // if a category is already selected use it, otherwise pick "Select Category"
+                          value:
+                              (controller.selectedCategory.value != null &&
+                                  items.contains(
+                                    controller.selectedCategory.value,
+                                  ))
+                              ? controller.selectedCategory.value
+                              : "Select Category",
+                          items: items
                               .map(
                                 (service) => DropdownMenuItem(
                                   value: service,
@@ -102,8 +109,13 @@ class PartsSearchSection extends StatelessWidget {
                                 ),
                               )
                               .toList(),
-                          onChanged: (value) =>
-                              controller.selectedCategory.value = value,
+                          onChanged: (value) {
+                            if (value == "Select Category") {
+                              controller.selectedCategory.value = null;
+                            } else {
+                              controller.selectedCategory.value = value;
+                            }
+                          },
                           decoration: InputDecoration(
                             hintText: "Category type",
                             hintStyle: getTextStyle(),
@@ -120,8 +132,8 @@ class PartsSearchSection extends StatelessWidget {
                               vertical: 8,
                             ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -137,7 +149,120 @@ class PartsSearchSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final searchText = controller.selectedModel.value ?? '';
+                    final category = controller.selectedCategory.value;
+
+                    if (searchText.trim().isEmpty &&
+                        (category == null || category.isEmpty)) {
+                      Get.snackbar(
+                        "Selection Required",
+                        "Please enter a search term or select a category",
+                        backgroundColor: Colors.redAccent,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    final productsCtrl = Get.put(
+                      ProductsController(),
+                      tag: 'productsList',
+                    );
+
+                    // find category id by name from spare parts controller
+                    final selectedName = controller.selectedCategory.value;
+                    String? catId;
+                    if (selectedName != null && selectedName.isNotEmpty) {
+                      final match = controller.categories.firstWhere(
+                        (c) => (c['name']?.toString() ?? '') == selectedName,
+                        orElse: () => {},
+                      );
+                      if (match.isNotEmpty) catId = match['id']?.toString();
+                    }
+
+                    // Use text from TextField if needed; for now will use selectedModel as search term
+                    final searchTerm = controller.selectedModel.value;
+
+                    await productsCtrl.fetchProducts(
+                      page: 1,
+                      limit: 20,
+                      categoryId: catId,
+                      search: searchTerm,
+                    );
+
+                    Get.to(
+                      () => Scaffold(
+                        appBar: AppBar(title: const Text('Search Results')),
+                        body: Obx(() {
+                          if (productsCtrl.isLoading.value)
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          if (productsCtrl.products.isEmpty)
+                            return const Center(child: Text('No products'));
+                          return ListView.builder(
+                            padding: const EdgeInsets.all(12),
+                            itemCount: productsCtrl.products.length,
+                            itemBuilder: (_, idx) {
+                              final p = productsCtrl.products[idx];
+                              final name = (p is Map && p['partName'] != null)
+                                  ? p['partName'].toString()
+                                  : 'Product ${idx + 1}';
+                              final price = (p is Map && p['price'] != null)
+                                  ? p['price'].toString()
+                                  : '-';
+                              final photo =
+                                  (p is Map && p['profilePhoto'] != null)
+                                  ? p['profilePhoto'].toString()
+                                  : (p is Map &&
+                                            p['photos'] is List &&
+                                            p['photos'].isNotEmpty
+                                        ? p['photos'][0].toString()
+                                        : null);
+
+                              return ListTile(
+                                leading: photo != null
+                                    ? Image.network(
+                                        photo,
+                                        width: 56,
+                                        height: 56,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            Image.asset(
+                                              Iconpath.carHomeIcon,
+                                              width: 56,
+                                              height: 56,
+                                            ),
+                                      )
+                                    : Image.asset(
+                                        Iconpath.carHomeIcon,
+                                        width: 56,
+                                        height: 56,
+                                      ),
+                                title: Text(name),
+                                subtitle: Text('Price: $price'),
+                                onTap: () {
+                                  String? id;
+                                  if (p is Map) {
+                                    if (p['id'] != null)
+                                      id = p['id'].toString();
+                                    else if (p['data'] is Map &&
+                                        p['data']['id'] != null)
+                                      id = p['data']['id'].toString();
+                                  }
+                                  if (id != null)
+                                    Get.toNamed(
+                                      Approute.getBrakePadsScreen(),
+                                      arguments: id,
+                                    );
+                                },
+                              );
+                            },
+                          );
+                        }),
+                      ),
+                    );
+                  },
                   child: const Text("Search Parts"),
                 ),
               ],

@@ -74,14 +74,12 @@ class HomeController extends GetxController {
   Future<void> fetchTopRatedGarages() async {
     try {
       isLoadingGarages.value = true;
-      print('HomeController: Fetching top-rated garages...');
 
       // Fetch more garages (limit 10) to have better selection for top 2
       var response = await ApiClient.to.get(
         '${Endpoint.findGarage}?page=1&limit=10&status=APPROVED&sortBy=averageRating&order=desc',
       );
 
-      print('HomeController: Response status=${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
@@ -90,13 +88,9 @@ class HomeController extends GetxController {
             body['data'] != null &&
             body['data']['data'] != null) {
           final List<dynamic> garagesJson = body['data']['data'];
-          print('HomeController: Found ${garagesJson.length} APPROVED garages');
 
           // If no APPROVED garages found, try fetching all garages
           if (garagesJson.isEmpty) {
-            print(
-              'HomeController: No APPROVED garages, fetching all garages...',
-            );
             response = await ApiClient.to.get(
               '${Endpoint.findGarage}?page=1&limit=10&sortBy=averageRating&order=desc',
             );
@@ -108,9 +102,6 @@ class HomeController extends GetxController {
                   allBody['data'] != null &&
                   allBody['data']['data'] != null) {
                 final allGaragesJson = allBody['data']['data'] as List<dynamic>;
-                print(
-                  'HomeController: Found ${allGaragesJson.length} total garages',
-                );
 
                 final garagesList = allGaragesJson
                     .map((json) => GarageModel.fromJson(json))
@@ -123,20 +114,11 @@ class HomeController extends GetxController {
 
                 // Log ratings for debugging
                 for (var garage in garagesList) {
-                  print(
-                    'Garage: ${garage.name}, Rating: ${garage.averageRating}, Status: ${garage.status}',
-                  );
                 }
 
                 // Take only top 2
                 garages.value = garagesList.take(2).toList();
 
-                print(
-                  'HomeController: Loaded ${garages.length} garages successfully',
-                );
-                print(
-                  'Top garage: ${garages.isNotEmpty ? garages[0].name : 'None'} - Rating: ${garages.isNotEmpty ? garages[0].averageRating : 0}',
-                );
               }
             }
           } else {
@@ -151,30 +133,17 @@ class HomeController extends GetxController {
 
             // Log ratings for debugging
             for (var garage in garagesList) {
-              print(
-                'Garage: ${garage.name}, Rating: ${garage.averageRating}, Status: ${garage.status}',
-              );
             }
 
             // Take only top 2
             garages.value = garagesList.take(2).toList();
 
-            print(
-              'HomeController: Loaded ${garages.length} garages successfully',
-            );
-            print(
-              'Top garage: ${garages.isNotEmpty ? garages[0].name : 'None'} - Rating: ${garages.isNotEmpty ? garages[0].averageRating : 0}',
-            );
           }
         } else {
-          print('HomeController: Invalid response structure');
         }
       } else {
-        print('HomeController: Failed with status ${response.statusCode}');
       }
     } catch (e, stackTrace) {
-      print('Failed to fetch top-rated garages: $e');
-      print('Stack trace: $stackTrace');
     } finally {
       isLoadingGarages.value = false;
     }
@@ -183,31 +152,20 @@ class HomeController extends GetxController {
   Future<void> fetchServices() async {
     try {
       isLoadingServices.value = true;
-      print('HomeController: Fetching services...');
 
       final response = await ApiClient.to.get(Endpoint.getService);
-      print('HomeController: Services response status=${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
-        print('HomeController: Services response body=$body');
 
         if (body != null && body['serviceCategories'] != null) {
           final List<dynamic> categories = body['serviceCategories'];
           serviceTypes.value = categories.map((e) => e.toString()).toList();
-          print(
-            'HomeController: Loaded ${serviceTypes.length} services: $serviceTypes',
-          );
         } else {
-          print('HomeController: Invalid response structure for services');
         }
       } else {
-        print(
-          'HomeController: Services fetch failed with status ${response.statusCode}',
-        );
       }
     } catch (e) {
-      print('Failed to fetch services: $e');
       // Fallback to default services if API fails
       serviceTypes.value = [
         "AC Repair",
@@ -219,7 +177,6 @@ class HomeController extends GetxController {
         "Brakes",
         "Body Work",
       ];
-      print('HomeController: Using fallback services: $serviceTypes');
     } finally {
       isLoadingServices.value = false;
     }

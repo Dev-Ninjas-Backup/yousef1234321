@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 
 class BrakePadsScreen extends StatelessWidget {
-  const BrakePadsScreen({super.key});
+  BrakePadsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +70,39 @@ class BrakePadsScreen extends StatelessWidget {
                       aspectRatio: 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          c.images[c.selectedImageIndex.value],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
+                        child: Builder(
+                          builder: (_) {
+                            final img =
+                                (c.images.isNotEmpty &&
+                                    c.selectedImageIndex.value <
+                                        c.images.length)
+                                ? c.images[c.selectedImageIndex.value]
+                                : '';
+                            if (img.toString().startsWith('http')) {
+                              return Image.network(
+                                img,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  'assets/images/image2.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              );
+                            }
+                            if (img.isNotEmpty) {
+                              return Image.asset(
+                                img,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              );
+                            }
+                            return Image.asset(
+                              'assets/images/image2.png',
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -135,6 +164,10 @@ class BrakePadsScreen extends StatelessWidget {
                     separatorBuilder: (_, __) => const SizedBox(width: 10),
                     itemBuilder: (_, i) {
                       final selected = c.selectedImageIndex.value == i;
+                      final img = c.images[i].toString();
+                      final ImageProvider provider = img.startsWith('http')
+                          ? NetworkImage(img)
+                          : AssetImage(img) as ImageProvider;
                       return GestureDetector(
                         onTap: () => c.changeImage(i),
                         child: Container(
@@ -148,7 +181,7 @@ class BrakePadsScreen extends StatelessWidget {
                             ),
                             borderRadius: BorderRadius.circular(12),
                             image: DecorationImage(
-                              image: AssetImage(c.images[i]),
+                              image: provider,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -159,6 +192,21 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 25),
+                // product info
+                Text(
+                  c.product['partName']?.toString() ?? 'Brake Pads',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  c.product['brand']?.toString() ?? '',
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 14, 14, 14),
+                    fontSize: 14,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     badge("In Stock", Colors.green),
@@ -175,9 +223,9 @@ class BrakePadsScreen extends StatelessWidget {
                             size: 18,
                           ),
                         ),
-                        const Text(
-                          "(4.8)",
-                          style: TextStyle(
+                        Text(
+                          c.product['rating']?.toString() ?? '(0.0)',
+                          style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
@@ -189,40 +237,27 @@ class BrakePadsScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                const Text(
-                  "Premium Ceramic Brake Pads Set",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
                 const SizedBox(height: 8),
-                const Text(
-                  "Compatible with Honda Civic 2016–2022",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 14, 14, 14),
-                    fontSize: 14,
-                  ),
-                ),
-
-                const SizedBox(height: 12),
+                // Price
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: const [
+                  children: [
                     Text(
-                      "\$89.99",
-                      style: TextStyle(
+                      '\$${c.product['price']?.toString() ?? '0'}',
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 7),
-                    Text(
-                      "\$106.99",
-                      style: TextStyle(
-                        decoration: TextDecoration.lineThrough,
-                        color: Colors.grey,
+                    const SizedBox(width: 7),
+                    if (c.product['promoCost'] != null)
+                      Text(
+                        '\$${c.product['promoCost'].toString()}',
+                        style: const TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 7),
-                    Text("Save \$16", style: TextStyle(color: Colors.green)),
                   ],
                 ),
 
@@ -230,21 +265,24 @@ class BrakePadsScreen extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Vehicle Compatibility",
+                          const Text(
+                            "Condition",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            "Honda Civic 2016–2022",
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            c.product['condition']?.toString() ?? 'N/A',
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),
@@ -281,11 +319,10 @@ class BrakePadsScreen extends StatelessWidget {
 
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    _FeatureItem("Low noise ceramic formula"),
-                    _FeatureItem("Extended pad life"),
-                    _FeatureItem("Superior stopping power"),
-                    _FeatureItem("2-year warranty included"),
+                  children: [
+                    _FeatureItem(
+                      c.product['description']?.toString() ?? 'No description',
+                    ),
                   ],
                 ),
 

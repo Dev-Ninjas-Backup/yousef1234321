@@ -37,7 +37,6 @@ class SplashController extends GetxController
         // User is logged in, navigate to home
         Get.offAllNamed(Approute.bottomNavBarScreen);
       } else {
-        print("User is not logged in");
         // User is not logged in, show onboarding
         Get.offAllNamed('/onboardingScreen');
       }

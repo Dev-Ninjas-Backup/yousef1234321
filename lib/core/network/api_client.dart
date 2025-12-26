@@ -19,6 +19,7 @@ class ApiClient extends GetConnect {
       return await sharedPreferences.remove('token');
     }
     final result = await sharedPreferences.setString('token', token);
+    // Debug
     print("Token saved: $result, Token: $token"); // Debug
     return result;
   }

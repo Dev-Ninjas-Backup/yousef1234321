@@ -58,7 +58,6 @@ class SignupOtpController extends GetxController {
         'resetToken': ApiClient.to.resetToken ?? '',
       });
 
-      print("OTP Verify Response: ${response.body}");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar(

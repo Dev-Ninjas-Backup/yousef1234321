@@ -158,6 +158,59 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
+
+            Column(
+              spacing: 10,
+              children: [
+                Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ServiceChip(
+                        label: "AC Repair",
+                        icon: Iconpath.acIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Battery",
+                        icon: Iconpath.batterryIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Engine",
+                        icon: Iconpath.engineIcon,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Tires",
+                        icon: Iconpath.wheelIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Electrical",
+                        icon: Iconpath.electricIcon,
+                      ),
+                    ),
+                    Expanded(
+                      child: ServiceChip(
+                        label: "Spares",
+                        icon: Iconpath.spareIcon,
+                        onTap: () {
+                          Get.toNamed(Approute.getBrakePadsScreen());
+                        },
+                      ),
+
             Obx(() {
               // Get services from controller, limit to 6
               final services = controller.serviceTypes.take(6).toList();

@@ -144,7 +144,9 @@ class GarageListScreen extends StatelessWidget {
                       'Clear',
                       style: TextStyle(color: Colors.red, fontSize: 14),
                     ),
+
                     backgroundColor: Colors.red.withValues(alpha:  0.1),
+
                     onPressed: controller.clearFilters,
                   );
                 }),

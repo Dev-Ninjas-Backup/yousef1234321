@@ -93,8 +93,8 @@ class GarageListController extends GetxController {
           serviceTypes.value = categories.map((e) => e.toString()).toList();
         }
       }
+    // ignore: empty_catches
     } catch (e) {
-      print('Failed to fetch services: $e');
     }
   }
 
@@ -161,7 +161,6 @@ class GarageListController extends GetxController {
         }
       }
     } catch (e) {
-      print('Failed to fetch garages: $e');
       Get.snackbar(
         'Error',
         'Failed to load garages',
@@ -223,8 +222,6 @@ class GarageListController extends GetxController {
           garages.addAll(newGarages);
         }
       }
-    } catch (e) {
-      print('Failed to load more garages: $e');
     } finally {
       isLoadingMore.value = false;
     }
