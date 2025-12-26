@@ -33,10 +33,27 @@ class SearchAndFilter extends StatelessWidget {
             child: TextField(
               controller: controller.searchController,
               decoration: InputDecoration(
-                hintText: "Enter your location",
-                prefixIcon: Icon(
-                  Icons.location_on_outlined,
-                  color: AppColors.primaryColor,
+                hintText: "Enter Garage Name",
+                prefixIcon: GestureDetector(
+                  onTap: () => controller.loadProfileLocation(),
+                  child: Obx(() {
+                    // show small spinner while fetching saved profile location
+                    if (controller.isLoadingLocation.value) {
+                      return SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.primaryColor,
+                        ),
+                      );
+                    }
+
+                    return Icon(
+                      Icons.location_on_outlined,
+                      color: AppColors.primaryColor,
+                    );
+                  }),
                 ),
 
                 contentPadding: const EdgeInsets.symmetric(horizontal: 6),
@@ -53,55 +70,32 @@ class SearchAndFilter extends StatelessWidget {
             ),
           ),
           SizedBox(width: 14),
-
           Obx(() {
-            return Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: DropdownButton<String>(
-                dropdownColor: AppColors.splashButtonColor.withValues(
-                  alpha: .75,
+            return GestureDetector(
+              onTap: () => controller.findGaragesNearbyFromProfile(),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                borderRadius: BorderRadius.circular(8),
-                icon: Icon(
-                  Icons.keyboard_arrow_down_sharp,
-                  size: 14,
-                  color: Colors.white,
-                ),
-                underline: SizedBox.shrink(),
-                padding: EdgeInsets.zero,
-                hint: Text(
-                  "Find by garages",
-                  style: getTextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-                value: controller.selectedOption.value == ''
-                    ? null
-                    : controller.selectedOption.value,
-                items: controller.options.map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                      style: getTextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                child: controller.isLoadingNearby.value
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        'Find Garage',
+                        style: getTextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    controller.changeOption(newValue);
-                  }
-                },
               ),
             );
           }),

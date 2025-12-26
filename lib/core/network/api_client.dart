@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,7 +19,7 @@ class ApiClient extends GetConnect {
       return await sharedPreferences.remove('token');
     }
     final result = await sharedPreferences.setString('token', token);
-    print("Token saved: $result, Token: ${token}"); // Debug
+    print("Token saved: $result, Token: $token"); // Debug
     return result;
   }
 
@@ -32,8 +34,26 @@ class ApiClient extends GetConnect {
   Future<void> logout() async {
     await sharedPreferences.remove('token');
     await sharedPreferences.remove('resetToken');
+    await sharedPreferences.remove('id');
     print("User logged out - tokens cleared");
   }
+
+
+
+String? get userId => sharedPreferences.getString('id');
+
+  Future<bool> setUserId(String? id) async {
+    if (id == null || id.isEmpty) {
+      return await sharedPreferences.remove('id');
+    }
+    final result = await sharedPreferences.setString('id', id);
+    print("User ID saved: $result, ID: $id");
+    return result;
+  }
+
+
+
+  
 
   /// Check if user is logged in
   bool get isLoggedIn => token != null && token!.isNotEmpty;
@@ -50,14 +70,14 @@ class ApiClient extends GetConnect {
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      // ignore: avoid_print
+
       print("Request: ${request.method} ${request.url}");
       return request;
     });
 
     // Response Modifier (Global Status Code Handling)
     httpClient.addResponseModifier((request, response) {
-      // ignore: avoid_print
+
       print("Response: ${response.statusCode} ${response.bodyString}");
       handleGlobalStatus(response);
       return response;

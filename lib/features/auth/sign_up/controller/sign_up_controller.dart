@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -64,9 +66,9 @@ class SignUpController extends GetxController {
 
       // Debug: Print form data
       print("Form Data Fields:");
-      formData.fields.forEach((field) {
+      for (var field in formData.fields) {
         print("${field.key}: ${field.value}");
-      });
+      }
 
       final response = await ApiClient.to.post(Endpoint.register, formData);
 

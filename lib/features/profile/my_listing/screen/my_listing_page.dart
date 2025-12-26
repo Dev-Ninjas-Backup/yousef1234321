@@ -4,6 +4,7 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/my_listing/conrtoller/listing_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 import '../../../../core/common/widgets/action_button.dart';
 
@@ -71,8 +72,60 @@ class MyListingPage extends StatelessWidget {
 
               // Listings
               Expanded(
-                child: Obx(
-                  () => ListView.builder(
+                child: Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (controller.hasError.value) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Failed to load listings',
+                            style: getTextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => controller.fetchMyListings(),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  if (controller.listings.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.shopping_bag_outlined,
+                            size: 48,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No listings yet',
+                            style: getTextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
                     itemCount: controller.listings.length,
                     itemBuilder: (context, index) {
                       final item = controller.listings[index];
@@ -94,16 +147,13 @@ class MyListingPage extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                item.image,
-                                height: 112,
-                                width: 112,
-                                fit: BoxFit.cover,
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: _buildImage(item.image),
                               ),
                             ),
-
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,20 +212,25 @@ class MyListingPage extends StatelessWidget {
                                         "View details",
                                         color: Colors.blue.shade50,
                                         textColor: Colors.blue,
-                                        onTap: () {},
+                                        onTap: () {
+                                          Get.toNamed(
+                                            arguments: {'productId': item.id},
+                                            Approute.brakePadsScreen,
+                                          );
+                                        },
                                       ),
-                                      actionButton(
-                                        "Re-post",
-                                        borderColor: Colors.blue,
-                                        textColor: Colors.blue,
-                                        onTap: () {},
-                                      ),
-                                      actionButton(
-                                        "Mark as sold",
-                                        borderColor: Colors.red,
-                                        textColor: Colors.red,
-                                        onTap: () {},
-                                      ),
+                                      // actionButton(
+                                      //   "Re-post",
+                                      //   borderColor: Colors.blue,
+                                      //   textColor: Colors.blue,
+                                      //   onTap: () {},
+                                      // ),
+                                      // actionButton(
+                                      //   "Mark as sold",
+                                      //   borderColor: Colors.red,
+                                      //   textColor: Colors.red,
+                                      //   onTap: () {},
+                                      // ),
                                     ],
                                   ),
                                 ],
@@ -185,8 +240,8 @@ class MyListingPage extends StatelessWidget {
                         ),
                       );
                     },
-                  ),
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -195,4 +250,39 @@ class MyListingPage extends StatelessWidget {
     );
   }
 
+  Widget _buildImage(String imagePath) {
+    // Check if it's a network image
+    final isNetworkImage =
+        imagePath.startsWith('http://') || imagePath.startsWith('https://');
+
+    return isNetworkImage
+        ? Image.network(
+            imagePath,
+            height: 112,
+            width: 112,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 112,
+                width: 112,
+                color: Colors.grey.shade300,
+                child: const Icon(Icons.image_not_supported),
+              );
+            },
+          )
+        : Image.asset(
+            imagePath,
+            height: 112,
+            width: 112,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                height: 112,
+                width: 112,
+                color: Colors.grey.shade300,
+                child: const Icon(Icons.image_not_supported),
+              );
+            },
+          );
+  }
 }

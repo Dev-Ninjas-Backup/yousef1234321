@@ -61,7 +61,7 @@ class ProfilePage extends StatelessWidget {
       height: 96,
       width: 96,
       decoration: BoxDecoration(
-        color: AppColors.primaryColor.withOpacity(0.1),
+        color: AppColors.primaryColor.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(Icons.person, size: 48, color: AppColors.primaryColor),
