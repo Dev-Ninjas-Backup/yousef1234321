@@ -70,7 +70,9 @@ class FindService extends StatelessWidget {
                     ),
                   );
                 }
-                final List<GarageModel> list = controller.garages;
+                final List<GarageModel> list = controller.garages.toList(
+                  growable: false,
+                );
 
                 return ListView.builder(
                   itemCount: list.length,
@@ -199,8 +201,7 @@ class FindService extends StatelessWidget {
 
                                   const SizedBox(height: 6),
                                   // Open / Closed badge for this garage
-                                  Row(
-                                    children: [
+                                  Row(children: [
                                       
                                     ],
                                   ),

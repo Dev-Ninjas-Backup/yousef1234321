@@ -71,10 +71,31 @@ class ServiceController extends GetxController {
       }
 
       final res = await ApiClient.to.get(url);
-      if (res.statusCode == 200 &&
-          res.body is Map &&
-          res.body['garages'] != null) {
-        List<dynamic> list = (res.body['garages'] as List<dynamic>);
+      if (res.statusCode == 200 && res.body != null) {
+        final body = res.body;
+        List<dynamic> list = [];
+
+        // Accept multiple response shapes: {garages: [...]}, {data: [...]}, {data: {data: [...]}}
+        if (body is Map) {
+          if (body['garages'] is List) {
+            list = List<dynamic>.from(body['garages']);
+          } else if (body['data'] is List) {
+            list = List<dynamic>.from(body['data']);
+          } else if (body['data'] is Map && body['data']['data'] is List) {
+            list = List<dynamic>.from(body['data']['data']);
+          } else if (body.values.any((v) => v is List)) {
+            final lists = body.values.whereType<List>().toList();
+            if (lists.isNotEmpty) list = List<dynamic>.from(lists.first);
+          }
+        } else if (body is List) {
+          list = List<dynamic>.from(body);
+        }
+
+        if (list.isEmpty) {
+          EasyLoading.showError('No garages found');
+          garages.clear();
+          return;
+        }
 
         // Map to typed models and filter invalid entries
         final models = list
@@ -83,14 +104,17 @@ class ServiceController extends GetxController {
             .toList(growable: false);
 
         // If user entered a search query, filter by garage name
-        final query = searchController.text.trim().toLowerCase();
-        final filtered = query.isNotEmpty
-            ? models.where((m) => m.name.toLowerCase().contains(query)).toList()
+        final queryLower = searchController.text.trim().toLowerCase();
+        final filtered = queryLower.isNotEmpty
+            ? models
+                  .where((m) => m.name.toLowerCase().contains(queryLower))
+                  .toList()
             : models;
 
         garages.value = filtered;
       } else {
         EasyLoading.showError('Failed to load nearby garages');
+        garages.clear();
       }
     } catch (e, st) {
       print('Error fetching nearby garages: $e');

@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   url_launcher: ^6.3.0
   get: ^4.7.2
+  google_sign_in: ^6.2.1
   google_fonts: ^6.3.2
   flutter_screenutil: ^5.9.3
   flutter_easyloading: ^3.0.5
