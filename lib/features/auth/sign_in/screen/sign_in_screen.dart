@@ -212,13 +212,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     SocialButton(
                       imagePath: Iconpath.google,
                       text: 'Continue with Google',
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 24),
-                    SocialButton(
-                      imagePath: Iconpath.apple,
-                      text: 'Continue with Apple',
-                      onTap: () {},
+                      onTap: () =>
+                          Get.find<SignInController>().signInWithGoogle(),
                     ),
                     const SizedBox(height: 40),
                   ],

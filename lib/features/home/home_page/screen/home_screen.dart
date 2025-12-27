@@ -96,7 +96,7 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      backgroundColor: Colors.black.withOpacity(0.1),
                       child: GestureDetector(
                         onTap: () {
                           Get.to(() => NotificationScreen());
@@ -140,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(8),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: () {},
@@ -159,11 +159,10 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
+            // removed unsupported `spacing` properties from Column/Row widgets
             Column(
-              spacing: 10,
               children: [
                 Row(
-                  spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
@@ -186,9 +185,9 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  spacing: 10,
                   children: [
                     Expanded(
                       child: ServiceChip(
@@ -210,6 +209,11 @@ class HomeScreen extends StatelessWidget {
                           Get.toNamed(Approute.getBrakePadsScreen());
                         },
                       ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
 
             Obx(() {
               // Get services from controller, limit to 6
@@ -223,11 +227,9 @@ class HomeScreen extends StatelessWidget {
               }
 
               return Column(
-                spacing: 10,
                 children: [
                   // First row: up to 3 services
                   Row(
-                    spacing: 10,
                     children: [
                       ...services.take(3).map((service) {
                         return Expanded(
@@ -248,10 +250,10 @@ class HomeScreen extends StatelessWidget {
                       }).toList(),
                     ],
                   ),
+                  const SizedBox(height: 10),
                   // Second row: remaining services (if more than 3)
                   if (services.length > 3)
                     Row(
-                      spacing: 10,
                       children: [
                         ...services.skip(3).take(3).map((service) {
                           return Expanded(

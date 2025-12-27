@@ -14,10 +14,32 @@ import '../../../core/common/style/global_text_style.dart';
 class SparePartsScreen extends StatelessWidget {
   SparePartsScreen({super.key});
 
+  // Ensure we only run the initial fetch once per app lifecycle to avoid repeated network calls
+  static bool _initialized = false;
+
   final SparePartsController controller = Get.put(SparePartsController());
 
   @override
   Widget build(BuildContext context) {
+    // Run initial fetch once (guarded) to avoid registering multiple postFrame callbacks
+    if (!SparePartsScreen._initialized) {
+      SparePartsScreen._initialized = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final allPartsCtrl = Get.put(ProductsController(), tag: 'allParts');
+        if (allPartsCtrl.products.isEmpty && !allPartsCtrl.isLoading.value) {
+          allPartsCtrl.fetchProducts(page: 1, limit: 10);
+        }
+        final todaysDealsCtrl = Get.put(
+          ProductsController(),
+          tag: 'todaysDeals',
+        );
+        if (todaysDealsCtrl.products.isEmpty &&
+            !todaysDealsCtrl.isLoading.value) {
+          todaysDealsCtrl.fetchProducts(page: 1, limit: 10);
+        }
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -45,7 +67,7 @@ class SparePartsScreen extends StatelessWidget {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      backgroundColor: Colors.black.withOpacity(0.1),
                       child: Image.asset(Iconpath.notification, scale: 2),
                     ),
                     SizedBox(width: 12),
@@ -255,17 +277,8 @@ class SparePartsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _sectionCard("All Parts"),
             const SizedBox(height: 10),
-            Obx(() {
-              final allPartsCtrl = Get.put(
-                ProductsController(),
-                tag: 'allParts',
-              );
-              if (allPartsCtrl.products.isEmpty &&
-                  !allPartsCtrl.isLoading.value) {
-                allPartsCtrl.fetchProducts(page: 1, limit: 10);
-              }
-              return partsList(allPartsCtrl);
-            }),
+            // partsList already uses Obx internally; avoid wrapping it in another Obx
+            partsList(Get.put(ProductsController(), tag: 'allParts')),
 
             const SizedBox(height: 20),
 
@@ -274,17 +287,8 @@ class SparePartsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             _sectionCard("Today's Deals"),
             const SizedBox(height: 10),
-            Obx(() {
-              final todaysDealsCtrl = Get.put(
-                ProductsController(),
-                tag: 'todaysDeals',
-              );
-              if (todaysDealsCtrl.products.isEmpty &&
-                  !todaysDealsCtrl.isLoading.value) {
-                todaysDealsCtrl.fetchProducts(page: 1, limit: 10);
-              }
-              return partsList(todaysDealsCtrl);
-            }),
+            // partsList already uses Obx internally; avoid wrapping it in another Obx
+            partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
           ],
         ),
       ),
@@ -399,12 +403,44 @@ class SparePartsScreen extends StatelessWidget {
     return SizedBox(
       height: 200,
       child: Obx(() {
+        // loading state
         if (productsCtrl.isLoading.value && productsCtrl.products.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
+
+        // show network/server error if present
+        final err = productsCtrl.error.value;
+        if (err != null && err.isNotEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  err,
+                  style: const TextStyle(fontSize: 16, color: Colors.red),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () async {
+                    await productsCtrl.fetchProducts(
+                      page: 1,
+                      limit: productsCtrl.limit.value,
+                      categoryId: productsCtrl.currentCategoryId.value,
+                      search: productsCtrl.currentSearch.value,
+                    );
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // empty list (no items)
         if (productsCtrl.products.isEmpty) {
           return const Center(child: Text('No products available'));
         }
+
         return ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: productsCtrl.products.length,
