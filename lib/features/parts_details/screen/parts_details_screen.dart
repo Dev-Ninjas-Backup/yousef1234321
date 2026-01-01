@@ -98,7 +98,9 @@ class PartsDetailsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: textField("Part Name *", controller: c.partNameCtrl)),
+                Expanded(
+                  child: textField("Part Name *", controller: c.partNameCtrl),
+                ),
                 const SizedBox(width: 22.5),
                 // Expanded(
                 //   child: dropdown("Category *", [
@@ -108,7 +110,6 @@ class PartsDetailsScreen extends StatelessWidget {
                 //   ], c.categories),
                 // ),
                 Expanded(child: categoryDropdown(c)),
-
               ],
             ),
             const SizedBox(height: 30.5),
@@ -149,35 +150,73 @@ class PartsDetailsScreen extends StatelessWidget {
                     onTap: () => c.selectPlan(1),
                   ),
                 ),
+
+                SizedBox(height: 20),
+
+                Obx(() {
+                  /// MONTHLY ACTIVE → SHOW ONLY STATUS
+                  if (c.hasProductMonthly.value) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text(
+                          "Monthly Active until ${c.productMonthlyEndsAt.value?.toLocal().toString().split(' ').first}",
+                        ),
+                      ),
+                    );
+                  }
+
+                  /// ❌ MONTHLY NOT ACTIVE
+                  /// MONTHLY SELECTED
+                  if (c.selectedPlan.value == 0) {
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await c.createMonthlyPayment();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text("Pay Now (Monthly)"),
+                      ),
+                    );
+                  }
+
+                  /// PAY PER LISTING (ONLY WHEN NO MONTHLY)
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (c.productCredits.value > 0) {
+                          EasyLoading.showSuccess(
+                            "Using available product credit",
+                          );
+                          return;
+                        }
+                        await c.createPayPerListingPayment();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: const Text("Pay Now (Per Listing)"),
+                    ),
+                  );
+                }),
               ],
             ),
 
-            // Row(
-            //   children: [
-            //     Expanded(child: textField("Compatible Vehicles *")),
-            //     const SizedBox(width: 12),
-            //     Expanded(
-            //       child: dropdown("Condition *", ["New", "Used"], c.condition),
-            //     ),
-            //   ],
-            // ),
             const SizedBox(height: 22.5),
 
             PromoteListingView(),
             const SizedBox(height: 22.5),
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: dropedown("Brand *", [
-            //         "Toyota",
-            //         "Honda",
-            //         "Nissan",
-            //       ], c.brand),
-            //     ),
-            //     const SizedBox(width: 14),
-            //  //   Expanded(child: textField("Part Number / Code *", controller: c.partNumberCtrl)),
-            //   ],
-            // ),
 
             textField("Brand *", hint: "Type here...", controller: c.brand),
 
@@ -190,7 +229,9 @@ class PartsDetailsScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: textField("Price [AED] *", controller: c.priceCtrl)),
+                Expanded(
+                  child: textField("Price [AED] *", controller: c.priceCtrl),
+                ),
                 const SizedBox(width: 12),
                 // Expanded(
                 //   child: dropdown("Quantity Available *", [
@@ -202,29 +243,16 @@ class PartsDetailsScreen extends StatelessWidget {
                 // ),
               ],
             ),
-            SizedBox(height: 24,),
-             textField("Brand *", hint: "Type here...", controller: c.quantity),
+            SizedBox(height: 24),
+            textField("Brand *", hint: "Type here...", controller: c.quantity),
             const SizedBox(height: 20),
 
-            textField("Description *", hint: "Type here...", controller: c.descriptionCtrl),
+            textField(
+              "Description *",
+              hint: "Type here...",
+              controller: c.descriptionCtrl,
+            ),
 
-            // Row(
-            //   children: [
-            //     Expanded(
-            //       child: dropdown("Warranty Info *", [
-            //         "Yes",
-            //         "No",
-            //       ], c.warrantyInfo),
-            //     ),
-            //     const SizedBox(width: 20),
-            //     Expanded(
-            //       child: dropdown("Delivery *", [
-            //         "Pickup",
-            //         "Delivery",
-            //       ], c.deliveryOption),
-            //     ),
-            //   ],
-            // ),
             const SizedBox(height: 20),
             const Text(
               "Upload Photo *",
@@ -279,7 +307,9 @@ class PartsDetailsScreen extends StatelessWidget {
               children: [
                 Expanded(child: textField("Email *", controller: c.emailCtrl)),
                 const SizedBox(width: 24),
-                Expanded(child: textField("Contact Number *", controller: c.phoneCtrl)),
+                Expanded(
+                  child: textField("Contact Number *", controller: c.phoneCtrl),
+                ),
               ],
             ),
             Row(
@@ -431,7 +461,10 @@ Widget categoryDropdown(PartsDetailsController c) {
     }
 
     if (c.errorMessageCategories.isNotEmpty) {
-      return Text(c.errorMessageCategories.value, style: const TextStyle(color: Colors.red));
+      return Text(
+        c.errorMessageCategories.value,
+        style: const TextStyle(color: Colors.red),
+      );
     }
 
     return Column(
@@ -455,7 +488,7 @@ Widget categoryDropdown(PartsDetailsController c) {
             underline: const SizedBox(),
             items: c.categories.map((cat) {
               return DropdownMenuItem<String>(
-                value: cat.id,       // store id
+                value: cat.id, // store id
                 child: Text(cat.name), // show name
               );
             }).toList(),
