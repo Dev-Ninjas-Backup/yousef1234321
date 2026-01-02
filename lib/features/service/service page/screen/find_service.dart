@@ -38,19 +38,19 @@ class FindService extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    // Optional: Navigate to full garage list
-                  },
-                  child: Text(
-                    "View All",
-                    style: getTextStyle(
-                      color: AppColors.splashButtonColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
+                // GestureDetector(
+                //   onTap: () {
+                //     // Optional: Navigate to full garage list
+                //   },
+                //   child: Text(
+                //     "View All",
+                //     style: getTextStyle(
+                //       color: AppColors.splashButtonColor,
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w400,
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             const SizedBox(height: 15),

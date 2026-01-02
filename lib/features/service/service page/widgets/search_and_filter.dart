@@ -31,13 +31,16 @@ class SearchAndFilter extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
-              controller: controller.searchController,
+              controller: controller.radiusController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
-                hintText: "Enter Garage Name",
+                hintText: "Radius (km)",
                 prefixIcon: GestureDetector(
-                  onTap: () => controller.loadProfileLocation(),
+                  onTap: () => controller.loadCurrentLocation(),
                   child: Obx(() {
-                    // show small spinner while fetching saved profile location
+                    // show small spinner while fetching current location
                     if (controller.isLoadingLocation.value) {
                       return SizedBox(
                         width: 24,
@@ -49,8 +52,11 @@ class SearchAndFilter extends StatelessWidget {
                       );
                     }
 
+                    // Show filled location icon if location is loaded
                     return Icon(
-                      Icons.location_on_outlined,
+                      controller.hasCurrentLocation.value
+                          ? Icons.location_on
+                          : Icons.location_on_outlined,
                       color: AppColors.primaryColor,
                     );
                   }),
@@ -72,7 +78,7 @@ class SearchAndFilter extends StatelessWidget {
           SizedBox(width: 14),
           Obx(() {
             return GestureDetector(
-              onTap: () => controller.findGaragesNearbyFromProfile(),
+              onTap: () => controller.findGaragesNearby(),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
                 decoration: BoxDecoration(
