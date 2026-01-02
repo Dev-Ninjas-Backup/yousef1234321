@@ -61,7 +61,7 @@ class FindChargerController extends GetxController {
     fetchGarages(emirate: emirate, serviceName: serviceName);
 
     // load user's current location for map
-    _loadCurrentLocation();
+    loadCurrentLocation();
   }
 
   @override
@@ -71,7 +71,10 @@ class FindChargerController extends GetxController {
     super.onClose();
   }
 
-  Future<void> _loadCurrentLocation() async {
+  /// Loads the user's current GPS location and stores it in
+  /// `currentLat` / `currentLng`. Public so widgets can trigger
+  /// a refresh each time the screen appears.
+  Future<void> loadCurrentLocation() async {
     try {
       isLoadingLocation.value = true;
       final permission = await Geolocator.checkPermission();

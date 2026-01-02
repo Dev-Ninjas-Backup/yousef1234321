@@ -1,3 +1,3 @@
 class GoogleMapApiKey {
-  static const String apiKey = 'AIzaSyAhTAUyy86GO2R6TXmOx7Zig0iomKxRC_Q';
+  static const String apiKey = 'AIzaSyAuU_kpFYi68n3EuF4L-87l1B2CWCq2RBk';
 }
