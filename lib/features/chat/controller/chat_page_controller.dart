@@ -174,13 +174,13 @@ class ChatPageController extends GetxController {
       final difference = now.difference(dateTime);
 
       if (difference.inMinutes < 1) {
-        return 'Just now';
+        return 'just_now'.tr;
       } else if (difference.inMinutes < 60) {
-        return '${difference.inMinutes}m ago';
+        return 'min_ago'.trParams({'min': difference.inMinutes.toString()});
       } else if (difference.inHours < 24) {
-        return '${difference.inHours}h ago';
+        return 'hr_ago'.trParams({'hr': difference.inHours.toString()});
       } else if (difference.inDays < 7) {
-        return '${difference.inDays}d ago';
+        return 'day_ago'.trParams({'day': difference.inDays.toString()});
       } else {
         return '${dateTime.day} ${_monthName(dateTime.month)}, ${dateTime.year}';
       }

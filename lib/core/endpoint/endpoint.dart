@@ -9,7 +9,7 @@
 /// ```
 class Endpoint {
   // Keep baseUrl here, ApiClient sets httpClient.baseUrl = Endpoint.baseUrl
-  static const String baseUrl = 'http://10.10.10.64:5050';
+  static const String baseUrl = 'http://13.62.72.14:3000';
 
   // Auth endpoints (path-only)
   static const String register = '/auth/register';
