@@ -52,8 +52,8 @@ class BrakePadsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const Text(
-                      "Brake Pads",
+                    Text(
+                      "brake_pads".tr,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -120,9 +120,9 @@ class BrakePadsScreen extends StatelessWidget {
                           color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          "-15%",
-                          style: TextStyle(
+                        child: Text(
+                          "discount_tag".tr,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
@@ -194,7 +194,7 @@ class BrakePadsScreen extends StatelessWidget {
                 const SizedBox(height: 25),
                 // product info
                 Text(
-                  c.product['partName']?.toString() ?? 'Brake Pads',
+                  c.product['partName']?.toString() ?? "brake_pads".tr,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
@@ -209,9 +209,9 @@ class BrakePadsScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    badge("In Stock", Colors.green),
+                    badge("in_stock".tr, Colors.green),
                     const SizedBox(width: 8),
-                    badge("OEM Quality", Colors.blue),
+                    badge("oem_quality".tr, Colors.blue),
                     const Spacer(),
                     Row(
                       children: [
@@ -269,16 +269,16 @@ class BrakePadsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Condition",
-                            style: TextStyle(
+                          Text(
+                            "condition".tr,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            c.product['condition']?.toString() ?? 'N/A',
+                            c.product['condition']?.toString() ?? "na".tr,
                             style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 14,
@@ -301,7 +301,7 @@ class BrakePadsScreen extends StatelessWidget {
                           Icons.chat_bubble_outline,
                           Colors.blue,
                           onTap: () {
-                            EasyLoading.showInfo("Opening chat window...");
+                            EasyLoading.showInfo("opening_chat".tr);
                           },
                         ),
                       ],
@@ -311,9 +311,12 @@ class BrakePadsScreen extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                const Text(
-                  "Key Features",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                Text(
+                  "key_features".tr,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 10),
 
@@ -321,7 +324,8 @@ class BrakePadsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _FeatureItem(
-                      c.product['description']?.toString() ?? 'No description',
+                      c.product['description']?.toString() ??
+                          "no_description".tr,
                     ),
                   ],
                 ),
@@ -386,16 +390,19 @@ class BrakePadsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 SizedBox(
                   height: 24,
-                  child: const Text(
-                    "Confirm Call?",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  child: Text(
+                    "confirm_call".tr,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  "You're about to call Al Majid Auto Service",
+                Text(
+                  "call_confirmation_msg".tr,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
                     fontSize: 14,
                   ),
@@ -417,18 +424,16 @@ class BrakePadsScreen extends StatelessWidget {
                       ),
                       onPressed: () => Get.back(),
                       child: SizedBox(
-                        child: const Text(
-                          "Cancel",
-                          style: TextStyle(color: Colors.red),
+                        child: Text(
+                          "cancel".tr,
+                          style: const TextStyle(color: Colors.red),
                         ),
                       ),
                     ),
                     ElevatedButton.icon(
                       onPressed: () {
                         Get.back();
-                        EasyLoading.showSuccess(
-                          "Calling Al Majid Auto Service...",
-                        );
+                        EasyLoading.showSuccess("calling_msg".tr);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -442,7 +447,7 @@ class BrakePadsScreen extends StatelessWidget {
                         ),
                       ),
                       icon: const Icon(Icons.phone, size: 19.5),
-                      label: const Text("Call Now"),
+                      label: Text("call_now".tr),
                     ),
                   ],
                 ),

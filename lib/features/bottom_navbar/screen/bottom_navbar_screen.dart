@@ -149,11 +149,11 @@ class BottomNavbarScreen extends StatelessWidget {
     ];
 
     final List<String> labels = [
-      "Service",
-      "Spare Parts",
-      "Home",
-      "Chat",
-      "Profile",
+      "nav_service".tr,
+      "nav_spare_parts".tr,
+      "home".tr,
+      "chat".tr,
+      "profile".tr,
     ];
 
     return Obx(
@@ -216,11 +216,17 @@ class BottomNavbarScreen extends StatelessWidget {
 
                       const SizedBox(height: 4),
 
-                      Text(
-                        labels[index],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected ? Colors.blue : Colors.grey,
+                      SizedBox(
+                        width: 70, // fix width for each label
+                        child: Text(
+                          labels[index],
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isSelected ? Colors.blue : Colors.grey,
+                          ),
                         ),
                       ),
                       // SizedBox(

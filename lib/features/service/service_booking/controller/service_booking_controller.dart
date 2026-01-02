@@ -29,12 +29,12 @@ class ServiceBookingController extends GetxController {
   ].obs;
 
   var services = [
-    {"title": "AC Service", "icon": Iconpath.acIcon},
-    {"title": "Battery Replacement", "icon": Iconpath.batterryIcon},
-    {"title": "Tires", "icon": Iconpath.tire},
-    {"title": "Engine Diagnostics", "icon": Iconpath.engineIcon},
-    {"title": "Electrical", "icon": Iconpath.electricIcon},
-    {"title": "Spares", "icon": Iconpath.spareIcon},
+    {"title": "ac_service", "icon": Iconpath.acIcon},
+    {"title": "battery_replacement", "icon": Iconpath.batterryIcon},
+    {"title": "tires", "icon": Iconpath.tire},
+    {"title": "engine_diagnostics", "icon": Iconpath.engineIcon},
+    {"title": "electrical", "icon": Iconpath.electricIcon},
+    {"title": "spares", "icon": Iconpath.spareIcon},
   ].obs;
   var isOpen = true.obs;
 
@@ -576,7 +576,7 @@ class ServiceBookingController extends GetxController {
               garageDetail.value!.services.isNotEmpty) {
             services.value = garageDetail.value!.services.map((serviceName) {
               return {
-                "title": serviceName,
+                "title": _mapServiceToKey(serviceName),
                 "icon": _getServiceIcon(serviceName),
               };
             }).toList();
@@ -598,6 +598,26 @@ class ServiceBookingController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  String _mapServiceToKey(String serviceName) {
+    final lower = serviceName.toLowerCase();
+    if (lower.contains('ac') || lower.contains('air')) return 'ac_service';
+    if (lower.contains('battery')) return 'battery_replacement';
+    if (lower.contains('tire') || lower.contains('wheel')) return 'tires';
+    if (lower.contains('engine')) return 'engine_diagnostics';
+    if (lower.contains('electric')) return 'electrical';
+    if (lower.contains('spare')) return 'spares';
+    if (lower.contains('brake')) return 'brakes';
+    if (lower.contains('body')) return 'body_work';
+
+    // Fallback: return the original name if no key matches.
+    // The UI should handle this gracefully (e.g. 'Some Name'.tr returns 'Some Name' if key missing)
+    // Or we can return a generic key.
+    // For now, returning the name allows it to be displayed as-is if not translated.
+    // However, to force localization, we should try to match as many as possible.
+
+    return serviceName;
   }
 
   String _getServiceIcon(String serviceName) {

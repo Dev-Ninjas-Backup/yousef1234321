@@ -137,7 +137,7 @@ class ProductsController extends GetxController {
         final bodyStr = response.bodyString ?? '<empty body>';
         print('[ProductsController] non-200 ${response.statusCode} $bodyStr');
         Get.snackbar(
-          'Products load failed',
+          'products_load_failed'.tr,
           'Status: ${response.statusCode}',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.redAccent,
@@ -145,7 +145,7 @@ class ProductsController extends GetxController {
         );
 
         // Set error message so UI can display it
-        error.value = 'Server error: ${response.statusCode}';
+        error.value = 'server_error'.tr + ': ${response.statusCode}';
 
         // If server returned JSON with 'success' and data but non-200, try to parse items anyway
         if (response.body is Map) {
@@ -166,7 +166,7 @@ class ProductsController extends GetxController {
       // network or parsing error
       print('[ProductsController] fetch error: $e');
       products.clear();
-      error.value = 'No internet or server unreachable';
+      error.value = 'no_internet'.tr;
     } finally {
       isLoading.value = false;
     }

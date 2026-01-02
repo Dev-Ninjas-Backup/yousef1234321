@@ -39,9 +39,7 @@ class ApiClient extends GetConnect {
     print("User logged out - tokens cleared");
   }
 
-
-
-String? get userId => sharedPreferences.getString('id');
+  String? get userId => sharedPreferences.getString('id');
 
   Future<bool> setUserId(String? id) async {
     if (id == null || id.isEmpty) {
@@ -51,10 +49,6 @@ String? get userId => sharedPreferences.getString('id');
     print("User ID saved: $result, ID: $id");
     return result;
   }
-
-
-
-  
 
   /// Check if user is logged in
   bool get isLoggedIn => token != null && token!.isNotEmpty;
@@ -78,7 +72,6 @@ String? get userId => sharedPreferences.getString('id');
 
     // Response Modifier (Global Status Code Handling)
     httpClient.addResponseModifier((request, response) {
-
       print("Response: ${response.statusCode} ${response.bodyString}");
       handleGlobalStatus(response);
       return response;
@@ -103,7 +96,7 @@ String? get userId => sharedPreferences.getString('id');
       }
 
       Get.snackbar(
-        "Error",
+        "error".tr,
         errorMessage,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
@@ -111,10 +104,33 @@ String? get userId => sharedPreferences.getString('id');
         margin: const EdgeInsets.all(10),
         borderRadius: 10,
       );
+    } else if (response.statusCode == 401) {
+      logout();
+      Get.snackbar(
+        "session_expired".tr,
+        "please_login".tr,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } else if (response.statusCode == 404) {
+      // 404 Not Found is often a valid state (e.g. new user, empty list).
+      // We suppress the global error snackbar so controllers can handle it gracefully.
+      print("ApiClient: Resource not found (404) for ${response.request?.url}");
+
+      if (response.body is Map &&
+          response.body['message'] == 'User not found') {
+        logout();
+        Get.snackbar(
+          "session_expired".tr,
+          "please_login".tr,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
     } else if (response.statusCode == 500) {
       Get.snackbar(
-        "Error",
-        "Server Error",
+        "error".tr,
+        "server_error".tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
@@ -123,7 +139,7 @@ String? get userId => sharedPreferences.getString('id');
       );
     } else {
       Get.snackbar(
-        "Error",
+        "error".tr,
         response.statusText ?? "Unknown Error ${response.statusCode}",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,

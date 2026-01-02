@@ -24,9 +24,9 @@ class PartsSearchSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Find Car Services Near You",
-            style: TextStyle(
+          Text(
+            "find_car_services_near_you".tr,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -34,7 +34,7 @@ class PartsSearchSection extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "Emergency repairs, maintenance & more",
+            "emergency_repairs_subtitle".tr,
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -54,7 +54,7 @@ class PartsSearchSection extends StatelessWidget {
                       child: TextField(
                         onChanged: (v) => controller.selectedModel.value = v,
                         decoration: InputDecoration(
-                          hintText: "Search",
+                          hintText: "search".tr,
                           hintStyle: getTextStyle(),
                           filled: true,
                           fillColor: Colors.white,
@@ -86,7 +86,7 @@ class PartsSearchSection extends StatelessWidget {
                             .where((s) => s.isNotEmpty)
                             .toList();
 
-                        final items = ["Select Category", ...categoryNames];
+                        final items = ["select_category".tr, ...categoryNames];
 
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
@@ -97,7 +97,7 @@ class PartsSearchSection extends StatelessWidget {
                                     controller.selectedCategory.value,
                                   ))
                               ? controller.selectedCategory.value
-                              : "Select Category",
+                              : "select_category".tr,
                           items: items
                               .map(
                                 (service) => DropdownMenuItem(
@@ -110,14 +110,14 @@ class PartsSearchSection extends StatelessWidget {
                               )
                               .toList(),
                           onChanged: (value) {
-                            if (value == "Select Category") {
+                            if (value == "select_category".tr) {
                               controller.selectedCategory.value = null;
                             } else {
                               controller.selectedCategory.value = value;
                             }
                           },
                           decoration: InputDecoration(
-                            hintText: "Category type",
+                            hintText: "category_type".tr,
                             hintStyle: getTextStyle(),
                             filled: true,
                             fillColor: Colors.white,
@@ -156,8 +156,8 @@ class PartsSearchSection extends StatelessWidget {
                     if (searchText.trim().isEmpty &&
                         (category == null || category.isEmpty)) {
                       Get.snackbar(
-                        "Selection Required",
-                        "Please enter a search term or select a category",
+                        "selection_required".tr,
+                        "enter_search_term_or_category".tr,
                         backgroundColor: Colors.redAccent,
                         colorText: Colors.white,
                       );
@@ -192,14 +192,14 @@ class PartsSearchSection extends StatelessWidget {
 
                     Get.to(
                       () => Scaffold(
-                        appBar: AppBar(title: const Text('Search Results')),
+                        appBar: AppBar(title: Text('search_results'.tr)),
                         body: Obx(() {
                           if (productsCtrl.isLoading.value)
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
                           if (productsCtrl.products.isEmpty)
-                            return const Center(child: Text('No products'));
+                            return Center(child: Text('no_products'.tr));
                           return ListView.builder(
                             padding: const EdgeInsets.all(12),
                             itemCount: productsCtrl.products.length,
@@ -207,7 +207,7 @@ class PartsSearchSection extends StatelessWidget {
                               final p = productsCtrl.products[idx];
                               final name = (p is Map && p['partName'] != null)
                                   ? p['partName'].toString()
-                                  : 'Product ${idx + 1}';
+                                  : '${'product'.tr} ${idx + 1}';
                               final price = (p is Map && p['price'] != null)
                                   ? p['price'].toString()
                                   : '-';
@@ -240,7 +240,9 @@ class PartsSearchSection extends StatelessWidget {
                                         height: 56,
                                       ),
                                 title: Text(name),
-                                subtitle: Text('Price: $price'),
+                                subtitle: Text(
+                                  'price'.tr.replaceAll('@price', price),
+                                ),
                                 onTap: () {
                                   String? id;
                                   if (p is Map) {
@@ -263,7 +265,7 @@ class PartsSearchSection extends StatelessWidget {
                       ),
                     );
                   },
-                  child: const Text("Search Parts"),
+                  child: Text("search_parts".tr),
                 ),
               ],
             ),

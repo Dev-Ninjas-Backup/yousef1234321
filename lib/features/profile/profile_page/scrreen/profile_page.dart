@@ -81,7 +81,7 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar(title: "Profile"),
+                CustomAppBar(title: "profile".tr),
                 SizedBox(height: 30),
                 Center(
                   child: Obx(
@@ -99,7 +99,7 @@ class ProfilePage extends StatelessWidget {
                               Obx(
                                 () => Text(
                                   controller.fullName.value.isEmpty
-                                      ? "User"
+                                      ? "user".tr
                                       : controller.fullName.value,
                                   style: getTextStyle(
                                     fontSize: 24,
@@ -111,7 +111,7 @@ class ProfilePage extends StatelessWidget {
                               Obx(
                                 () => Text(
                                   controller.email.value.isEmpty
-                                      ? "user@example.com"
+                                      ? "default_email".tr
                                       : controller.email.value,
                                   style: getTextStyle(
                                     fontSize: 14,
@@ -158,7 +158,7 @@ class ProfilePage extends StatelessWidget {
                                     size: 24,
                                   ),
                                   Text(
-                                    controller.profileItem[index].title,
+                                    controller.profileItem[index].title.tr,
                                     style: getTextStyle(fontSize: 16),
                                   ),
                                 ],
@@ -220,7 +220,7 @@ class ProfilePage extends StatelessWidget {
                                 )
                               else
                                 Text(
-                                  "Log Out",
+                                  "logout".tr,
                                   textAlign: TextAlign.center,
                                   style: getTextStyle(
                                     fontSize: 16,
@@ -258,7 +258,7 @@ class ProfilePage extends StatelessWidget {
                             spacing: 4,
                             children: [
                               Text(
-                                "Delete Account",
+                                "delete_account".tr,
                                 style: getTextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,

@@ -23,7 +23,7 @@ class FindService extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomAppBar(title: "Find Service"),
+            const CustomAppBar(title: "find_service"),
             const SizedBox(height: 32),
             SearchAndFilter(controller: controller),
             const SizedBox(height: 20),
@@ -32,7 +32,7 @@ class FindService extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Nearby garages",
+                  'nearby_garages'.tr,
                   style: getTextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -51,6 +51,19 @@ class FindService extends StatelessWidget {
                 //     ),
                 //   ),
                 // ),
+                GestureDetector(
+                  onTap: () {
+                    // Optional: Navigate to full garage list
+                  },
+                  child: Text(
+                    'view_all'.tr,
+                    style: getTextStyle(
+                      color: AppColors.splashButtonColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 15),
@@ -63,9 +76,9 @@ class FindService extends StatelessWidget {
                 }
 
                 if (controller.garages.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'No garages available',
+                      'no_garages_available'.tr,
                       style: TextStyle(color: Colors.grey),
                     ),
                   );
@@ -164,7 +177,10 @@ class FindService extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        "$distance km",
+                                        'distance_km'.tr.replaceAll(
+                                          '@distance',
+                                          distance,
+                                        ),
                                         style: getTextStyle(
                                           fontSize: 12,
                                           color: AppColors.subTextColor,
@@ -186,8 +202,8 @@ class FindService extends StatelessWidget {
                                         ),
                                         child: Text(
                                           g.isOpenNow == true
-                                              ? 'Open'
-                                              : 'Closed',
+                                              ? 'open'.tr
+                                              : 'closed'.tr,
                                           style: getTextStyle(
                                             fontSize: 12,
                                             color: g.isOpenNow == true
