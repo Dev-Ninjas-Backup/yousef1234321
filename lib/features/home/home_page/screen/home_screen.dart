@@ -98,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                     Tooltip(
                       message: "notifications".tr,
                       child: CircleAvatar(
-                        backgroundColor: Colors.black.withOpacity(0.1),
+                        backgroundColor: Colors.black.withValues(alpha: 0.1),
                         child: GestureDetector(
                           onTap: () {
                             Get.to(() => NotificationScreen());

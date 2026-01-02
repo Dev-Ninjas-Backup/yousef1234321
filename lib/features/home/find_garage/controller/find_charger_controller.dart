@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
@@ -105,8 +107,9 @@ class FindChargerController extends GetxController {
       String url = Endpoint.findGarage;
       final params = <String, String>{};
       if (emirate != null && emirate.isNotEmpty) params['emirate'] = emirate;
-      if (serviceName != null && serviceName.isNotEmpty)
+      if (serviceName != null && serviceName.isNotEmpty) {
         params['serviceName'] = serviceName;
+      }
       if (params.isNotEmpty) {
         final query = params.entries
             .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -29,14 +31,7 @@ class PartsDetailsController extends GetxController {
 
   /// ---------------- Listing Plan ----------------
   final selectedPlan = 0.obs; // 0 = Monthly, 1 = Pay per listing
- // final isMonthlyPaid = false.obs;
-
-
-
-
-
-
-
+  // final isMonthlyPaid = false.obs;
 
   /// ---------------- MONTHLY PAYMENT ----------------
   Future<void> createMonthlyPayment() async {
@@ -44,25 +39,21 @@ class PartsDetailsController extends GetxController {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-monthly-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-monthly-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
-
-      print("monthly payment: ${data['url']}");
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
+        print("monthly payment: ${data['url']}");
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-
-      print("monthly response:${response.body}");
+        print("monthly response:${response.body}");
         EasyLoading.showError("Payment failed");
       }
     } catch (e) {
@@ -78,18 +69,16 @@ class PartsDetailsController extends GetxController {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-payper-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-payper-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
@@ -102,26 +91,21 @@ class PartsDetailsController extends GetxController {
     }
   }
 
-
-
-
-    Future<void> createPromotionPayment() async {
+  Future<void> createPromotionPayment() async {
     try {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-promotion-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-promotion-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
@@ -133,51 +117,41 @@ class PartsDetailsController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-final hasProductMonthly = false.obs;
-final productMonthlyEndsAt = Rxn<DateTime>();
-final productCredits = 0.obs;
-final canAddFreeProduct = false.obs;
-final promotionCredits=0.obs;
 
+  final hasProductMonthly = false.obs;
+  final productMonthlyEndsAt = Rxn<DateTime>();
+  final productCredits = 0.obs;
+  final canAddFreeProduct = false.obs;
+  final promotionCredits = 0.obs;
 
-Future<void> checkUserProductLimit() async {
-  try {
-    final response = await http.get(
-      Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
-      headers: {
-        'Authorization': 'Bearer ${ApiClient.to.token}',
-        'Content-Type': 'application/json',
-      },
-    );
+  Future<void> checkUserProductLimit() async {
+    try {
+      final response = await http.get(
+        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
+        headers: {
+          'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+        },
+      );
 
-    if (response.statusCode == 200||response.statusCode==201) {
-      final data = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
 
-      hasProductMonthly.value = data['hasProductMonthly'] == true;
-      canAddFreeProduct.value = data['canAddFreeProduct'] == true;
-      productCredits.value = data['productCredits'] ?? 0;
-            promotionCredits.value = data['promotionCredits'] ?? 0;
+        hasProductMonthly.value = data['hasProductMonthly'] == true;
+        canAddFreeProduct.value = data['canAddFreeProduct'] == true;
+        productCredits.value = data['productCredits'] ?? 0;
+        promotionCredits.value = data['promotionCredits'] ?? 0;
 
-
-      if (data['productMonthlyEndsAt'] != null) {
-        productMonthlyEndsAt.value =
-            DateTime.parse(data['productMonthlyEndsAt']);
+        if (data['productMonthlyEndsAt'] != null) {
+          productMonthlyEndsAt.value = DateTime.parse(
+            data['productMonthlyEndsAt'],
+          );
+        }
       }
+    } catch (e) {
+      debugPrint("Limit check error: $e");
     }
-  } catch (e) {
-    debugPrint("Limit check error: $e");
   }
-}
-
-
-
-
-
-
-
-
-
-
 
   void selectPlan(int value) {
     selectedPlan.value = value;
@@ -243,7 +217,6 @@ Future<void> checkUserProductLimit() async {
           print("Error");
         }
       } else {}
-    } catch (e) {
     } finally {}
   }
 
@@ -258,7 +231,7 @@ Future<void> checkUserProductLimit() async {
     phoneCtrl.dispose();
     brand.dispose();
     quantity.dispose();
-    
+
     super.onClose();
   }
 }

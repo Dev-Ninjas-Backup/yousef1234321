@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/home/find_garage/controller/find_charger_controller.dart';
 import '../../../../core/common/widgets/custom_appbar.dart';
 import 'dart:async';
@@ -11,7 +10,7 @@ import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class FindGaragePage extends StatefulWidget {
-  FindGaragePage({super.key});
+  const FindGaragePage({super.key});
 
   @override
   State<FindGaragePage> createState() => _FindGaragePageState();

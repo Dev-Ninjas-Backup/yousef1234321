@@ -1,4 +1,6 @@
 // service_review_controller.dart
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -71,9 +73,7 @@ class ServiceReviewController extends GetxController {
     final args = Get.arguments as Map<String, dynamic>?;
     // Accept numeric or string garageId; convert to string safely
     final dynamic rawGarageId = args != null ? args['garageId'] : null;
-    final String? garageId = rawGarageId != null
-        ? rawGarageId.toString()
-        : null;
+    final String? garageId = rawGarageId?.toString();
     if (garageId == null || garageId.isEmpty) {
       EasyLoading.showError('Garage id not found');
       return;

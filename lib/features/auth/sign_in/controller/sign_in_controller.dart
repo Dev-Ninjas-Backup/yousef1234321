@@ -145,8 +145,9 @@ class SignInController extends GetxController {
 
         if (token != null && token.isNotEmpty) {
           await ApiClient.to.setToken(token);
-          if (userId != null && userId.isNotEmpty)
+          if (userId != null && userId.isNotEmpty) {
             await ApiClient.to.setUserId(userId);
+          }
           Get.snackbar('Success', 'Signed in with Google');
           Get.offAllNamed(Approute.bottomNavBarScreen);
         } else {
