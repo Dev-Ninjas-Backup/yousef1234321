@@ -54,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Header Title
-            CustomAppBar(title: "Chat"),
+            CustomAppBar(title: "chat".tr),
             const SizedBox(height: 12), // Reduced gap
             /// 🔍 Search Bar
             Container(
@@ -63,8 +63,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 borderRadius: BorderRadius.circular(25),
               ),
               child: TextField(
-                decoration: const InputDecoration(
-                  hintText: "Search",
+                decoration: InputDecoration(
+                  hintText: "search".tr,
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 14),
@@ -96,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   print(
                     '🎨 [ChatScreen] Chat list is empty, showing no conversations message',
                   );
-                  return const Center(child: Text('No conversations yet'));
+                  return Center(child: Text('no_conversations'.tr));
                 }
 
                 print(
