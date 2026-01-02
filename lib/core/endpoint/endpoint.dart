@@ -40,4 +40,5 @@ class Endpoint {
   static const String notificationIO = '/notification';
   static const String userNotifications =
       '/notification-setting/all-notifications';
+  static const String postReview = '/review';
 }
