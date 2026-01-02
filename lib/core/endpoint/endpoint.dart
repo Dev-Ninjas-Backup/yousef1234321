@@ -9,7 +9,6 @@
 /// ```
 class Endpoint {
   // Keep baseUrl here, ApiClient sets httpClient.baseUrl = Endpoint.baseUrl
-  static const String baseUrl = 'http://13.62.72.14:3000';
   static const String baseUrl = 'https://yousef-softvence.saikat.com.bd';
 
   // Auth endpoints (path-only)
