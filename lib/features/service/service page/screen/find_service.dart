@@ -14,6 +14,73 @@ class FindService extends StatelessWidget {
 
   FindService({super.key});
 
+  /// Check if garage is currently open based on operating hours
+  Map<String, dynamic> _getOpenStatus(GarageModel garage) {
+    final now = DateTime.now();
+    final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
+    final isWeekend = currentDay == 6 || currentDay == 7; // Saturday or Sunday
+
+    String? hoursString = isWeekend
+        ? garage.weekendsHours
+        : garage.weekdaysHours;
+
+    if (hoursString == null || hoursString.isEmpty) {
+      return {'isOpen': false, 'label': 'closed'};
+    }
+
+    try {
+      // Parse hours like "08:00 AM - 08:00 PM"
+      final parts = hoursString.split('-');
+      if (parts.length != 2) return {'isOpen': false, 'label': 'closed'};
+
+      final openTime = _parseTime(parts[0].trim());
+      final closeTime = _parseTime(parts[1].trim());
+
+      if (openTime == null || closeTime == null) {
+        return {'isOpen': false, 'label': 'closed'};
+      }
+
+      final currentTime = TimeOfDay.now();
+      final isOpen =
+          currentTime.hour > openTime.hour ||
+          (currentTime.hour == openTime.hour &&
+                  currentTime.minute >= openTime.minute) &&
+              (currentTime.hour < closeTime.hour ||
+                  (currentTime.hour == closeTime.hour &&
+                      currentTime.minute < closeTime.minute));
+
+      return {'isOpen': isOpen, 'label': isOpen ? 'open' : 'closed'};
+    } catch (e) {
+      return {'isOpen': false, 'label': 'closed'};
+    }
+  }
+
+  TimeOfDay? _parseTime(String timeStr) {
+    try {
+      // Expected format: "08:00 AM" or "8:00 PM"
+      final parts = timeStr.split(' ');
+      if (parts.length != 2) return null;
+
+      final timeParts = parts[0].split(':');
+      if (timeParts.length != 2) return null;
+
+      int hour = int.parse(timeParts[0]);
+      final minute = int.parse(timeParts[1]);
+      final period = parts[1].toUpperCase();
+
+      // Convert to 24-hour format
+      if (period == 'PM' && hour != 12) {
+        hour += 12;
+      } else if (period == 'AM' && hour == 12) {
+        hour = 0;
+      }
+
+      return TimeOfDay(hour: hour, minute: minute);
+    } catch (e) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,30 +254,34 @@ class FindService extends StatelessWidget {
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            25,
-                                          ),
-                                          color: g.isOpenNow == true
-                                              ? const Color(0xFFDCFCE7)
-                                              : const Color(0xFFF3F4F6),
-                                        ),
-                                        child: Text(
-                                          g.isOpenNow == true
-                                              ? 'open'.tr
-                                              : 'closed'.tr,
-                                          style: getTextStyle(
-                                            fontSize: 12,
-                                            color: g.isOpenNow == true
-                                                ? const Color(0xFF2ECC71)
-                                                : AppColors.subTextColor,
-                                          ),
-                                        ),
+                                      Builder(
+                                        builder: (context) {
+                                          final openStatus = _getOpenStatus(g);
+                                          final isOpen =
+                                              openStatus['isOpen'] as bool;
+                                          return Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              color: isOpen
+                                                  ? const Color(0xFFDCFCE7)
+                                                  : const Color(0xFFF3F4F6),
+                                            ),
+                                            child: Text(
+                                              isOpen ? 'open'.tr : 'closed'.tr,
+                                              style: getTextStyle(
+                                                fontSize: 12,
+                                                color: isOpen
+                                                    ? const Color(0xFF2ECC71)
+                                                    : AppColors.subTextColor,
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),
