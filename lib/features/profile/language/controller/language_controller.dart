@@ -14,8 +14,6 @@ class LanguageController extends GetxController {
 
   void _loadSavedLanguage() {
     final savedLang = _prefs.getString('language_name');
-    final savedCode = _prefs.getString('language_code');
-    final savedCountry = _prefs.getString('country_code');
 
     if (savedLang != null) {
       selectedLanguage.value = savedLang;

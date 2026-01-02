@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:yousef1234321/core/binding/controller_binder.dart';
 import 'package:yousef1234321/core/common/widgets/app_translations.dart';
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';

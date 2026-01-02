@@ -112,7 +112,7 @@ class HomeController extends GetxController {
                 );
 
                 // Log ratings for debugging
-                for (var garage in garagesList) {}
+                //for (var garage in garagesList) {}
 
                 // Take only top 2
                 garages.value = garagesList.take(2).toList();
@@ -129,14 +129,13 @@ class HomeController extends GetxController {
             );
 
             // Log ratings for debugging
-            for (var garage in garagesList) {}
+            //for (var garage in garagesList) {}
 
             // Take only top 2
             garages.value = garagesList.take(2).toList();
           }
         } else {}
       } else {}
-    } catch (e, stackTrace) {
     } finally {
       isLoadingGarages.value = false;
     }

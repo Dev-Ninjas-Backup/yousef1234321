@@ -38,39 +38,6 @@ class PartsDetailsScreen extends StatelessWidget {
     );
 
     // 🔹 Reusable Dropdown
-    Widget dropdown(String label, List<String> items, RxString valueRx) =>
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            const SizedBox(height: 6),
-            Obx(
-              () => Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButton<String>(
-                  value: valueRx.value.isEmpty ? null : valueRx.value,
-                  isExpanded: true,
-                  hint: const Text("Select"),
-                  underline: const SizedBox(),
-                  items: items
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (value) => valueRx.value = value ?? '',
-                ),
-              ),
-            ),
-          ],
-        );
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -390,7 +357,7 @@ Widget _planTile({
     child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue.withOpacity(0.08) : Colors.white,
+        color: isSelected ? Colors.blue.withValues(alpha: 0.08) : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isSelected ? Colors.blue : Colors.grey.shade300,

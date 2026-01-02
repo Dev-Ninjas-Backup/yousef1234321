@@ -11,7 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
-import 'package:yousef1234321/core/secrets/google_map_api_key.dart';
+import 'package:yousef1234321/secrets/google_map_api_key.dart';
 
 class LocationPageController extends GetxController {
   final TextEditingController searchController = TextEditingController();
