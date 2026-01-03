@@ -45,12 +45,12 @@ class HomeController extends GetxController {
   var garages = <GarageModel>[].obs;
 
   var services = [
-    "AC Repair",
-    "Battery",
-    "Engine",
-    "Tires",
-    "Electrical",
-    "Spares",
+    "ac_repair",
+    "battery",
+    "engine",
+    "tires",
+    "electrical",
+    "spares",
   ];
 
   var selectedService = RxnString();
@@ -59,13 +59,13 @@ class HomeController extends GetxController {
   final serviceTypes = <String>[].obs; // Changed to observable list
 
   final locations = [
-    "Abu Dhabi",
-    "Dubai",
-    "Sharjah",
-    "Ajman",
-    "Fujairah",
-    "Ras Al Khaimah",
-    "Umm Al Quwain",
+    "abu_dhabi",
+    "dubai",
+    "sharjah",
+    "ajman",
+    "fujairah",
+    "ras_al_khaimah",
+    "umm_al_quwain",
   ];
 
   final isLoadingServices = false.obs;
@@ -79,7 +79,6 @@ class HomeController extends GetxController {
       var response = await ApiClient.to.get(
         '${Endpoint.findGarage}?page=1&limit=10&status=APPROVED&sortBy=averageRating&order=desc',
       );
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
@@ -113,12 +112,10 @@ class HomeController extends GetxController {
                 );
 
                 // Log ratings for debugging
-                for (var garage in garagesList) {
-                }
+                //for (var garage in garagesList) {}
 
                 // Take only top 2
                 garages.value = garagesList.take(2).toList();
-
               }
             }
           } else {
@@ -132,18 +129,13 @@ class HomeController extends GetxController {
             );
 
             // Log ratings for debugging
-            for (var garage in garagesList) {
-            }
+            //for (var garage in garagesList) {}
 
             // Take only top 2
             garages.value = garagesList.take(2).toList();
-
           }
-        } else {
-        }
-      } else {
-      }
-    } catch (e, stackTrace) {
+        } else {}
+      } else {}
     } finally {
       isLoadingGarages.value = false;
     }
@@ -161,21 +153,19 @@ class HomeController extends GetxController {
         if (body != null && body['serviceCategories'] != null) {
           final List<dynamic> categories = body['serviceCategories'];
           serviceTypes.value = categories.map((e) => e.toString()).toList();
-        } else {
-        }
-      } else {
-      }
+        } else {}
+      } else {}
     } catch (e) {
       // Fallback to default services if API fails
       serviceTypes.value = [
-        "AC Repair",
-        "Battery",
-        "Engine",
-        "Tires",
-        "Electrical",
-        "Spares",
-        "Brakes",
-        "Body Work",
+        "ac_repair",
+        "battery",
+        "engine",
+        "tires",
+        "electrical",
+        "spares",
+        "brakes",
+        "body_work",
       ];
     } finally {
       isLoadingServices.value = false;

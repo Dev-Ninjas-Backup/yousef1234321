@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -38,10 +40,12 @@ class ProductsController extends GetxController {
       currentSearch.value = search;
 
       var url = '${Endpoint.products}?page=$page&limit=$limit';
-      if (categoryId != null && categoryId.isNotEmpty)
+      if (categoryId != null && categoryId.isNotEmpty) {
         url = '$url&categoryId=$categoryId';
-      if (search != null && search.isNotEmpty)
+      }
+      if (search != null && search.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(search)}';
+      }
 
       // Debug log to help diagnose API issues
       try {
@@ -137,7 +141,7 @@ class ProductsController extends GetxController {
         final bodyStr = response.bodyString ?? '<empty body>';
         print('[ProductsController] non-200 ${response.statusCode} $bodyStr');
         Get.snackbar(
-          'Products load failed',
+          'products_load_failed'.tr,
           'Status: ${response.statusCode}',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.redAccent,
@@ -145,16 +149,17 @@ class ProductsController extends GetxController {
         );
 
         // Set error message so UI can display it
-        error.value = 'Server error: ${response.statusCode}';
+        error.value = '${'server_error'.tr}: ${response.statusCode}';
 
         // If server returned JSON with 'success' and data but non-200, try to parse items anyway
         if (response.body is Map) {
           final tentative = <dynamic>[];
           final b = response.body as Map;
-          if (b['data'] is List)
+          if (b['data'] is List) {
             tentative.addAll(List<dynamic>.from(b['data']));
-          else if (b['data'] is Map && b['data']['data'] is List)
+          } else if (b['data'] is Map && b['data']['data'] is List) {
             tentative.addAll(List<dynamic>.from(b['data']['data']));
+          }
           if (tentative.isNotEmpty) {
             products.assignAll(tentative);
             return;
@@ -166,7 +171,7 @@ class ProductsController extends GetxController {
       // network or parsing error
       print('[ProductsController] fetch error: $e');
       products.clear();
-      error.value = 'No internet or server unreachable';
+      error.value = 'no_internet'.tr;
     } finally {
       isLoading.value = false;
     }
@@ -184,8 +189,9 @@ class ProductsController extends GetxController {
       final cid = currentCategoryId.value;
       final cs = currentSearch.value;
       if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid';
-      if (cs != null && cs.isNotEmpty)
+      if (cs != null && cs.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(cs)}';
+      }
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {

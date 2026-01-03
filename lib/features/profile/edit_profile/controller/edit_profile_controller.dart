@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,7 @@ class EditProfileController extends GetxController {
   final email = ''.obs;
   final profilePhotoUrl = Rx<String?>(null);
 
-  final NetworkClient _networkClient = NetworkClient(onUnAuthorize: () {});
+  late final NetworkClient _networkClient;
 
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -36,6 +37,14 @@ class EditProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _networkClient = NetworkClient(onUnAuthorize: () {});
+
+    // Pre-fill email from token immediately (Fix for "No email" issue)
+    final tokenEmail = _getEmailFromToken();
+    if (tokenEmail.isNotEmpty) {
+      email.value = tokenEmail;
+    }
+
     loadProfile();
   }
 
@@ -43,6 +52,7 @@ class EditProfileController extends GetxController {
     try {
       print('EditProfileController: ApiClient token: ${ApiClient.to.token}');
       final response = await ApiClient.to.get(Endpoint.profile);
+
       print(
         'EditProfileController: profile GET status=${response.statusCode} body=${response.body}',
       );
@@ -51,7 +61,9 @@ class EditProfileController extends GetxController {
         if (body != null && body is Map && body['data'] != null) {
           final data = body['data'];
           fullName.value = data['fullName'] ?? '';
-          email.value = data['email'] ?? '';
+          if (data['email'] != null && data['email'].toString().isNotEmpty) {
+            email.value = data['email'];
+          }
           profilePhotoUrl.value = data['profilePhoto'];
 
           // Split full name into first and last
@@ -70,6 +82,11 @@ class EditProfileController extends GetxController {
           // Load phone number as-is from API
           phoneController.text = (data['phone'] ?? '').toString();
         }
+      } else if (response.statusCode == 404) {
+        // This is expected for new users who haven't set up a profile yet.
+        print(
+          'EditProfileController: New user detected (404). Ready to create profile.',
+        );
       }
     } catch (e, st) {
       print('Failed to load profile: $e');
@@ -182,6 +199,28 @@ class EditProfileController extends GetxController {
         colorText: Colors.white,
       );
     }
+  }
+
+  // Helper to extract email from JWT Token
+  String _getEmailFromToken() {
+    try {
+      final token = ApiClient.to.token;
+      if (token != null) {
+        final parts = token.split('.');
+        if (parts.length == 3) {
+          final payload = parts[1];
+          final normalized = base64Url.normalize(payload);
+          final resp = utf8.decode(base64Url.decode(normalized));
+          final payloadMap = jsonDecode(resp);
+          if (payloadMap is Map && payloadMap['email'] != null) {
+            return payloadMap['email'];
+          }
+        }
+      }
+    } catch (e) {
+      print('Error decoding token: $e');
+    }
+    return '';
   }
 
   @override

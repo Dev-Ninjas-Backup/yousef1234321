@@ -273,7 +273,6 @@ class ServiceMessage extends StatelessWidget {
                         .take(2)
                         .map((e) => e.toString())
                         .toList();
-                    // ignore: avoid_print
                     print(
                       '📎 [UI] Render attachments for message id=${message['id']} count=${files.length} sample=$sample',
                     );

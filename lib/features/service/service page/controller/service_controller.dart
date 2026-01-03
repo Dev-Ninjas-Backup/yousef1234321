@@ -1,25 +1,28 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/endpoint/endpoint.dart';
 import '../model/garage_model.dart';
 
 class ServiceController extends GetxController {
-  final searchController = TextEditingController();
+  final radiusController = TextEditingController();
   var serviceItemList = [].obs;
 
   var selectedOption = RxString('');
   var garages = <GarageModel>[].obs;
   var isLoadingNearby = false.obs;
 
-  /// Loading state for fetching the saved profile location only
+  /// Loading state for fetching current location
   var isLoadingLocation = false.obs;
 
-  /// The saved profile latitude/lng loaded by tapping the location icon
-  final profileLat = Rxn<double>();
-  final profileLng = Rxn<double>();
-  var hasProfileLocation = false.obs;
+  /// The current location latitude/lng fetched by tapping the location icon
+  final currentLat = Rxn<double>();
+  final currentLng = Rxn<double>();
+  var hasCurrentLocation = false.obs;
 
   final List<String> options = ["Garage Services ", "Towing Service "];
 
@@ -37,45 +40,34 @@ class ServiceController extends GetxController {
     serviceItemList.addAll([]);
   }
 
-  /// Find garages using the user's saved profile location (radius fixed to 10 km).
-  /// If a name query is provided in [searchController], the results are filtered by name.
-  Future<void> findGaragesNearbyFromProfile() async {
+  /// Find garages using the current location and user-specified radius.
+  /// Called after loadCurrentLocation() has populated currentLat/currentLng.
+  Future<void> findGaragesNearby() async {
     try {
       isLoadingNearby.value = true;
-      // Preconditions: either a loaded profile location exists or user typed a name
-      final query = searchController.text.trim();
-      if (!hasProfileLocation.value && query.isEmpty) {
-        EasyLoading.showError(
-          'Please load location first or enter a garage name',
-        );
+
+      // Precondition: must have current location loaded
+      if (!hasCurrentLocation.value ||
+          currentLat.value == null ||
+          currentLng.value == null) {
+        EasyLoading.showError('Please load your location first');
         return;
       }
 
-      // Build URL depending on whether we have profile coords or only a name query
-      String url;
-      if (hasProfileLocation.value &&
-          profileLat.value != null &&
-          profileLng.value != null) {
-        final lat = profileLat.value!;
-        final lng = profileLng.value!;
-        url = '${Endpoint.garageNearby}?lat=$lat&lng=$lng&radius=10';
-        // If user also typed a query, include it for server-side filtering if supported
-        if (query.isNotEmpty) {
-          url += '&name=${Uri.encodeQueryComponent(query)}';
-        }
-      } else {
-        // No profile location but user typed a name — attempt server-side name search
-        // NOTE: this assumes the /garages/nearby endpoint supports a 'name' query parameter
-        url =
-            '${Endpoint.garageNearby}?name=${Uri.encodeQueryComponent(query)}';
-      }
+      // Get radius from input (default to 10 if empty)
+      final radiusText = radiusController.text.trim();
+      final radius = double.tryParse(radiusText) ?? 10.0;
+
+      final lat = currentLat.value!;
+      final lng = currentLng.value!;
+      final url = '${Endpoint.garageNearby}?lat=$lat&lng=$lng&radius=$radius';
 
       final res = await ApiClient.to.get(url);
       if (res.statusCode == 200 && res.body != null) {
         final body = res.body;
         List<dynamic> list = [];
 
-        // Accept multiple response shapes: {garages: [...]}, {data: [...]}, {data: {data: [...]}}
+        // Accept multiple response shapes: {garages: [...]}, {data: [...]}, etc.
         if (body is Map) {
           if (body['garages'] is List) {
             list = List<dynamic>.from(body['garages']);
@@ -97,21 +89,13 @@ class ServiceController extends GetxController {
           return;
         }
 
-        // Map to typed models and filter invalid entries
+        // Map to typed models
         final models = list
             .where((e) => e != null && e is Map<String, dynamic>)
             .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
             .toList(growable: false);
 
-        // If user entered a search query, filter by garage name
-        final queryLower = searchController.text.trim().toLowerCase();
-        final filtered = queryLower.isNotEmpty
-            ? models
-                  .where((m) => m.name.toLowerCase().contains(queryLower))
-                  .toList()
-            : models;
-
-        garages.value = filtered;
+        garages.value = models;
       } else {
         EasyLoading.showError('Failed to load nearby garages');
         garages.clear();
@@ -125,53 +109,45 @@ class ServiceController extends GetxController {
     }
   }
 
-  /// Fetches the saved profile location (userLat/userLng) and stores it locally.
-  /// This method only loads the location and does NOT call the nearby garages API.
-  Future<void> loadProfileLocation() async {
+  /// Fetches the user's current location via GPS and stores it locally.
+  /// This method does NOT call the nearby garages API.
+  Future<void> loadCurrentLocation() async {
     try {
       isLoadingLocation.value = true;
-      final profileRes = await ApiClient.to.get(Endpoint.profile);
-      if (profileRes.statusCode != 200 || profileRes.body == null) {
-        EasyLoading.showError('Unable to load profile');
-        hasProfileLocation.value = false;
-        return;
+
+      // Import geolocator if not already done
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        final requested = await Geolocator.requestPermission();
+        if (requested == LocationPermission.denied) {
+          EasyLoading.showError('Location permission denied');
+          hasCurrentLocation.value = false;
+          return;
+        }
       }
 
-      final data = profileRes.body['data'] as Map<String, dynamic>?;
-      if (data == null) {
-        EasyLoading.showError('Profile data not found');
-        hasProfileLocation.value = false;
-        return;
-      }
-
-      final latRaw = data['userLat'];
-      final lngRaw = data['userLng'];
-      final lat = (latRaw is num)
-          ? latRaw.toDouble()
-          : double.tryParse(latRaw?.toString() ?? '');
-      final lng = (lngRaw is num)
-          ? lngRaw.toDouble()
-          : double.tryParse(lngRaw?.toString() ?? '');
-
-      if (lat == null || lng == null) {
-        EasyLoading.showInfo(
-          'No saved location found. Please set a default location.',
+      if (permission == LocationPermission.deniedForever) {
+        EasyLoading.showError(
+          'Location permission permanently denied. Enable in settings.',
         );
-        hasProfileLocation.value = false;
-        profileLat.value = null;
-        profileLng.value = null;
+        await Geolocator.openAppSettings();
+        hasCurrentLocation.value = false;
         return;
       }
 
-      profileLat.value = lat;
-      profileLng.value = lng;
-      hasProfileLocation.value = true;
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      currentLat.value = position.latitude;
+      currentLng.value = position.longitude;
+      hasCurrentLocation.value = true;
       EasyLoading.showSuccess('Location loaded');
     } catch (e, st) {
-      print('Error loading profile location: $e');
+      print('Error loading current location: $e');
       print(st);
-      EasyLoading.showError('Failed to load profile location');
-      hasProfileLocation.value = false;
+      EasyLoading.showError('Failed to load location');
+      hasCurrentLocation.value = false;
     } finally {
       isLoadingLocation.value = false;
     }

@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
@@ -56,7 +58,7 @@ class SparePartsScreen extends StatelessWidget {
                     Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
                     SizedBox(width: 8),
                     Text(
-                      "SayaraHub",
+                      'sayara_hub'.tr,
                       style: getTextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
@@ -67,7 +69,7 @@ class SparePartsScreen extends StatelessWidget {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.black.withOpacity(0.1),
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
                       child: Image.asset(Iconpath.notification, scale: 2),
                     ),
                     SizedBox(width: 12),
@@ -111,7 +113,8 @@ class SparePartsScreen extends StatelessWidget {
                         onTap: () async {
                           // extract id and name safely
                           final cid = (cat['id'] ?? '').toString();
-                          final cname = (cat['name'] ?? 'Category').toString();
+                          final cname = (cat['name'] ?? 'category'.tr)
+                              .toString();
 
                           final productsCtrl = Get.put(
                             ProductsController(),
@@ -133,9 +136,7 @@ class SparePartsScreen extends StatelessWidget {
                                     child: CircularProgressIndicator(),
                                   );
                                 if (productsCtrl.products.isEmpty)
-                                  return const Center(
-                                    child: Text('No products'),
-                                  );
+                                  return Center(child: Text('no_products'.tr));
                                 return ListView.builder(
                                   padding: const EdgeInsets.all(12),
                                   itemCount: productsCtrl.products.length,
@@ -144,7 +145,7 @@ class SparePartsScreen extends StatelessWidget {
                                     final name =
                                         (p is Map && p['partName'] != null)
                                         ? p['partName'].toString()
-                                        : 'Product ${idx + 1}';
+                                        : '${'product'.tr} ${idx + 1}';
                                     final price =
                                         (p is Map && p['price'] != null)
                                         ? p['price'].toString()
@@ -178,7 +179,10 @@ class SparePartsScreen extends StatelessWidget {
                                               height: 56,
                                             ),
                                       title: Text(name),
-                                      subtitle: Text('Price: $price'),
+                                      subtitle: Text(
+                                        'price'.tr.replaceAll('@price', price),
+                                      ),
+
                                       onTap: () {
                                         String? id;
                                         if (p is Map) {
@@ -226,8 +230,8 @@ class SparePartsScreen extends StatelessWidget {
                     children: [
                       SizedBox(height: 20),
 
-                      const Text(
-                        "Have Spare Parts to Sell?",
+                      Text(
+                        'have_spare_parts_to_sell'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -235,8 +239,8 @@ class SparePartsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        "List your car parts in just a few steps and connect with customers directly from the app.",
+                      Text(
+                        'list_your_car_parts'.tr,
                         style: TextStyle(color: Colors.white70),
                         textAlign: TextAlign.center,
                       ),
@@ -251,11 +255,11 @@ class SparePartsScreen extends StatelessWidget {
                         onPressed: () {
                           Get.toNamed(Approute.partsDetailsScreen);
                         },
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              "Sell Now",
+                              'sell_now'.tr,
                               style: TextStyle(color: Colors.blue),
                             ),
                             SizedBox(width: 5),
@@ -272,10 +276,10 @@ class SparePartsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // All Parts
-            sectionHeader("All Parts"),
+            sectionHeader("all_parts"),
 
             const SizedBox(height: 8),
-            _sectionCard("All Parts"),
+            _sectionCard("all_parts"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'allParts')),
@@ -283,9 +287,9 @@ class SparePartsScreen extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Today's Deals
-            sectionHeader("Today's Deals"),
+            sectionHeader("todays_deals"),
             const SizedBox(height: 8),
-            _sectionCard("Today's Deals"),
+            _sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
@@ -295,12 +299,12 @@ class SparePartsScreen extends StatelessWidget {
     );
   }
 
-  Widget sectionHeader(String title) {
+  Widget sectionHeader(String titleKey) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          title,
+          titleKey.tr,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
 
@@ -317,13 +321,13 @@ class SparePartsScreen extends StatelessWidget {
             // Open a new simple screen to display fetched products
             Get.to(
               () => Scaffold(
-                appBar: AppBar(title: const Text('All Spare Parts')),
+                appBar: AppBar(title: Text('all_spare_parts'.tr)),
                 body: Obx(() {
                   if (productsCtrl.isLoading.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (productsCtrl.products.isEmpty) {
-                    return const Center(child: Text('No products'));
+                    return Center(child: Text('no_products'.tr));
                   }
                   return ListView.builder(
                     padding: const EdgeInsets.all(12),
@@ -333,7 +337,7 @@ class SparePartsScreen extends StatelessWidget {
                       // Keep UI simple: show name/price if available, others null
                       final name = (p is Map && p['partName'] != null)
                           ? p['partName'].toString()
-                          : 'Product ${idx + 1}';
+                          : '${'product'.tr} ${idx + 1}';
                       final price = (p is Map && p['price'] != null)
                           ? p['price'].toString()
                           : '-';
@@ -367,7 +371,7 @@ class SparePartsScreen extends StatelessWidget {
                                 height: 56,
                               ),
                         title: Text(name),
-                        subtitle: Text('Price: $price'),
+                        subtitle: Text('price'.tr.replaceAll('@price', price)),
                         onTap: () {
                           // robust id extraction for different response shapes
                           String? id;
@@ -393,7 +397,7 @@ class SparePartsScreen extends StatelessWidget {
               ),
             );
           },
-          child: const Text("See All"),
+          child: Text("see_all".tr),
         ),
       ],
     );
@@ -429,7 +433,7 @@ class SparePartsScreen extends StatelessWidget {
                       search: productsCtrl.currentSearch.value,
                     );
                   },
-                  child: const Text('Retry'),
+                  child: Text('retry'.tr),
                 ),
               ],
             ),
@@ -438,7 +442,7 @@ class SparePartsScreen extends StatelessWidget {
 
         // empty list (no items)
         if (productsCtrl.products.isEmpty) {
-          return const Center(child: Text('No products available'));
+          return Center(child: Text('no_products_available'.tr));
         }
 
         return ListView.builder(
@@ -499,7 +503,7 @@ class SparePartsScreen extends StatelessWidget {
   }
 
   // Small card shown above parts lists with quick CTA
-  Widget _sectionCard(String title) {
+  Widget _sectionCard(String titleKey) {
     return GestureDetector(
       onTap: () async {
         // open the same 'See All' full list
@@ -507,12 +511,12 @@ class SparePartsScreen extends StatelessWidget {
         await productsCtrl.fetchProducts(page: 1, limit: 10);
         Get.to(
           () => Scaffold(
-            appBar: AppBar(title: Text(title)),
+            appBar: AppBar(title: Text(titleKey.tr)),
             body: Obx(() {
               if (productsCtrl.isLoading.value)
                 return const Center(child: CircularProgressIndicator());
               if (productsCtrl.products.isEmpty)
-                return const Center(child: Text('No products'));
+                return Center(child: Text('no_products'.tr));
               return ListView.builder(
                 padding: const EdgeInsets.all(12),
                 itemCount: productsCtrl.products.length,
@@ -520,7 +524,7 @@ class SparePartsScreen extends StatelessWidget {
                   final p = productsCtrl.products[idx];
                   final name = (p is Map && p['partName'] != null)
                       ? p['partName'].toString()
-                      : 'Product ${idx + 1}';
+                      : '${'product'.tr} ${idx + 1}';
                   final price = (p is Map && p['price'] != null)
                       ? p['price'].toString()
                       : '-';
@@ -551,7 +555,7 @@ class SparePartsScreen extends StatelessWidget {
                             height: 56,
                           ),
                     title: Text(name),
-                    subtitle: Text('Price: $price'),
+                    subtitle: Text('price'.tr.replaceAll('@price', price)),
                     onTap: () {
                       String? id;
                       if (p is Map) {
@@ -600,15 +604,15 @@ class SparePartsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Explore $title',
+                    'explore'.tr.replaceAll('@title', titleKey.tr),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    'Find the best spare parts from verified sellers.',
+                  Text(
+                    'find_best_spare_parts'.tr,
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
@@ -623,12 +627,12 @@ class SparePartsScreen extends StatelessWidget {
                 await productsCtrl.fetchProducts(page: 1, limit: 10);
                 Get.to(
                   () => Scaffold(
-                    appBar: AppBar(title: Text(title)),
+                    appBar: AppBar(title: Text(titleKey.tr)),
                     body: Obx(() {
                       if (productsCtrl.isLoading.value)
                         return const Center(child: CircularProgressIndicator());
                       if (productsCtrl.products.isEmpty)
-                        return const Center(child: Text('No products'));
+                        return Center(child: Text('no_products'.tr));
                       return ListView.builder(
                         padding: const EdgeInsets.all(12),
                         itemCount: productsCtrl.products.length,
@@ -636,7 +640,7 @@ class SparePartsScreen extends StatelessWidget {
                           final p = productsCtrl.products[idx];
                           final name = (p is Map && p['partName'] != null)
                               ? p['partName'].toString()
-                              : 'Product ${idx + 1}';
+                              : '${'product'.tr} ${idx + 1}';
                           final price = (p is Map && p['price'] != null)
                               ? p['price'].toString()
                               : '-';
@@ -667,7 +671,9 @@ class SparePartsScreen extends StatelessWidget {
                                     height: 56,
                                   ),
                             title: Text(name),
-                            subtitle: Text('Price: $price'),
+                            subtitle: Text(
+                              'price'.tr.replaceAll('@price', price),
+                            ),
                             onTap: () {
                               String? id;
                               if (p is Map) {
@@ -690,7 +696,7 @@ class SparePartsScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('See All'),
+              child: Text('see_all'.tr),
             ),
           ],
         ),

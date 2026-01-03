@@ -181,6 +181,35 @@ Future<bool> validatePromotionBeforeSubmit() async {
       debugPrint("Limit check error: $e");
     }
   }
+=======
+  Future<void> checkUserProductLimit() async {
+    try {
+      final response = await http.get(
+        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
+        headers: {
+          'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+
+        hasProductMonthly.value = data['hasProductMonthly'] == true;
+        canAddFreeProduct.value = data['canAddFreeProduct'] == true;
+        productCredits.value = data['productCredits'] ?? 0;
+        promotionCredits.value = data['promotionCredits'] ?? 0;
+
+        if (data['productMonthlyEndsAt'] != null) {
+          productMonthlyEndsAt.value = DateTime.parse(
+            data['productMonthlyEndsAt'],
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Limit check error: $e");
+    }
+  }
 
   void selectPlan(int value) {
     selectedPlan.value = value;

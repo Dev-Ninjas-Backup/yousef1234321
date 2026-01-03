@@ -76,7 +76,7 @@ class ForgetPasswordController extends GetxController {
                 boxShadow: [
                   BoxShadow(
                     // ignore: deprecated_member_use
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -121,8 +121,11 @@ class ForgetPasswordController extends GetxController {
                     height: 44,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.to(() => const OtpScreen(),
-                            binding: OtpBinding(), arguments: email);
+                        Get.to(
+                          () => const OtpScreen(),
+                          binding: OtpBinding(),
+                          arguments: email,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.splashButtonColor,
@@ -146,7 +149,7 @@ class ForgetPasswordController extends GetxController {
           ),
           barrierDismissible: true,
           // ignore: deprecated_member_use
-          barrierColor: Colors.black.withOpacity(0.5),
+          barrierColor: Colors.black.withValues(alpha: 0.5),
         );
       }
     } catch (e) {

@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
     }
     // Default
     else {
-      return Iconpath.acIcon;
+      return Iconpath.engineIcon;
     }
   }
 
@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                     Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
                     SizedBox(width: 8),
                     Text(
-                      "SayaraHub",
+                      "sayara_hub".tr,
                       style: getTextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
@@ -95,19 +95,25 @@ class HomeScreen extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.black.withOpacity(0.1),
-                      child: GestureDetector(
-                        onTap: () {
-                          Get.to(() => NotificationScreen());
-                        },
-                        child: Image.asset(Iconpath.notification, scale: 2),
+                    Tooltip(
+                      message: "notifications".tr,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black.withValues(alpha: 0.1),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(() => NotificationScreen());
+                          },
+                          child: Image.asset(Iconpath.notification, scale: 2),
+                        ),
                       ),
                     ),
                     SizedBox(width: 12),
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+                    Tooltip(
+                      message: "profile".tr,
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+                        ),
                       ),
                     ),
                   ],
@@ -129,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      "Emergency Service\n24/7 Available",
+                      "emergency_service".tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -145,7 +151,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     onPressed: () {},
                     child: Text(
-                      "Search Now",
+                      "search_now".tr,
                       style: TextStyle(color: Colors.red),
                     ),
                   ),
@@ -154,67 +160,66 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              "Popular Services",
+              "popular_services".tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
 
             // removed unsupported `spacing` properties from Column/Row widgets
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "AC Repair",
-                        icon: Iconpath.acIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Battery",
-                        icon: Iconpath.batterryIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Engine",
-                        icon: Iconpath.engineIcon,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Tires",
-                        icon: Iconpath.wheelIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Electrical",
-                        icon: Iconpath.electricIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "Spares",
-                        icon: Iconpath.spareIcon,
-                        onTap: () {
-                          Get.toNamed(Approute.getBrakePadsScreen());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
+            // Column(
+            //   children: [
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "ac_repair".tr,
+            //             icon: Iconpath.acIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "battery".tr,
+            //             icon: Iconpath.batterryIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "engine".tr,
+            //             icon: Iconpath.engineIcon,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //     const SizedBox(height: 10),
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "tires".tr,
+            //             icon: Iconpath.wheelIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "electrical".tr,
+            //             icon: Iconpath.electricIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "spares".tr,
+            //             icon: Iconpath.spareIcon,
+            //             onTap: () {
+            //               Get.toNamed(Approute.getBrakePadsScreen());
+            //             },
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ],
+            // ),
             Obx(() {
               // Get services from controller, limit to 6
               final services = controller.serviceTypes.take(6).toList();
@@ -230,6 +235,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // First row: up to 3 services
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ...services.take(3).map((service) {
                         return Expanded(
@@ -241,13 +247,15 @@ class HomeScreen extends StatelessWidget {
                                 arguments: {'selectedService': service},
                               );
                             },
-                            child: ServiceChip(
-                              label: service,
-                              icon: _getIconForService(service),
+                            child: Center(
+                              child: ServiceChip(
+                                label: service.tr,
+                                icon: _getIconForService(service),
+                              ),
                             ),
                           ),
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -265,13 +273,15 @@ class HomeScreen extends StatelessWidget {
                                   arguments: {'selectedService': service},
                                 );
                               },
-                              child: ServiceChip(
-                                label: service,
-                                icon: _getIconForService(service),
+                              child: Center(
+                                child: ServiceChip(
+                                  label: service.tr,
+                                  icon: _getIconForService(service),
+                                ),
                               ),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                 ],
@@ -279,17 +289,16 @@ class HomeScreen extends StatelessWidget {
             }),
             SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Top Rated Garages",
+                  "top_rated_garages".tr,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextButton(
                   onPressed: () {
                     Get.toNamed(Approute.getGarageListPage());
                   },
-                  child: const Text("View All"),
+                  child: Text("view_all".tr),
                 ),
               ],
             ),
@@ -302,11 +311,11 @@ class HomeScreen extends StatelessWidget {
               }
 
               if (controller.garages.isEmpty) {
-                return const Padding(
+                return Padding(
                   padding: EdgeInsets.all(20.0),
                   child: Center(
                     child: Text(
-                      'No garages available',
+                      'no_garages_available'.tr,
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
