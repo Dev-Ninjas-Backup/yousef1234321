@@ -229,41 +229,92 @@ class PartsDetailsScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
-            Obx(
-              () => GestureDetector(
-                onTap: c.pickImage,
-                child: Container(
-                  height: 120,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: c.selectedImage.value == null
-                      ? const Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.add_circle_outline,
-                                color: Colors.blue,
-                              ),
-                              SizedBox(height: 4),
-                              Text("Add Photo"),
-                            ],
+Obx(
+  () => GestureDetector(
+    onTap: c.pickImages, // select more images
+    child: Container(
+      height: 140,
+      width: double.infinity,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: c.selectedImages.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.add_circle_outline, color: Colors.blue, size: 36),
+                  SizedBox(height: 4),
+                  Text("Add Photos"),
+                ],
+              ),
+            )
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: c.selectedImages.length + 1, // +1 for add button
+              itemBuilder: (_, index) {
+                if (index == c.selectedImages.length) {
+                  // Last item = add more button
+                  return GestureDetector(
+                    onTap: c.pickImages,
+                    child: Container(
+                      width: 120,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade400),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, color: Colors.blue, size: 32),
+                      ),
+                    ),
+                  );
+                }
+
+                final img = c.selectedImages[index];
+                return Stack(
+                  children: [
+                    Container(
+                      width: 120,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(img.path),
+                          fit: BoxFit.cover,
+                          width: 120,
+                          height: 120,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: () => c.removeImage(index),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
                           ),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(c.selectedImage.value!.path),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
-                ),
-              ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
+    ),
+  ),
+),
+
 
             const SizedBox(height: 20),
             const Text(
