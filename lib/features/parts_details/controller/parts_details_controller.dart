@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/parts_details/model.dart/part_categories_model.dart';
+import 'package:http_parser/http_parser.dart';
 
 class PartsDetailsController extends GetxController {
   /// ---------------- Text Controllers ----------------
@@ -181,35 +182,7 @@ Future<bool> validatePromotionBeforeSubmit() async {
       debugPrint("Limit check error: $e");
     }
   }
-=======
-  Future<void> checkUserProductLimit() async {
-    try {
-      final response = await http.get(
-        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
-        headers: {
-          'Authorization': 'Bearer ${ApiClient.to.token}',
-          'Content-Type': 'application/json',
-        },
-      );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = json.decode(response.body);
-
-        hasProductMonthly.value = data['hasProductMonthly'] == true;
-        canAddFreeProduct.value = data['canAddFreeProduct'] == true;
-        productCredits.value = data['productCredits'] ?? 0;
-        promotionCredits.value = data['promotionCredits'] ?? 0;
-
-        if (data['productMonthlyEndsAt'] != null) {
-          productMonthlyEndsAt.value = DateTime.parse(
-            data['productMonthlyEndsAt'],
-          );
-        }
-      }
-    } catch (e) {
-      debugPrint("Limit check error: $e");
-    }
-  }
 
   void selectPlan(int value) {
     selectedPlan.value = value;
@@ -225,15 +198,33 @@ Future<bool> validatePromotionBeforeSubmit() async {
   }
 
   /// ---------------- Image ----------------
-  final selectedImage = Rx<XFile?>(null);
-  final ImagePicker _picker = ImagePicker();
+  // final selectedImage = Rx<XFile?>(null);
+  // final ImagePicker _picker = ImagePicker();
 
-  Future<void> pickImage() async {
-    final image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedImage.value = image;
-    }
+  // Future<void> pickImage() async {
+  //   final image = await _picker.pickImage(source: ImageSource.gallery);
+  //   if (image != null) {
+  //     selectedImage.value = image;
+  //   }
+  // }
+  final selectedImages = <XFile>[].obs;
+
+final ImagePicker _picker = ImagePicker();
+
+Future<void> pickImages() async {
+  final images = await _picker.pickMultiImage();
+  if (images.isNotEmpty) {
+    selectedImages.addAll(images); // allow adding more images
   }
+}
+
+/// Remove image by index
+void removeImage(int index) {
+  if (index >= 0 && index < selectedImages.length) {
+    selectedImages.removeAt(index);
+  }
+}
+
 
   /// ---------------- Confirmation ----------------
   final isConfirmed = false.obs;
@@ -296,9 +287,7 @@ Future<bool> validatePromotionBeforeSubmit() async {
     super.onClose();
   }
 
-
-
-  Future<void> createProduct() async {
+Future<void> createProduct() async {
   try {
     EasyLoading.show(status: "Creating listing...");
 
@@ -314,39 +303,67 @@ Future<bool> validatePromotionBeforeSubmit() async {
       return;
     }
 
-    final body = {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse("${Endpoint.baseUrl}/products"),
+    );
+
+    // ---------- ADD FIELDS ----------
+    request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
+    request.fields.addAll({
       "partName": partNameCtrl.text.trim(),
       "brand": brand.text.trim(),
-      "categoryId": selectedCategoryId.value,
+      "categoryId": selectedCategoryId.value!,
       "condition": "New",
-      "price": double.parse(priceCtrl.text),
-      "quantity": int.parse(quantity.text),
+      "price": priceCtrl.text,
+      "quantity": quantity.text,
       "description": descriptionCtrl.text.trim(),
-      "isPromoted": isPromoted.value,
+      "isPromoted": isPromoted.value.toString(),
       "sellerName": sellerNameCtrl.text.trim(),
-      "sellerEmail":emailCtrl.text.trim(),
+      "sellerEmail": emailCtrl.text.trim(),
       "sellerPhoneNumber": phoneCtrl.text.trim(),
-      "photos":selectedImage.value,
       "sellerType": "INDIVIDUAL",
       "plan": selectedPlan.value == 0 ? "MONTHLY" : "PAY_PER_LISTING",
-    };
+    });
 
-    final response = await http.post(
-      Uri.parse("${Endpoint.baseUrl}/products"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
-      },
-      body: jsonEncode(body),
-    );
+    // ---------- ADD MULTIPLE IMAGES ----------
+    for (var img in selectedImages) {
+      final mimeType = img.path.split('.').last.toLowerCase();
+
+      String type;
+      String subtype;
+
+      switch (mimeType) {
+        case 'jpg':
+        case 'jpeg':
+          type = 'image';
+          subtype = 'jpeg';
+          break;
+        case 'png':
+          type = 'image';
+          subtype = 'png';
+          break;
+        default:
+          type = 'application';
+          subtype = 'octet-stream';
+      }
+
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'photos', // key expected by your API
+          img.path,
+          contentType: MediaType(type, subtype),
+        ),
+      );
+    }
+
+    // ---------- SEND REQUEST ----------
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       EasyLoading.showSuccess("Product listed successfully 🎉");
-
-      // 🔁 Refresh limits after listing
       await checkUserProductLimit();
-
-      // 🔙 Optional: go back
       Get.back();
     } else {
       debugPrint("Create product error: ${response.body}");
@@ -359,5 +376,99 @@ Future<bool> validatePromotionBeforeSubmit() async {
     EasyLoading.dismiss();
   }
 }
+
+
+
+// Future<void> createProduct() async {
+//   try {
+//     EasyLoading.show(status: "Creating listing...");
+
+//     // ---------- VALIDATION ----------
+//     if (partNameCtrl.text.isEmpty ||
+//         brand.text.isEmpty ||
+//         selectedCategoryId.value == null ||
+//         priceCtrl.text.isEmpty ||
+//         quantity.text.isEmpty ||
+//         sellerNameCtrl.text.isEmpty ||
+//         phoneCtrl.text.isEmpty) {
+//       EasyLoading.showError("Please fill all required fields");
+//       return;
+//     }
+
+//     var request = http.MultipartRequest(
+//       'POST',
+//       Uri.parse("${Endpoint.baseUrl}/products"),
+//     );
+
+//     // ---------- ADD FIELDS ----------
+//     request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
+//     request.fields['partName'] = partNameCtrl.text.trim();
+//     request.fields['brand'] = brand.text.trim();
+//     request.fields['categoryId'] = selectedCategoryId.value!;
+//     request.fields['condition'] = 'New';
+//     request.fields['price'] = priceCtrl.text;
+//     request.fields['quantity'] = quantity.text;
+//     request.fields['description'] = descriptionCtrl.text.trim();
+//     request.fields['isPromoted'] = isPromoted.value.toString();
+//     request.fields['sellerName'] = sellerNameCtrl.text.trim();
+//     request.fields['sellerEmail'] = emailCtrl.text.trim();
+//     request.fields['sellerPhoneNumber'] = phoneCtrl.text.trim();
+//     request.fields['sellerType'] = 'INDIVIDUAL';
+//     request.fields['plan'] = selectedPlan.value == 0 ? 'MONTHLY' : 'PAY_PER_LISTING';
+
+//     // ---------- ADD IMAGE ----------
+// if (selectedImage.value != null) {
+//   final mimeType = selectedImage.value!.path.split('.').last.toLowerCase();
+
+//   String type;
+//   String subtype;
+
+//   switch (mimeType) {
+//     case 'jpg':
+//     case 'jpeg':
+//       type = 'image';
+//       subtype = 'jpeg';
+//       break;
+//     case 'png':
+//       type = 'image';
+//       subtype = 'png';
+//       break;
+//     default:
+//       type = 'application';
+//       subtype = 'octet-stream';
+//   }
+
+//   request.files.add(
+//     await http.MultipartFile.fromPath(
+//       'photos', // key expected by your API
+//       selectedImage.value!.path,
+//       contentType: MediaType(type, subtype),
+//     ),
+//   );
+// }
+
+//     // ---------- SEND REQUEST ----------
+//     final streamedResponse = await request.send();
+//     final response = await http.Response.fromStream(streamedResponse);
+
+//     if (response.statusCode == 200 || response.statusCode == 201) {
+//       EasyLoading.showSuccess("Product listed successfully 🎉");
+
+//       // Refresh limits
+//       await checkUserProductLimit();
+
+//       Get.back();
+//     } else {
+//       debugPrint("Create product error: ${response.body}");
+//       EasyLoading.showError("Failed to create product");
+//     }
+//   } catch (e) {
+//     debugPrint("Create product exception: $e");
+//     EasyLoading.showError("Something went wrong");
+//   } finally {
+//     EasyLoading.dismiss();
+//   }
+// }
+
 
 }

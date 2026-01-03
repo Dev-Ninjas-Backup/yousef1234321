@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/call_dialog.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
@@ -142,7 +144,27 @@ class ServiceBookingMiddleSection extends StatelessWidget {
             ),
             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 14),
           ),
-          onPressed: () {},
+          onPressed: () async {
+            final g = controller.garageDetail.value;
+            if (g == null) return;
+            final lat = g.garageLat;
+            final lng = g.garageLng;
+            if (lat == 0 || lng == 0) {
+              EasyLoading.showError('Location not available');
+              return;
+            }
+
+            final uri = Uri.parse(
+              'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+            );
+            try {
+              if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+                EasyLoading.showError('Could not open maps');
+              }
+            } catch (e) {
+              EasyLoading.showError('Could not open maps');
+            }
+          },
           icon: const Icon(
             Icons.location_on_outlined,
             size: 18,
