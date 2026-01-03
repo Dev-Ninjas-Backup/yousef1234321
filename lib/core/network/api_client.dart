@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class ApiClient extends GetConnect {
   static ApiClient get to => Get.find();
@@ -22,6 +23,56 @@ class ApiClient extends GetConnect {
     // Debug
     print("Token saved: $result, Token: $token"); // Debug
     return result;
+  }
+
+  /// Permanently delete the current user account on the server.
+  /// On success clears local auth data and navigates to the sign-in screen.
+  Future<bool> deleteUserAccount() async {
+    try {
+      final response = await delete(Endpoint.deleteUUser);
+      print(
+        'Delete user response: ${response.statusCode} ${response.bodyString}',
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Clear local tokens / id
+        await setToken(null);
+        await setResetToken(null);
+        await setUserId(null);
+
+        // Navigate to sign-in screen (clear navigation stack)
+        try {
+          Get.offAllNamed(Approute.getSignInScreen());
+        } catch (_) {}
+
+        // Optionally show success snackbar
+        Get.snackbar(
+          'Success',
+          response.body is Map && response.body['message'] != null
+              ? response.body['message']
+              : 'User account deleted successfully',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        return true;
+      }
+
+      // Let global handler show an error snackbar where appropriate
+      return false;
+    } catch (e, st) {
+      print('Error deleting user account: $e');
+      print(st);
+      Get.snackbar(
+        'Error',
+        'Failed to delete account',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return false;
+    }
   }
 
   Future<bool> setResetToken(String? token) async {
@@ -120,12 +171,12 @@ class ApiClient extends GetConnect {
       if (response.body is Map &&
           response.body['message'] == 'User not found') {
         logout();
-        Get.snackbar(
-          "session_expired".tr,
-          "please_login".tr,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-        );
+        // Get.snackbar(
+        //   "session_expired".tr,
+        //   "please_login".tr,
+        //   backgroundColor: Colors.redAccent,
+        //   colorText: Colors.white,
+        // );
       }
     } else if (response.statusCode == 500) {
       Get.snackbar(
