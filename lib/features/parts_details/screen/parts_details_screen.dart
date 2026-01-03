@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/parts_details/controller/parts_details_controller.dart';
 import 'package:yousef1234321/features/parts_details/widgets/promotion_listing.dart';
-import 'package:yousef1234321/routes/app_route.dart';
 
 class PartsDetailsScreen extends StatelessWidget {
   const PartsDetailsScreen({super.key});
@@ -211,7 +210,11 @@ class PartsDetailsScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 24),
-            textField("Brand *", hint: "Type here...", controller: c.quantity),
+            textField(
+              "Quantity *",
+              hint: "Type here...",
+              controller: c.quantity,
+            ),
             const SizedBox(height: 20),
 
             textField(
@@ -299,23 +302,38 @@ class PartsDetailsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
-            const Text(
-              "Note: You can list up to 3 parts for free. After that, a small fee of 20 AED per part will apply.",
-              style: TextStyle(color: Colors.red, fontSize: 12),
-            ),
+            // const Text(
+            //   "Note: You can list up to 3 parts for free. After that, a small fee of 20 AED per part will apply.",
+            //   style: TextStyle(color: Colors.red, fontSize: 12),
+            // ),
 
-            const SizedBox(height: 20),
+       //     const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!c.isConfirmed.value) {
                     EasyLoading.showError(
                       "Error, Please confirm part information.",
                     );
                     return;
                   }
-                  Get.toNamed(Approute.payment);
+
+                  // 🔥 PROMOTION CHECK
+                  final canProceed = await c.validatePromotionBeforeSubmit();
+                  if (!canProceed) return;
+
+                  // 🔥 CREATE PRODUCT
+                  await c.createProduct();
+
+                  // if (!c.isConfirmed.value) {
+                  //   EasyLoading.showError(
+                  //     "Error, Please confirm part information.",
+                  //   );
+                  //   return;
+                  // }
+
+                  //hit create product api
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,

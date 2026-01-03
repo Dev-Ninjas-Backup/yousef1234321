@@ -124,6 +124,64 @@ class PartsDetailsController extends GetxController {
   final canAddFreeProduct = false.obs;
   final promotionCredits = 0.obs;
 
+
+  Future<void> handlePromotionPayment() async {
+  if (promotionCredits.value > 0) {
+    EasyLoading.showSuccess(
+      "Promotion applied using credit (${promotionCredits.value} left)",
+    );
+
+    // Optional: decrease locally for instant UI feedback
+    promotionCredits.value -= 1;
+    return;
+  }
+
+  await createPromotionPayment();
+}
+
+Future<bool> validatePromotionBeforeSubmit() async {
+  if (!isPromoted.value) return true;
+
+  if (promotionCredits.value > 0) {
+    promotionCredits.value -= 1; // UI instant
+    return true;
+  }
+
+  await createPromotionPayment();
+  return false;
+}
+
+
+
+  Future<void> checkUserProductLimit() async {
+    try {
+      final response = await http.get(
+        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
+        headers: {
+          'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+
+        hasProductMonthly.value = data['hasProductMonthly'] == true;
+        canAddFreeProduct.value = data['canAddFreeProduct'] == true;
+        productCredits.value = data['productCredits'] ?? 0;
+        promotionCredits.value = data['promotionCredits'] ?? 0;
+
+        if (data['productMonthlyEndsAt'] != null) {
+          productMonthlyEndsAt.value = DateTime.parse(
+            data['productMonthlyEndsAt'],
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Limit check error: $e");
+    }
+  }
+=======
   Future<void> checkUserProductLimit() async {
     try {
       final response = await http.get(
@@ -157,9 +215,7 @@ class PartsDetailsController extends GetxController {
     selectedPlan.value = value;
   }
 
-  // void markMonthlyPaid() {
-  //   isMonthlyPaid.value = true;
-  // }
+
 
   /// ---------------- Promotion ----------------
   final isPromoted = false.obs;
@@ -198,7 +254,7 @@ class PartsDetailsController extends GetxController {
     try {
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.resetToken}',
+        'Authorization': 'Bearer ${ApiClient.to.token}',
       };
 
       final response = await http.get(
@@ -206,17 +262,22 @@ class PartsDetailsController extends GetxController {
         headers: headers,
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200||response.statusCode==201) {
         final jsonData = json.decode(response.body);
         if (jsonData['success'] == true) {
           List<dynamic> dataList = jsonData['data']['data'];
           categories.value = dataList
               .map((e) => PartCategory.fromJson(e))
               .toList();
+
+              print("the categoris: ${response.body}");
+
         } else {
           print("Error");
         }
       } else {}
+    } catch (e) {
+    print(e);
     } finally {}
   }
 
@@ -234,4 +295,69 @@ class PartsDetailsController extends GetxController {
 
     super.onClose();
   }
+
+
+
+  Future<void> createProduct() async {
+  try {
+    EasyLoading.show(status: "Creating listing...");
+
+    // ---------- VALIDATION ----------
+    if (partNameCtrl.text.isEmpty ||
+        brand.text.isEmpty ||
+        selectedCategoryId.value == null ||
+        priceCtrl.text.isEmpty ||
+        quantity.text.isEmpty ||
+        sellerNameCtrl.text.isEmpty ||
+        phoneCtrl.text.isEmpty) {
+      EasyLoading.showError("Please fill all required fields");
+      return;
+    }
+
+    final body = {
+      "partName": partNameCtrl.text.trim(),
+      "brand": brand.text.trim(),
+      "categoryId": selectedCategoryId.value,
+      "condition": "New",
+      "price": double.parse(priceCtrl.text),
+      "quantity": int.parse(quantity.text),
+      "description": descriptionCtrl.text.trim(),
+      "isPromoted": isPromoted.value,
+      "sellerName": sellerNameCtrl.text.trim(),
+      "sellerEmail":emailCtrl.text.trim(),
+      "sellerPhoneNumber": phoneCtrl.text.trim(),
+      "photos":selectedImage.value,
+      "sellerType": "INDIVIDUAL",
+      "plan": selectedPlan.value == 0 ? "MONTHLY" : "PAY_PER_LISTING",
+    };
+
+    final response = await http.post(
+      Uri.parse("${Endpoint.baseUrl}/products"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${ApiClient.to.token}',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      EasyLoading.showSuccess("Product listed successfully 🎉");
+
+      // 🔁 Refresh limits after listing
+      await checkUserProductLimit();
+
+      // 🔙 Optional: go back
+      Get.back();
+    } else {
+      debugPrint("Create product error: ${response.body}");
+      EasyLoading.showError("Failed to create product");
+    }
+  } catch (e) {
+    debugPrint("Create product exception: $e");
+    EasyLoading.showError("Something went wrong");
+  } finally {
+    EasyLoading.dismiss();
+  }
+}
+
 }
