@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -23,12 +24,7 @@ class SignInController extends GetxController {
     final passwordValue = (password ?? passwordController.text).trim();
 
     if (emailValue.isEmpty || passwordValue.isEmpty) {
-      Get.snackbar(
-        "Error",
-        "Please enter email and password",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      EasyLoading.showError("Please enter email and password");
       return;
     }
 
@@ -53,52 +49,40 @@ class SignInController extends GetxController {
             await ApiClient.to.setToken(accessToken);
             await ApiClient.to.setUserId(userId);
 
-            Get.snackbar(
-              "Success",
-              "Login Successful",
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-            );
+            // Get.snackbar(
+            //   "Success",
+            //   "Login Successful",
+            //   backgroundColor: Colors.green,
+            //   colorText: Colors.white,
+            // );
 
             // Navigate to Home/Dashboard
             Get.offAllNamed(Approute.bottomNavBarScreen);
           } else {
-            Get.snackbar(
-              "Error",
+            EasyLoading.showError(
               "Invalid token received",
-              backgroundColor: Colors.redAccent,
-              colorText: Colors.white,
             );
           }
         } else {
-          Get.snackbar(
-            "Error",
+          EasyLoading.showError(
             "Invalid response format",
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
           );
         }
       } else {
-        Get.snackbar(
-          "Error",
-          "Login failed with status code: ${response.statusCode}",
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
+        EasyLoading.showError(
+          "Login failed: ${response.body['message'] ?? response.statusCode}",
         );
       }
     } catch (e) {
-      Get.snackbar(
-        "Error",
+      EasyLoading.showError(
         "Something went wrong: $e",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;
     }
   }
 
-  /// Sign in with Google. Requires google_sign_in package and backend endpoint
+  // Sign in with Google. Requires google_sign_in package and backend endpoint
   Future<void> signInWithGoogle() async {
     if (isLoading.value) return;
     isLoading.value = true;
@@ -116,7 +100,7 @@ class SignInController extends GetxController {
       final accessToken = auth.accessToken;
 
       if (idToken == null) {
-        Get.snackbar('Error', 'Failed to get id token from Google');
+        EasyLoading.showError('Failed to get id');
         return;
       }
 
