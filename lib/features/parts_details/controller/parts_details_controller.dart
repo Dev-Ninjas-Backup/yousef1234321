@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -29,14 +31,7 @@ class PartsDetailsController extends GetxController {
 
   /// ---------------- Listing Plan ----------------
   final selectedPlan = 0.obs; // 0 = Monthly, 1 = Pay per listing
- // final isMonthlyPaid = false.obs;
-
-
-
-
-
-
-
+  // final isMonthlyPaid = false.obs;
 
   /// ---------------- MONTHLY PAYMENT ----------------
   Future<void> createMonthlyPayment() async {
@@ -44,25 +39,21 @@ class PartsDetailsController extends GetxController {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-monthly-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-monthly-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
-
-      print("monthly payment: ${data['url']}");
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
+        print("monthly payment: ${data['url']}");
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
-
-      print("monthly response:${response.body}");
+        print("monthly response:${response.body}");
         EasyLoading.showError("Payment failed");
       }
     } catch (e) {
@@ -78,18 +69,16 @@ class PartsDetailsController extends GetxController {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-payper-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-payper-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
@@ -102,26 +91,21 @@ class PartsDetailsController extends GetxController {
     }
   }
 
-
-
-
-    Future<void> createPromotionPayment() async {
+  Future<void> createPromotionPayment() async {
     try {
       EasyLoading.show(status: "Redirecting to payment...");
 
       final response = await http.post(
-        Uri.parse(
-          "${Endpoint.baseUrl}/products/create-promotion-payment",
-        ),
+        Uri.parse("${Endpoint.baseUrl}/products/create-promotion-payment"),
         headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${ApiClient.to.token}',
         },
       );
 
       final data = json.decode(response.body);
 
-      if ((response.statusCode == 200||response.statusCode==201)) {
+      if ((response.statusCode == 200 || response.statusCode == 201)) {
         final uri = Uri.parse(data['url']);
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
@@ -133,59 +117,76 @@ class PartsDetailsController extends GetxController {
       EasyLoading.dismiss();
     }
   }
-final hasProductMonthly = false.obs;
-final productMonthlyEndsAt = Rxn<DateTime>();
-final productCredits = 0.obs;
-final canAddFreeProduct = false.obs;
-final promotionCredits=0.obs;
+
+  final hasProductMonthly = false.obs;
+  final productMonthlyEndsAt = Rxn<DateTime>();
+  final productCredits = 0.obs;
+  final canAddFreeProduct = false.obs;
+  final promotionCredits = 0.obs;
 
 
-Future<void> checkUserProductLimit() async {
-  try {
-    final response = await http.get(
-      Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
-      headers: {
-        'Authorization': 'Bearer ${ApiClient.to.token}',
-        'Content-Type': 'application/json',
-      },
+  Future<void> handlePromotionPayment() async {
+  if (promotionCredits.value > 0) {
+    EasyLoading.showSuccess(
+      "Promotion applied using credit (${promotionCredits.value} left)",
     );
 
-    if (response.statusCode == 200||response.statusCode==201) {
-      final data = json.decode(response.body);
-
-      hasProductMonthly.value = data['hasProductMonthly'] == true;
-      canAddFreeProduct.value = data['canAddFreeProduct'] == true;
-      productCredits.value = data['productCredits'] ?? 0;
-            promotionCredits.value = data['promotionCredits'] ?? 0;
-
-
-      if (data['productMonthlyEndsAt'] != null) {
-        productMonthlyEndsAt.value =
-            DateTime.parse(data['productMonthlyEndsAt']);
-      }
-    }
-  } catch (e) {
-    debugPrint("Limit check error: $e");
+    // Optional: decrease locally for instant UI feedback
+    promotionCredits.value -= 1;
+    return;
   }
+
+  await createPromotionPayment();
+}
+
+Future<bool> validatePromotionBeforeSubmit() async {
+  if (!isPromoted.value) return true;
+
+  if (promotionCredits.value > 0) {
+    promotionCredits.value -= 1; // UI instant
+    return true;
+  }
+
+  await createPromotionPayment();
+  return false;
 }
 
 
 
+  Future<void> checkUserProductLimit() async {
+    try {
+      final response = await http.get(
+        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
+        headers: {
+          'Authorization': 'Bearer ${ApiClient.to.token}',
+          'Content-Type': 'application/json',
+        },
+      );
 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
 
+        hasProductMonthly.value = data['hasProductMonthly'] == true;
+        canAddFreeProduct.value = data['canAddFreeProduct'] == true;
+        productCredits.value = data['productCredits'] ?? 0;
+        promotionCredits.value = data['promotionCredits'] ?? 0;
 
-
-
-
-
+        if (data['productMonthlyEndsAt'] != null) {
+          productMonthlyEndsAt.value = DateTime.parse(
+            data['productMonthlyEndsAt'],
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Limit check error: $e");
+    }
+  }
 
   void selectPlan(int value) {
     selectedPlan.value = value;
   }
 
-  // void markMonthlyPaid() {
-  //   isMonthlyPaid.value = true;
-  // }
+
 
   /// ---------------- Promotion ----------------
   final isPromoted = false.obs;
@@ -224,7 +225,7 @@ Future<void> checkUserProductLimit() async {
     try {
       final headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.resetToken}',
+        'Authorization': 'Bearer ${ApiClient.to.token}',
       };
 
       final response = await http.get(
@@ -232,18 +233,22 @@ Future<void> checkUserProductLimit() async {
         headers: headers,
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200||response.statusCode==201) {
         final jsonData = json.decode(response.body);
         if (jsonData['success'] == true) {
           List<dynamic> dataList = jsonData['data']['data'];
           categories.value = dataList
               .map((e) => PartCategory.fromJson(e))
               .toList();
+
+              print("the categoris: ${response.body}");
+
         } else {
           print("Error");
         }
       } else {}
     } catch (e) {
+    print(e);
     } finally {}
   }
 
@@ -258,7 +263,72 @@ Future<void> checkUserProductLimit() async {
     phoneCtrl.dispose();
     brand.dispose();
     quantity.dispose();
-    
+
     super.onClose();
   }
+
+
+
+  Future<void> createProduct() async {
+  try {
+    EasyLoading.show(status: "Creating listing...");
+
+    // ---------- VALIDATION ----------
+    if (partNameCtrl.text.isEmpty ||
+        brand.text.isEmpty ||
+        selectedCategoryId.value == null ||
+        priceCtrl.text.isEmpty ||
+        quantity.text.isEmpty ||
+        sellerNameCtrl.text.isEmpty ||
+        phoneCtrl.text.isEmpty) {
+      EasyLoading.showError("Please fill all required fields");
+      return;
+    }
+
+    final body = {
+      "partName": partNameCtrl.text.trim(),
+      "brand": brand.text.trim(),
+      "categoryId": selectedCategoryId.value,
+      "condition": "New",
+      "price": double.parse(priceCtrl.text),
+      "quantity": int.parse(quantity.text),
+      "description": descriptionCtrl.text.trim(),
+      "isPromoted": isPromoted.value,
+      "sellerName": sellerNameCtrl.text.trim(),
+      "sellerEmail":emailCtrl.text.trim(),
+      "sellerPhoneNumber": phoneCtrl.text.trim(),
+      "photos":selectedImage.value,
+      "sellerType": "INDIVIDUAL",
+      "plan": selectedPlan.value == 0 ? "MONTHLY" : "PAY_PER_LISTING",
+    };
+
+    final response = await http.post(
+      Uri.parse("${Endpoint.baseUrl}/products"),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${ApiClient.to.token}',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      EasyLoading.showSuccess("Product listed successfully 🎉");
+
+      // 🔁 Refresh limits after listing
+      await checkUserProductLimit();
+
+      // 🔙 Optional: go back
+      Get.back();
+    } else {
+      debugPrint("Create product error: ${response.body}");
+      EasyLoading.showError("Failed to create product");
+    }
+  } catch (e) {
+    debugPrint("Create product exception: $e");
+    EasyLoading.showError("Something went wrong");
+  } finally {
+    EasyLoading.dismiss();
+  }
+}
+
 }
