@@ -103,7 +103,7 @@ class ServiceMessage extends StatelessWidget {
       // Download the file
       final response = await http.get(Uri.parse(url));
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Get the downloads directory
         final directory = await getDownloadsDirectory();
         if (directory == null) {
@@ -122,10 +122,11 @@ class ServiceMessage extends StatelessWidget {
         // Write file to downloads
         final file = File(filePath);
         await file.writeAsBytes(response.bodyBytes);
+        print("file downloaded to $filePath");
 
         Get.snackbar(
           'Success',
-          'File downloaded to Downloads folder',
+          'File downloaded to $filePath',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {

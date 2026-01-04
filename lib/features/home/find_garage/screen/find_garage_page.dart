@@ -188,7 +188,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: SizedBox(
-                    height: 260,
+                    height: 400,
                     width: double.infinity,
                     child: Stack(
                       children: [

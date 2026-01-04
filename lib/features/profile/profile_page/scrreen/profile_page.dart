@@ -11,7 +11,7 @@ class ProfilePage extends StatelessWidget {
   final controller = Get.put(ProfileController());
   ProfilePage({super.key});
 
-  Widget _buildProfileImage() {
+  Widget buildProfileImage() {
     // Display API profile photo or default avatar
     if (controller.profilePhoto.value != null &&
         controller.profilePhoto.value!.isNotEmpty) {
@@ -92,7 +92,7 @@ class ProfilePage extends StatelessWidget {
                               Obx(
                                 () => ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: _buildProfileImage(),
+                                  child: buildProfileImage(),
                                 ),
                               ),
                               const SizedBox(height: 8),

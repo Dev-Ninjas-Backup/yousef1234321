@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
@@ -7,6 +8,7 @@ import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
 import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
+import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -110,11 +112,23 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(width: 12),
                     Tooltip(
                       message: "profile".tr,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-                        ),
-                      ),
+                      child: Obx(() {
+                        final profileController = Get.find<ProfileController>();
+                        final profilePhoto =
+                            profileController.profilePhoto.value;
+
+                        return CircleAvatar(
+                          backgroundImage:
+                              profilePhoto != null && profilePhoto.isNotEmpty
+                              ? NetworkImage(profilePhoto)
+                              : NetworkImage(
+                                  "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
+                                ),
+                          onBackgroundImageError: (exception, stackTrace) {
+                            // Fallback to default image on error
+                          },
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -149,7 +163,11 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      EasyLoading.showInfo(
+                        "Emergency Service not available at the moment".tr,
+                      );
+                    },
                     child: Text(
                       "search_now".tr,
                       style: TextStyle(color: Colors.red),
@@ -289,6 +307,7 @@ class HomeScreen extends StatelessWidget {
             }),
             SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   "top_rated_garages".tr,
