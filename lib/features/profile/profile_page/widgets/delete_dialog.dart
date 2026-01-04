@@ -62,11 +62,7 @@ void showDeletelDialog() {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
-                      "cancel".tr,
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    child: const Text("Cancel", style: TextStyle(fontSize: 12)),
+                    child: Text("cancel".tr, style: TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 16),
