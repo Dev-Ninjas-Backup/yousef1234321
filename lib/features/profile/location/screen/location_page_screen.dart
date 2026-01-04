@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/location/controller/location_page_controller.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LocationPageScreen extends StatelessWidget {
   const LocationPageScreen({super.key});
@@ -43,6 +44,7 @@ class LocationPageScreen extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: controller.searchController,
+                    onSubmitted: (_) => controller.searchLocationByText(),
                     decoration: InputDecoration(
                       hintText: "search".tr,
                       hintStyle: const TextStyle(
@@ -53,6 +55,10 @@ class LocationPageScreen extends StatelessWidget {
                         Icons.search,
                         color: Colors.grey,
                         size: 22,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: controller.searchLocationByText,
                       ),
                       filled: true,
                       fillColor: const Color(0xFFF1F5FF),
@@ -76,7 +82,7 @@ class LocationPageScreen extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    onPressed: controller.setDefaultLocation,
+                    onPressed: controller.setCurrentLocation,
                     icon: Icon(
                       Icons.my_location,
                       color: AppColors.primaryColor,
@@ -90,15 +96,69 @@ class LocationPageScreen extends StatelessWidget {
             const SizedBox(height: 25),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                "assets/images/map_sample.png",
+              child: SizedBox(
                 height: 180,
                 width: double.infinity,
-                fit: BoxFit.cover,
+                child: Obx(() {
+                  // show a placeholder while profile load
+                  if (controller.isLoadingProfile.value &&
+                      controller.selectedLatLng.value == null) {
+                    return Image.asset(
+                      "assets/images/map_sample.png",
+                      fit: BoxFit.cover,
+                    );
+                  }
+
+                  final initial =
+                      controller.selectedLatLng.value ??
+                      const LatLng(25.2048, 55.2708);
+                  final markers = <Marker>{
+                    if (controller.selectedLatLng.value != null)
+                      Marker(
+                        markerId: const MarkerId('selected'),
+                        position: controller.selectedLatLng.value!,
+                      ),
+                  };
+
+                  return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: initial,
+                      zoom: 12,
+                    ),
+                    onMapCreated: controller.onMapCreated,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    markers: markers,
+                    onTap: controller.onMapTap,
+                    onCameraMove: controller.onCameraMove,
+                    zoomControlsEnabled: false,
+                  );
+                }),
               ),
             ),
 
             const SizedBox(height: 25),
+            // Show selected address (reverse geocoded)
+            Obx(() {
+              final addr = controller.resolvedAddress.value;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Text(
+                  addr.isEmpty
+                      ? 'Tap the map or search to select a location'
+                      : addr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: addr.isEmpty ? Colors.grey : Colors.black87,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              );
+            }),
+
+            const SizedBox(height: 10),
             SizedBox(
               width: 215,
               child: ElevatedButton(

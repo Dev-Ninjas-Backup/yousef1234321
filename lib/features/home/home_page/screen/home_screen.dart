@@ -60,7 +60,7 @@ class HomeScreen extends StatelessWidget {
     }
     // Default
     else {
-      return Iconpath.acIcon;
+      return Iconpath.engineIcon;
     }
   }
 
@@ -98,7 +98,7 @@ class HomeScreen extends StatelessWidget {
                     Tooltip(
                       message: "notifications".tr,
                       child: CircleAvatar(
-                        backgroundColor: Colors.black.withOpacity(0.1),
+                        backgroundColor: Colors.black.withValues(alpha: 0.1),
                         child: GestureDetector(
                           onTap: () {
                             Get.to(() => NotificationScreen());
@@ -166,61 +166,60 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // removed unsupported `spacing` properties from Column/Row widgets
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "ac_repair".tr,
-                        icon: Iconpath.acIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "battery".tr,
-                        icon: Iconpath.batterryIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "engine".tr,
-                        icon: Iconpath.engineIcon,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ServiceChip(
-                        label: "tires".tr,
-                        icon: Iconpath.wheelIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "electrical".tr,
-                        icon: Iconpath.electricIcon,
-                      ),
-                    ),
-                    Expanded(
-                      child: ServiceChip(
-                        label: "spares".tr,
-                        icon: Iconpath.spareIcon,
-                        onTap: () {
-                          Get.toNamed(Approute.getBrakePadsScreen());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
+            // Column(
+            //   children: [
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "ac_repair".tr,
+            //             icon: Iconpath.acIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "battery".tr,
+            //             icon: Iconpath.batterryIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "engine".tr,
+            //             icon: Iconpath.engineIcon,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //     const SizedBox(height: 10),
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "tires".tr,
+            //             icon: Iconpath.wheelIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "electrical".tr,
+            //             icon: Iconpath.electricIcon,
+            //           ),
+            //         ),
+            //         Expanded(
+            //           child: ServiceChip(
+            //             label: "spares".tr,
+            //             icon: Iconpath.spareIcon,
+            //             onTap: () {
+            //               Get.toNamed(Approute.getBrakePadsScreen());
+            //             },
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ],
+            // ),
             Obx(() {
               // Get services from controller, limit to 6
               final services = controller.serviceTypes.take(6).toList();
@@ -236,6 +235,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // First row: up to 3 services
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ...services.take(3).map((service) {
                         return Expanded(
@@ -247,13 +247,15 @@ class HomeScreen extends StatelessWidget {
                                 arguments: {'selectedService': service},
                               );
                             },
-                            child: ServiceChip(
-                              label: service.tr,
-                              icon: _getIconForService(service),
+                            child: Center(
+                              child: ServiceChip(
+                                label: service.tr,
+                                icon: _getIconForService(service),
+                              ),
                             ),
                           ),
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                   const SizedBox(height: 10),
@@ -271,13 +273,15 @@ class HomeScreen extends StatelessWidget {
                                   arguments: {'selectedService': service},
                                 );
                               },
-                              child: ServiceChip(
-                                label: service.tr,
-                                icon: _getIconForService(service),
+                              child: Center(
+                                child: ServiceChip(
+                                  label: service.tr,
+                                  icon: _getIconForService(service),
+                                ),
                               ),
                             ),
                           );
-                        }).toList(),
+                        }),
                       ],
                     ),
                 ],
@@ -285,7 +289,6 @@ class HomeScreen extends StatelessWidget {
             }),
             SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   "top_rated_garages".tr,

@@ -52,11 +52,12 @@ class GarageModel {
 
     List<String>? parseStringList(dynamic v) {
       if (v == null) return null;
-      if (v is List)
+      if (v is List) {
         return v
             .map((e) => e?.toString() ?? '')
             .where((s) => s.isNotEmpty)
             .toList();
+      }
       return null;
     }
 

@@ -6,7 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 
 class BrakePadsScreen extends StatelessWidget {
-  BrakePadsScreen({super.key});
+  const BrakePadsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class BrakePadsScreen extends StatelessWidget {
     Widget badge(String text, Color color) => Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -139,7 +139,7 @@ class BrakePadsScreen extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
+                          color: Colors.black.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -349,7 +349,7 @@ class BrakePadsScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
         ),
         child: Icon(icon, color: color, size: 22),
@@ -371,7 +371,7 @@ class BrakePadsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),

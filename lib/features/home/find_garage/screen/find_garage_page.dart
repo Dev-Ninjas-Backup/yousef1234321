@@ -1,14 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/home/find_garage/controller/find_charger_controller.dart';
 import '../../../../core/common/widgets/custom_appbar.dart';
-import '../wigets/slider_image.dart';
+import 'dart:async';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
+import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
-class FindGaragePage extends StatelessWidget {
+class FindGaragePage extends StatefulWidget {
+  const FindGaragePage({super.key});
+
+  @override
+  State<FindGaragePage> createState() => _FindGaragePageState();
+}
+
+class _FindGaragePageState extends State<FindGaragePage> {
   final FindChargerController controller = Get.put(FindChargerController());
+  final Completer<GoogleMapController> _mapController =
+      Completer<GoogleMapController>();
 
-  FindGaragePage({super.key});
+  @override
+  void initState() {
+    super.initState();
+
+    // Always refresh user's location when this screen initializes.
+    controller.loadCurrentLocation();
+
+    // When location becomes available, animate the map to the user's position.
+    ever(controller.currentLat, (_) async {
+      if (controller.currentLat.value != null &&
+          controller.currentLng.value != null) {
+        try {
+          final mapCtrl = await _mapController.future;
+          await mapCtrl.animateCamera(
+            CameraUpdate.newLatLngZoom(
+              LatLng(
+                controller.currentLat.value!,
+                controller.currentLng.value!,
+              ),
+              14,
+            ),
+          );
+        } catch (e) {
+          // ignore
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,56 +68,54 @@ class FindGaragePage extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Search bar + filter
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller.searchController,
-                      decoration: InputDecoration(
-                        hintText: "Search nearby garage",
-                        prefixIcon: const Icon(Icons.search, size: 20),
-                        suffixIcon: GestureDetector(
-                        onTap: () {
-                          controller.searchController.clear();
-                        },
-                        child: const Icon(Icons.clear,size: 20,)),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 16,
-                        ),
-                        filled: true,
-                        fillColor: const Color(0xFFF7F7F9),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      controller.isDropdownVisible.value =
-                          !controller.isDropdownVisible.value;
-                    },
-                    child: Image.asset(
-                      Iconpath.filtericon,
-                      height: 44,
-                      width: 44,
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: TextField(
+              //         controller: controller.searchController,
+              //         decoration: InputDecoration(
+              //           hintText: "Search nearby garage",
+              //           prefixIcon: const Icon(Icons.search, size: 20),
+              //           suffixIcon: GestureDetector(
+              //             onTap: () {
+              //               controller.searchController.clear();
+              //             },
+              //             child: const Icon(Icons.clear, size: 20),
+              //           ),
+              //           contentPadding: const EdgeInsets.symmetric(
+              //             vertical: 14,
+              //             horizontal: 16,
+              //           ),
+              //           filled: true,
+              //           fillColor: const Color(0xFFF7F7F9),
+              //           border: OutlineInputBorder(
+              //             borderRadius: BorderRadius.circular(14),
+              //             borderSide: BorderSide.none,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //     const SizedBox(width: 10),
+              //     GestureDetector(
+              //       onTap: () {
+              //         controller.isDropdownVisible.value =
+              //             !controller.isDropdownVisible.value;
+              //       },
+              //       child: Image.asset(
+              //         Iconpath.filtericon,
+              //         height: 44,
+              //         width: 44,
+              //       ),
+              //     ),
+              //   ],
+              // ),
 
               // Dropdown
               Obx(() {
                 if (!controller.isDropdownVisible.value) {
                   return const SizedBox();
                 }
-                return 
-                
-                
-                Container(
+                return Container(
                   margin: const EdgeInsets.only(top: 8),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -114,17 +157,215 @@ class FindGaragePage extends StatelessWidget {
                     }).toList(),
                   ),
                 );
-
-
-
               }),
 
               const SizedBox(height: 24),
-              Image.asset("assets/images/findGarageMap.png"),
-              const SizedBox(height: 24),
 
-              // Horizontal image slider
-              SliderImge(controller: controller),
+              // Map with garage markers and user's current location
+              Obx(() {
+                final garages = controller.garages;
+
+                final markers = <Marker>{};
+
+                // Garage markers
+                for (var g in garages) {
+                  if (g.garageLat != 0 && g.garageLng != 0) {
+                    markers.add(
+                      Marker(
+                        markerId: MarkerId(g.id),
+                        position: LatLng(g.garageLat, g.garageLng),
+                        infoWindow: InfoWindow(title: g.name),
+                      ),
+                    );
+                  }
+                }
+
+                // If we have user's location, show the map centered on user
+                final hasUserLoc =
+                    controller.currentLat.value != null &&
+                    controller.currentLng.value != null;
+
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    height: 260,
+                    width: double.infinity,
+                    child: Stack(
+                      children: [
+                        if (hasUserLoc) ...[
+                          GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: LatLng(
+                                controller.currentLat.value!,
+                                controller.currentLng.value!,
+                              ),
+                              zoom: 14,
+                            ),
+                            markers: {
+                              ...markers,
+                              Marker(
+                                markerId: const MarkerId('user'),
+                                position: LatLng(
+                                  controller.currentLat.value!,
+                                  controller.currentLng.value!,
+                                ),
+                                icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueAzure,
+                                ),
+                                infoWindow: const InfoWindow(title: 'You'),
+                              ),
+                            },
+                            gestureRecognizers:
+                                <Factory<OneSequenceGestureRecognizer>>{
+                                  Factory<OneSequenceGestureRecognizer>(
+                                    () => EagerGestureRecognizer(),
+                                  ),
+                                },
+                            myLocationEnabled: false,
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: false,
+                            onMapCreated: (GoogleMapController ctrl) async {
+                              if (!_mapController.isCompleted) {
+                                _mapController.complete(ctrl);
+                              }
+                            },
+                          ),
+                        ] else ...[
+                          // If no user location yet, show a loading placeholder
+                          Container(
+                            color: Colors.grey.shade100,
+                            child: const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        ],
+
+                        Positioned(
+                          bottom: 12,
+                          right: 12,
+                          child: Obx(() {
+                            final hasLoc =
+                                controller.currentLat.value != null &&
+                                controller.currentLng.value != null;
+                            return FloatingActionButton(
+                              mini: true,
+                              backgroundColor: hasLoc
+                                  ? Colors.white
+                                  : Colors.grey.shade300,
+                              onPressed: hasLoc
+                                  ? () async {
+                                      try {
+                                        final mapCtrl =
+                                            await _mapController.future;
+                                        final lat =
+                                            controller.currentLat.value!;
+                                        final lng =
+                                            controller.currentLng.value!;
+                                        await mapCtrl.animateCamera(
+                                          CameraUpdate.newLatLngZoom(
+                                            LatLng(lat, lng),
+                                            14,
+                                          ),
+                                        );
+                                      } catch (e) {
+                                        // ignore errors
+                                      }
+                                    }
+                                  : null,
+                              child: const Icon(
+                                Icons.my_location,
+                                color: Colors.black54,
+                                size: 18,
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+
+              const SizedBox(height: 16),
+
+              // Horizontal list of garages (image + name)
+              Obx(() {
+                final list = controller.garages.toList(growable: false);
+                if (list.isEmpty) {
+                  return const SizedBox();
+                }
+
+                return SizedBox(
+                  height: 140,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    itemCount: list.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final g = list[index];
+                      final image = g.coverPhoto.isNotEmpty
+                          ? g.coverPhoto
+                          : (g.profileImage.isNotEmpty
+                                ? g.profileImage
+                                : 'assets/images/onboarding1.png');
+
+                      return GestureDetector(
+                        onTap: () {
+                          // navigate to booking for this garage
+                          Get.toNamed(
+                            Approute.getServiceBooking(),
+                            arguments: {'garageId': g.id},
+                          );
+                        },
+                        child: Container(
+                          width: 220,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8),
+                                ),
+                                child: image.startsWith('http')
+                                    ? Image.network(
+                                        image,
+                                        height: 84,
+                                        width: 220,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        image,
+                                        height: 84,
+                                        width: 220,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  g.name,
+                                  style: getTextStyle(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }),
             ],
           ),
         ),
@@ -133,3 +374,4 @@ class FindGaragePage extends StatelessWidget {
   }
 }
 
+// topLeft: Radius.circular(8),

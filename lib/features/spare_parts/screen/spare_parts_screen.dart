@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
@@ -67,7 +69,7 @@ class SparePartsScreen extends StatelessWidget {
                 Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.black.withOpacity(0.1),
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
                       child: Image.asset(Iconpath.notification, scale: 2),
                     ),
                     SizedBox(width: 12),

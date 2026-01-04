@@ -9,6 +9,9 @@ import '../widgets/operation_houre.dart';
 import '../widgets/service_booking_middle_section.dart';
 import '../widgets/service_booking_upper_section.dart';
 import '../widgets/serviced_offered.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class ServiceBooking extends StatelessWidget {
   final controller = Get.put(ServiceBookingController());
@@ -75,7 +78,6 @@ class ServiceBooking extends StatelessWidget {
 
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8,
                       children: [
                         Expanded(
                           child: Text(
@@ -86,7 +88,30 @@ class ServiceBooking extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () async {
+                            final g = controller.garageDetail.value;
+                            if (g == null) return;
+                            final lat = g.garageLat;
+                            final lng = g.garageLng;
+                            if (lat == 0 || lng == 0) {
+                              EasyLoading.showError('Location not available');
+                              return;
+                            }
+
+                            final uri = Uri.parse(
+                              'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng',
+                            );
+                            try {
+                              if (!await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              )) {
+                                EasyLoading.showError('Could not open maps');
+                              }
+                            } catch (e) {
+                              EasyLoading.showError('Could not open maps');
+                            }
+                          },
                           child: Text(
                             "See location",
                             style: getTextStyle(
@@ -99,8 +124,42 @@ class ServiceBooking extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 12),
-                    //map
-                    Image.asset("assets/images/image 2.png"),
+                    // map (replace static image)
+                    Obx(() {
+                      final g = controller.garageDetail.value;
+                      if (g == null) {
+                        return Image.asset("assets/images/image 2.png");
+                      }
+                      final lat = g.garageLat;
+                      final lng = g.garageLng;
+                      if (lat == 0 || lng == 0) {
+                        return Image.asset("assets/images/image 2.png");
+                      }
+
+                      final marker = Marker(
+                        markerId: const MarkerId('garage_marker'),
+                        position: LatLng(lat, lng),
+                        infoWindow: InfoWindow(title: g.name),
+                      );
+
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: SizedBox(
+                          height: 180,
+                          width: double.infinity,
+                          child: GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: LatLng(lat, lng),
+                              zoom: 15,
+                            ),
+                            markers: {marker},
+                            myLocationEnabled: false,
+                            myLocationButtonEnabled: false,
+                            zoomControlsEnabled: false,
+                          ),
+                        ),
+                      );
+                    }),
                     SizedBox(height: 24),
 
                     Center(
@@ -116,7 +175,11 @@ class ServiceBooking extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          Get.to(ServiceReviewScreen());
+                          final garageId = controller.garageDetail.value?.id;
+                          Get.to(
+                            ServiceReviewScreen(),
+                            arguments: {'garageId': garageId},
+                          );
                         },
                         icon: const Icon(
                           Icons.mode_edit_outline_outlined,

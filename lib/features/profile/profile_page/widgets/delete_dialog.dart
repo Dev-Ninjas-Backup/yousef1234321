@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/routes/app_route.dart';
+// import 'package:yousef1234321/routes/app_route.dart';
 import '../../../../core/common/style/global_text_style.dart';
+import '../../../../core/network/api_client.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void showDeletelDialog() {
   Get.dialog(
@@ -64,17 +66,30 @@ void showDeletelDialog() {
                       "cancel".tr,
                       style: TextStyle(fontSize: 12),
                     ),
+                    child: const Text("Cancel", style: TextStyle(fontSize: 12)),
                   ),
                 ),
                 const SizedBox(width: 16),
 
-                // Call Now Button
+                // Delete Account Button
                 Expanded(
                   child: SizedBox(
                     height: 36,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Get.offAllNamed(Approute.signInScreen);
+                      onPressed: () async {
+                        // Show loading and call delete endpoint
+                        try {
+                          EasyLoading.show(status: 'Deleting...');
+                          final success = await ApiClient.to
+                              .deleteUserAccount();
+                          EasyLoading.dismiss();
+                          if (success) {
+                            // Close dialog if still open
+                            if (Get.isDialogOpen == true) Get.back();
+                          }
+                        } catch (e) {
+                          EasyLoading.dismiss();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,

@@ -91,7 +91,7 @@ class PartsSearchSection extends StatelessWidget {
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
                           // if a category is already selected use it, otherwise pick "Select Category"
-                          value:
+                          initialValue:
                               (controller.selectedCategory.value != null &&
                                   items.contains(
                                     controller.selectedCategory.value,
@@ -194,12 +194,14 @@ class PartsSearchSection extends StatelessWidget {
                       () => Scaffold(
                         appBar: AppBar(title: Text('search_results'.tr)),
                         body: Obx(() {
-                          if (productsCtrl.isLoading.value)
+                          if (productsCtrl.isLoading.value) {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
-                          if (productsCtrl.products.isEmpty)
+                          }
+                          if (productsCtrl.products.isEmpty) {
                             return Center(child: Text('no_products'.tr));
+                          }
                           return ListView.builder(
                             padding: const EdgeInsets.all(12),
                             itemCount: productsCtrl.products.length,
@@ -246,17 +248,19 @@ class PartsSearchSection extends StatelessWidget {
                                 onTap: () {
                                   String? id;
                                   if (p is Map) {
-                                    if (p['id'] != null)
+                                    if (p['id'] != null) {
                                       id = p['id'].toString();
-                                    else if (p['data'] is Map &&
-                                        p['data']['id'] != null)
+                                    } else if (p['data'] is Map &&
+                                        p['data']['id'] != null) {
                                       id = p['data']['id'].toString();
+                                    }
                                   }
-                                  if (id != null)
+                                  if (id != null) {
                                     Get.toNamed(
                                       Approute.getBrakePadsScreen(),
                                       arguments: id,
                                     );
+                                  }
                                 },
                               );
                             },

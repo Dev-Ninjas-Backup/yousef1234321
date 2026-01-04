@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/parts_details/controller/parts_details_controller.dart';
 import 'package:yousef1234321/features/parts_details/widgets/promotion_listing.dart';
-import 'package:yousef1234321/routes/app_route.dart';
 
 class PartsDetailsScreen extends StatelessWidget {
   const PartsDetailsScreen({super.key});
@@ -38,39 +37,6 @@ class PartsDetailsScreen extends StatelessWidget {
     );
 
     // 🔹 Reusable Dropdown
-    Widget dropdown(String label, List<String> items, RxString valueRx) =>
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-            ),
-            const SizedBox(height: 6),
-            Obx(
-              () => Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButton<String>(
-                  value: valueRx.value.isEmpty ? null : valueRx.value,
-                  isExpanded: true,
-                  hint: const Text("Select"),
-                  underline: const SizedBox(),
-                  items: items
-                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                      .toList(),
-                  onChanged: (value) => valueRx.value = value ?? '',
-                ),
-              ),
-            ),
-          ],
-        );
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -244,7 +210,11 @@ class PartsDetailsScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 24),
-            textField("Brand *", hint: "Type here...", controller: c.quantity),
+            textField(
+              "Quantity *",
+              hint: "Type here...",
+              controller: c.quantity,
+            ),
             const SizedBox(height: 20),
 
             textField(
@@ -259,41 +229,92 @@ class PartsDetailsScreen extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
-            Obx(
-              () => GestureDetector(
-                onTap: c.pickImage,
-                child: Container(
-                  height: 120,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: c.selectedImage.value == null
-                      ? const Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.add_circle_outline,
-                                color: Colors.blue,
-                              ),
-                              SizedBox(height: 4),
-                              Text("Add Photo"),
-                            ],
+Obx(
+  () => GestureDetector(
+    onTap: c.pickImages, // select more images
+    child: Container(
+      height: 140,
+      width: double.infinity,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: c.selectedImages.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.add_circle_outline, color: Colors.blue, size: 36),
+                  SizedBox(height: 4),
+                  Text("Add Photos"),
+                ],
+              ),
+            )
+          : ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: c.selectedImages.length + 1, // +1 for add button
+              itemBuilder: (_, index) {
+                if (index == c.selectedImages.length) {
+                  // Last item = add more button
+                  return GestureDetector(
+                    onTap: c.pickImages,
+                    child: Container(
+                      width: 120,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade400),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.add, color: Colors.blue, size: 32),
+                      ),
+                    ),
+                  );
+                }
+
+                final img = c.selectedImages[index];
+                return Stack(
+                  children: [
+                    Container(
+                      width: 120,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(img.path),
+                          fit: BoxFit.cover,
+                          width: 120,
+                          height: 120,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 2,
+                      right: 2,
+                      child: GestureDetector(
+                        onTap: () => c.removeImage(index),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            shape: BoxShape.circle,
                           ),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(c.selectedImage.value!.path),
-                            fit: BoxFit.cover,
-                            width: double.infinity,
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
-                ),
-              ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
+    ),
+  ),
+),
+
 
             const SizedBox(height: 20),
             const Text(
@@ -332,23 +353,38 @@ class PartsDetailsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 10),
-            const Text(
-              "Note: You can list up to 3 parts for free. After that, a small fee of 20 AED per part will apply.",
-              style: TextStyle(color: Colors.red, fontSize: 12),
-            ),
+            // const Text(
+            //   "Note: You can list up to 3 parts for free. After that, a small fee of 20 AED per part will apply.",
+            //   style: TextStyle(color: Colors.red, fontSize: 12),
+            // ),
 
-            const SizedBox(height: 20),
+       //     const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (!c.isConfirmed.value) {
                     EasyLoading.showError(
                       "Error, Please confirm part information.",
                     );
                     return;
                   }
-                  Get.toNamed(Approute.payment);
+
+                  // 🔥 PROMOTION CHECK
+                  final canProceed = await c.validatePromotionBeforeSubmit();
+                  if (!canProceed) return;
+
+                  // 🔥 CREATE PRODUCT
+                  await c.createProduct();
+
+                  // if (!c.isConfirmed.value) {
+                  //   EasyLoading.showError(
+                  //     "Error, Please confirm part information.",
+                  //   );
+                  //   return;
+                  // }
+
+                  //hit create product api
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -390,7 +426,7 @@ Widget _planTile({
     child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.blue.withOpacity(0.08) : Colors.white,
+        color: isSelected ? Colors.blue.withValues(alpha: 0.08) : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isSelected ? Colors.blue : Colors.grey.shade300,

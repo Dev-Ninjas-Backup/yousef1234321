@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yousef1234321/features/home/home_page/widget/brand_marque.dart';
 
 import '../../../../routes/app_route.dart';
@@ -152,20 +154,73 @@ class SearchSection extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(8),
+                Obx(() {
+                  final hasLocation =
+                      controller.selectedLocation.value != null &&
+                      controller.selectedLocation.value!.isNotEmpty;
+                  final hasService =
+                      controller.selectedService.value != null &&
+                      controller.selectedService.value!.isNotEmpty;
+                  final enabled = hasLocation && hasService;
+
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.circular(8),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    Get.toNamed(Approute.getfindGaragePage());
-                  },
-                  child: const Text("Search garage"),
-                ),
+                    onPressed: enabled
+                        ? () async {
+                            // Attempt to get current location. If permission denied, navigate without it.
+                            double? lat;
+                            double? lng;
+                            try {
+                              EasyLoading.show(status: 'Locating...');
+                              LocationPermission permission =
+                                  await Geolocator.checkPermission();
+                              if (permission == LocationPermission.denied) {
+                                permission =
+                                    await Geolocator.requestPermission();
+                              }
+                              if (permission == LocationPermission.denied ||
+                                  permission ==
+                                      LocationPermission.deniedForever) {
+                                EasyLoading.dismiss();
+                                EasyLoading.showInfo(
+                                  'Location permission denied',
+                                );
+                              } else {
+                                final pos = await Geolocator.getCurrentPosition(
+                                  desiredAccuracy: LocationAccuracy.high,
+                                );
+                                lat = pos.latitude;
+                                lng = pos.longitude;
+                                EasyLoading.dismiss();
+                              }
+                            } catch (e) {
+                              EasyLoading.dismiss();
+                              print('Failed to get location: $e');
+                            }
+
+                            final args = {
+                              'emirate': controller.selectedLocation.value,
+                              'serviceName': controller.selectedService.value,
+                              if (lat != null && lng != null) 'currentLat': lat,
+                              if (lat != null && lng != null) 'currentLng': lng,
+                            };
+
+                            Get.toNamed(
+                              Approute.getfindGaragePage(),
+                              arguments: args,
+                            );
+                          }
+                        : null,
+                    child: const Text("Search garage"),
+                  );
+                }),
               ],
             ),
           ),
