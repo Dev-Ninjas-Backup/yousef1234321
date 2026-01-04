@@ -49,7 +49,7 @@ class HomeController extends GetxController {
     "battery",
     "engine",
     "tires",
-    "electrical",
+    "electrical", 
     "spares",
   ];
 

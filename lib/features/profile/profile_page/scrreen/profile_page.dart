@@ -81,7 +81,7 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar(title: "profile".tr),
+                CustomAppBar(title: "profile"),
                 SizedBox(height: 30),
                 Center(
                   child: Obx(

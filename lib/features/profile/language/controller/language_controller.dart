@@ -29,7 +29,7 @@ class LanguageController extends GetxController {
     if (savedCode != null && savedCountry != null) {
       return Locale(savedCode, savedCountry);
     }
-    return null;
+    return const Locale('en', 'US');
   }
 
   void changeLanguage(String name, String code, String country) {
