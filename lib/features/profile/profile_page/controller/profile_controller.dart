@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -33,7 +34,6 @@ class ProfileController extends GetxController {
 
       final response = await ApiClient.to.get(Endpoint.profile);
 
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.body != null &&
             response.body is Map &&
@@ -46,7 +46,6 @@ class ProfileController extends GetxController {
           phone.value = data['phone'] ?? '';
           role.value = data['role'] ?? '';
           profilePhoto.value = data['profilePhoto']; // Can be null
-
         } else {
           Get.snackbar(
             "Error",
@@ -127,7 +126,13 @@ class ProfileController extends GetxController {
         Get.toNamed(Approute.locationPageScreen);
       },
     ),
-    ProfileModel(icon: Icons.settings, title: "App Settings"),
+    ProfileModel(
+      icon: Icons.settings,
+      title: "App Settings",
+      ontap: () {
+        EasyLoading.showInfo("App Settings not available at the moment");
+      },
+    ),
 
     ProfileModel(
       icon: Icons.language,
@@ -143,6 +148,12 @@ class ProfileController extends GetxController {
         Get.toNamed(Approute.helpSupportScreen);
       },
     ),
-    ProfileModel(icon: Icons.security, title: "Legal & Security"),
+    ProfileModel(
+      icon: Icons.security,
+      title: "Legal & Security",
+      ontap: () {
+        EasyLoading.showInfo("Legal & Security not available at the moment");
+      },
+    ),
   ];
 }
