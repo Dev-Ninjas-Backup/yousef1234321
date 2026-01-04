@@ -21,7 +21,7 @@ class HelpSupportScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
 
             children: [
-              CustomAppBar(title: "Help & Support"),
+              CustomAppBar(title: "help_support"),
               const SizedBox(height: 90),
 
               Image.asset(
@@ -31,9 +31,9 @@ class HelpSupportScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              const Text(
-                "Help & Support",
-                style: TextStyle(
+              Text(
+                "help_support".tr,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryColor,
@@ -41,10 +41,10 @@ class HelpSupportScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              const Text(
-                "If you face any issues, please contact our support team.",
+              Text(
+                "help_support_desc".tr,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                   color: Colors.black54,
                   height: 1.4,
@@ -70,9 +70,9 @@ class HelpSupportScreen extends StatelessWidget {
                     width: 22,
                     color: Colors.white,
                   ),
-                  label: const Text(
-                    "Contact Support",
-                    style: TextStyle(
+                  label: Text(
+                    "contact_support".tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

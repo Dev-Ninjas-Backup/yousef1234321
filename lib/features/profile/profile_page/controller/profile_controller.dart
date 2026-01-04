@@ -20,10 +20,55 @@ class ProfileController extends GetxController {
   final phone = ''.obs;
   final role = ''.obs;
 
+  var profileItem = <ProfileModel>[].obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchProfile();
+    updateProfileItems();
+  }
+
+  void updateProfileItems() {
+    profileItem.value = [
+      ProfileModel(
+        icon: Icons.person_2_outlined,
+        title: "edit_profile",
+        ontap: () {
+          Get.toNamed(Approute.editProfileScreen);
+        },
+      ),
+      ProfileModel(
+        icon: Icons.list,
+        title: "my_listing",
+        ontap: () {
+          Get.toNamed(Approute.myListingPage);
+        },
+      ),
+      ProfileModel(
+        icon: Icons.location_on_outlined,
+        title: "location",
+        ontap: () {
+          Get.toNamed(Approute.locationPageScreen);
+        },
+      ),
+      ProfileModel(icon: Icons.settings, title: "app_settings"),
+      ProfileModel(
+        icon: Icons.language,
+        title: "language",
+        ontap: () {
+          Get.toNamed(Approute.languageScreen);
+        },
+      ),
+      ProfileModel(
+        icon: Icons.contact_support_rounded,
+        title: "help_support",
+        ontap: () {
+          Get.toNamed(Approute.helpSupportScreen);
+        },
+      ),
+      ProfileModel(icon: Icons.security, title: "legal_security"),
+    ];
   }
 
   /// Fetch user profile from API
@@ -32,7 +77,6 @@ class ProfileController extends GetxController {
       isLoadingProfile.value = true;
 
       final response = await ApiClient.to.get(Endpoint.profile);
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.body != null &&
@@ -46,27 +90,26 @@ class ProfileController extends GetxController {
           phone.value = data['phone'] ?? '';
           role.value = data['role'] ?? '';
           profilePhoto.value = data['profilePhoto']; // Can be null
-
         } else {
           Get.snackbar(
-            "Error",
-            "Invalid profile data format",
+            'error'.tr,
+            'invalid_profile_data_format'.tr,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
           );
         }
       } else {
         Get.snackbar(
-          "Error",
-          "Failed to load profile",
+          'error'.tr,
+          'failed_to_load_profile'.tr,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
         );
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Failed to fetch profile: $e",
+        'error'.tr,
+        'failed_to_fetch_profile'.tr.replaceAll('@error', e.toString()),
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -85,8 +128,8 @@ class ProfileController extends GetxController {
 
       // Show success message
       Get.snackbar(
-        "Success",
-        "Logged out successfully",
+        'success'.tr,
+        'logged_out_successfully'.tr,
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
@@ -95,8 +138,8 @@ class ProfileController extends GetxController {
       Get.offAllNamed(Approute.signInScreen);
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Failed to logout: $e",
+        'error'.tr,
+        'failed_to_logout'.tr.replaceAll('@error', e.toString()),
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -104,45 +147,4 @@ class ProfileController extends GetxController {
       isLoggingOut.value = false;
     }
   }
-
-  var profileItem = [
-    ProfileModel(
-      icon: Icons.person_2_outlined,
-      title: "Profile",
-      ontap: () {
-        Get.toNamed(Approute.editProfileScreen);
-      },
-    ),
-    ProfileModel(
-      icon: Icons.list,
-      title: "My Listing",
-      ontap: () {
-        Get.toNamed(Approute.myListingPage);
-      },
-    ),
-    ProfileModel(
-      icon: Icons.location_on_outlined,
-      title: "Location",
-      ontap: () {
-        Get.toNamed(Approute.locationPageScreen);
-      },
-    ),
-    ProfileModel(icon: Icons.settings, title: "App Settings"),
-
-    ProfileModel(
-      icon: Icons.language,
-      title: "Language",
-      ontap: () {
-        Get.toNamed(Approute.languageScreen);
-      },
-    ),
-    ProfileModel(
-      icon: Icons.contact_support_rounded,
-      title: "Help & Support",
-      ontap: () {
-        Get.toNamed(Approute.helpSupportScreen);
-      },
-    ),
-    ProfileModel(icon: Icons.security, title: "Legal & Security"),
-  ];
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:yousef1234321/features/profile/edit_profile/controller/edit_profile_controller.dart';
 
 class BuildPhoneField extends StatelessWidget {
@@ -13,16 +14,16 @@ class BuildPhoneField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Mobile Number",
-            style: TextStyle(fontSize: 18, color: Colors.black),
+          Text(
+            "mobile_number".tr,
+            style: const TextStyle(fontSize: 18, color: Colors.black),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: controller.phoneController,
             keyboardType: TextInputType.phone,
             decoration: InputDecoration(
-              hintText: "Mobile Number",
+              hintText: "mobile_number".tr,
               hintStyle: const TextStyle(color: Colors.grey),
               filled: true,
               fillColor: const Color(0xFFF9FAFB),
