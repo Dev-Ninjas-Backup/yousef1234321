@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -50,9 +51,12 @@ class PartsDetailsController extends GetxController {
       final data = json.decode(response.body);
 
       if ((response.statusCode == 200 || response.statusCode == 201)) {
-        print("monthly payment: ${data['url']}");
-        final uri = Uri.parse(data['url']);
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final url = data['url'] as String?;
+        if (url != null && url.isNotEmpty) {
+          await _openPaymentAndPoll(url, expectMonthly: true);
+        } else {
+          EasyLoading.showError("Payment failed: invalid payment url");
+        }
       } else {
         print("monthly response:${response.body}");
         EasyLoading.showError("Payment failed");
@@ -80,8 +84,12 @@ class PartsDetailsController extends GetxController {
       final data = json.decode(response.body);
 
       if ((response.statusCode == 200 || response.statusCode == 201)) {
-        final uri = Uri.parse(data['url']);
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final url = data['url'] as String?;
+        if (url != null && url.isNotEmpty) {
+          await _openPaymentAndPoll(url, expectProductCredits: true);
+        } else {
+          EasyLoading.showError("Payment failed: invalid payment url");
+        }
       } else {
         EasyLoading.showError("Payment failed");
       }
@@ -107,8 +115,12 @@ class PartsDetailsController extends GetxController {
       final data = json.decode(response.body);
 
       if ((response.statusCode == 200 || response.statusCode == 201)) {
-        final uri = Uri.parse(data['url']);
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final url = data['url'] as String?;
+        if (url != null && url.isNotEmpty) {
+          await _openPaymentAndPoll(url, expectPromotionCredit: true);
+        } else {
+          EasyLoading.showError("Payment failed: invalid payment url");
+        }
       } else {
         EasyLoading.showError("Payment failed");
       }
@@ -119,40 +131,114 @@ class PartsDetailsController extends GetxController {
     }
   }
 
+  Future<void> _openPaymentAndPoll(
+    String url, {
+    bool expectMonthly = false,
+    bool expectProductCredits = false,
+    bool expectPromotionCredit = false,
+    Duration timeout = const Duration(seconds: 60),
+  }) async {
+    try {
+      // Snapshot previous values
+      final prevHasMonthly = hasProductMonthly.value;
+      final prevProductCredits = productCredits.value;
+      final prevPromotionCredits = promotionCredits.value;
+      final prevCanAddFree = canAddFreeProduct.value;
+
+      final uri = Uri.parse(url);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+      // Start polling the server for up to [timeout]
+      final start = DateTime.now();
+      final completer = Completer<void>();
+      final timer = Timer.periodic(const Duration(seconds: 5), (t) async {
+        try {
+          await checkUserProductLimit();
+
+          final nowHasMonthly = hasProductMonthly.value;
+          final nowProductCredits = productCredits.value;
+          final nowPromotionCredits = promotionCredits.value;
+          final nowCanAddFree = canAddFreeProduct.value;
+
+          var confirmed = false;
+          if (expectMonthly && nowHasMonthly && nowHasMonthly != prevHasMonthly)
+            confirmed = true;
+          if (expectProductCredits && nowProductCredits > prevProductCredits)
+            confirmed = true;
+          if (expectPromotionCredit &&
+              nowPromotionCredits > prevPromotionCredits)
+            confirmed = true;
+          if (nowCanAddFree && nowCanAddFree != prevCanAddFree)
+            confirmed = true;
+
+          if (confirmed) {
+            EasyLoading.showSuccess('Payment confirmed');
+            t.cancel();
+            completer.complete();
+            return;
+          }
+
+          if (DateTime.now().difference(start) > timeout) {
+            t.cancel();
+            // timeout — don't treat as failure of payment, inform the user
+            EasyLoading.showInfo(
+              'Payment not yet confirmed. Refreshing status later.',
+            );
+            completer.complete();
+            return;
+          }
+        } catch (e) {
+          // ignore polling errors
+        }
+      });
+
+      await completer.future;
+      // Ensure we have the latest state from server after polling completes
+      try {
+        await checkUserProductLimit();
+      } catch (_) {}
+      if (timer.isActive) timer.cancel();
+    } catch (e) {
+      EasyLoading.showError('Failed to open payment');
+    }
+  }
+
   final hasProductMonthly = false.obs;
   final productMonthlyEndsAt = Rxn<DateTime>();
   final productCredits = 0.obs;
   final canAddFreeProduct = false.obs;
   final promotionCredits = 0.obs;
 
-
   Future<void> handlePromotionPayment() async {
-  if (promotionCredits.value > 0) {
-    EasyLoading.showSuccess(
-      "Promotion applied using credit (${promotionCredits.value} left)",
-    );
+    if (promotionCredits.value > 0) {
+      EasyLoading.showSuccess(
+        "Promotion applied using credit (${promotionCredits.value} left)",
+      );
 
-    // Optional: decrease locally for instant UI feedback
-    promotionCredits.value -= 1;
-    return;
+      // Optional: decrease locally for instant UI feedback
+      promotionCredits.value -= 1;
+      return;
+    }
+
+    await createPromotionPayment();
   }
 
-  await createPromotionPayment();
-}
+  Future<bool> validatePromotionBeforeSubmit() async {
+    if (!isPromoted.value) return true;
 
-Future<bool> validatePromotionBeforeSubmit() async {
-  if (!isPromoted.value) return true;
+    // Refresh server state before deciding - ensures we don't rely on stale local value
+    await checkUserProductLimit();
 
-  if (promotionCredits.value > 0) {
-    promotionCredits.value -= 1; // UI instant
-    return true;
+    if (promotionCredits.value > 0) {
+      // Consume one credit locally for immediate UX feedback. The server will reconcile on createProduct.
+      promotionCredits.value = promotionCredits.value - 1;
+      return true;
+    }
+
+    // No credits available: open payment flow for buying a promotion credit
+    await createPromotionPayment();
+    return false;
   }
-
-  await createPromotionPayment();
-  return false;
-}
-
-
 
   Future<void> checkUserProductLimit() async {
     try {
@@ -183,12 +269,9 @@ Future<bool> validatePromotionBeforeSubmit() async {
     }
   }
 
-
   void selectPlan(int value) {
     selectedPlan.value = value;
   }
-
-
 
   /// ---------------- Promotion ----------------
   final isPromoted = false.obs;
@@ -209,22 +292,21 @@ Future<bool> validatePromotionBeforeSubmit() async {
   // }
   final selectedImages = <XFile>[].obs;
 
-final ImagePicker _picker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
 
-Future<void> pickImages() async {
-  final images = await _picker.pickMultiImage();
-  if (images.isNotEmpty) {
-    selectedImages.addAll(images); // allow adding more images
+  Future<void> pickImages() async {
+    final images = await _picker.pickMultiImage();
+    if (images.isNotEmpty) {
+      selectedImages.addAll(images); // allow adding more images
+    }
   }
-}
 
-/// Remove image by index
-void removeImage(int index) {
-  if (index >= 0 && index < selectedImages.length) {
-    selectedImages.removeAt(index);
+  /// Remove image by index
+  void removeImage(int index) {
+    if (index >= 0 && index < selectedImages.length) {
+      selectedImages.removeAt(index);
+    }
   }
-}
-
 
   /// ---------------- Confirmation ----------------
   final isConfirmed = false.obs;
@@ -253,7 +335,7 @@ void removeImage(int index) {
         headers: headers,
       );
 
-      if (response.statusCode == 200||response.statusCode==201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = json.decode(response.body);
         if (jsonData['success'] == true) {
           List<dynamic> dataList = jsonData['data']['data'];
@@ -261,14 +343,13 @@ void removeImage(int index) {
               .map((e) => PartCategory.fromJson(e))
               .toList();
 
-              print("the categoris: ${response.body}");
-
+          print("the categoris: ${response.body}");
         } else {
           print("Error");
         }
       } else {}
     } catch (e) {
-    print(e);
+      print(e);
     } finally {}
   }
 
@@ -287,188 +368,184 @@ void removeImage(int index) {
     super.onClose();
   }
 
-Future<void> createProduct() async {
-  try {
-    EasyLoading.show(status: "Creating listing...");
+  Future<void> createProduct() async {
+    try {
+      EasyLoading.show(status: "Creating listing...");
 
-    // ---------- VALIDATION ----------
-    if (partNameCtrl.text.isEmpty ||
-        brand.text.isEmpty ||
-        selectedCategoryId.value == null ||
-        priceCtrl.text.isEmpty ||
-        quantity.text.isEmpty ||
-        sellerNameCtrl.text.isEmpty ||
-        phoneCtrl.text.isEmpty) {
-      EasyLoading.showError("Please fill all required fields");
-      return;
-    }
-
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse("${Endpoint.baseUrl}/products"),
-    );
-
-    // ---------- ADD FIELDS ----------
-    request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
-    request.fields.addAll({
-      "partName": partNameCtrl.text.trim(),
-      "brand": brand.text.trim(),
-      "categoryId": selectedCategoryId.value!,
-      "condition": "New",
-      "price": priceCtrl.text,
-      "quantity": quantity.text,
-      "description": descriptionCtrl.text.trim(),
-      "isPromoted": isPromoted.value.toString(),
-      "sellerName": sellerNameCtrl.text.trim(),
-      "sellerEmail": emailCtrl.text.trim(),
-      "sellerPhoneNumber": phoneCtrl.text.trim(),
-      "sellerType": "INDIVIDUAL",
-      "plan": selectedPlan.value == 0 ? "MONTHLY" : "PAY_PER_LISTING",
-    });
-
-    // ---------- ADD MULTIPLE IMAGES ----------
-    for (var img in selectedImages) {
-      final mimeType = img.path.split('.').last.toLowerCase();
-
-      String type;
-      String subtype;
-
-      switch (mimeType) {
-        case 'jpg':
-        case 'jpeg':
-          type = 'image';
-          subtype = 'jpeg';
-          break;
-        case 'png':
-          type = 'image';
-          subtype = 'png';
-          break;
-        default:
-          type = 'application';
-          subtype = 'octet-stream';
+      // ---------- VALIDATION ----------
+      if (partNameCtrl.text.isEmpty ||
+          brand.text.isEmpty ||
+          selectedCategoryId.value == null ||
+          priceCtrl.text.isEmpty ||
+          quantity.text.isEmpty ||
+          sellerNameCtrl.text.isEmpty ||
+          phoneCtrl.text.isEmpty) {
+        EasyLoading.showError("Please fill all required fields");
+        return;
       }
 
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'photos', // key expected by your API
-          img.path,
-          contentType: MediaType(type, subtype),
-        ),
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse("${Endpoint.baseUrl}/products"),
       );
-    }
 
-    // ---------- SEND REQUEST ----------
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
+      // ---------- ADD FIELDS ----------
+      request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
+      request.fields.addAll({
+        "partName": partNameCtrl.text.trim(),
+        "brand": brand.text.trim(),
+        "categoryId": selectedCategoryId.value!,
+        "condition": "New",
+        "price": priceCtrl.text,
+        "quantity": quantity.text,
+        "description": descriptionCtrl.text.trim(),
+        "isPromoted": isPromoted.value.toString(),
+        "sellerName": sellerNameCtrl.text.trim(),
+        "sellerEmail": emailCtrl.text.trim(),
+        "sellerPhoneNumber": phoneCtrl.text.trim(),
+        "sellerType": "INDIVIDUAL",
+        "plan": selectedPlan.value == 0 ? "MONTHLY" : "PAY_PER",
+      });
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      EasyLoading.showSuccess("Product listed successfully 🎉");
-      await checkUserProductLimit();
-      Get.back();
-    } else {
-      debugPrint("Create product error: ${response.body}");
-      EasyLoading.showError("Failed to create product");
+      // ---------- ADD MULTIPLE IMAGES ----------
+      for (var img in selectedImages) {
+        final mimeType = img.path.split('.').last.toLowerCase();
+
+        String type;
+        String subtype;
+
+        switch (mimeType) {
+          case 'jpg':
+          case 'jpeg':
+            type = 'image';
+            subtype = 'jpeg';
+            break;
+          case 'png':
+            type = 'image';
+            subtype = 'png';
+            break;
+          default:
+            type = 'application';
+            subtype = 'octet-stream';
+        }
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'photos', // key expected by your API
+            img.path,
+            contentType: MediaType(type, subtype),
+          ),
+        );
+      }
+
+      // ---------- SEND REQUEST ----------
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess("Product listed successfully 🎉");
+        await checkUserProductLimit();
+        Get.back();
+      } else {
+        debugPrint("Create product error: ${response.body}");
+        EasyLoading.showError("Failed to create product");
+      }
+    } catch (e) {
+      debugPrint("Create product exception: $e");
+      EasyLoading.showError("Something went wrong");
+    } finally {
+      EasyLoading.dismiss();
     }
-  } catch (e) {
-    debugPrint("Create product exception: $e");
-    EasyLoading.showError("Something went wrong");
-  } finally {
-    EasyLoading.dismiss();
   }
-}
 
+  // Future<void> createProduct() async {
+  //   try {
+  //     EasyLoading.show(status: "Creating listing...");
 
+  //     // ---------- VALIDATION ----------
+  //     if (partNameCtrl.text.isEmpty ||
+  //         brand.text.isEmpty ||
+  //         selectedCategoryId.value == null ||
+  //         priceCtrl.text.isEmpty ||
+  //         quantity.text.isEmpty ||
+  //         sellerNameCtrl.text.isEmpty ||
+  //         phoneCtrl.text.isEmpty) {
+  //       EasyLoading.showError("Please fill all required fields");
+  //       return;
+  //     }
 
-// Future<void> createProduct() async {
-//   try {
-//     EasyLoading.show(status: "Creating listing...");
+  //     var request = http.MultipartRequest(
+  //       'POST',
+  //       Uri.parse("${Endpoint.baseUrl}/products"),
+  //     );
 
-//     // ---------- VALIDATION ----------
-//     if (partNameCtrl.text.isEmpty ||
-//         brand.text.isEmpty ||
-//         selectedCategoryId.value == null ||
-//         priceCtrl.text.isEmpty ||
-//         quantity.text.isEmpty ||
-//         sellerNameCtrl.text.isEmpty ||
-//         phoneCtrl.text.isEmpty) {
-//       EasyLoading.showError("Please fill all required fields");
-//       return;
-//     }
+  //     // ---------- ADD FIELDS ----------
+  //     request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
+  //     request.fields['partName'] = partNameCtrl.text.trim();
+  //     request.fields['brand'] = brand.text.trim();
+  //     request.fields['categoryId'] = selectedCategoryId.value!;
+  //     request.fields['condition'] = 'New';
+  //     request.fields['price'] = priceCtrl.text;
+  //     request.fields['quantity'] = quantity.text;
+  //     request.fields['description'] = descriptionCtrl.text.trim();
+  //     request.fields['isPromoted'] = isPromoted.value.toString();
+  //     request.fields['sellerName'] = sellerNameCtrl.text.trim();
+  //     request.fields['sellerEmail'] = emailCtrl.text.trim();
+  //     request.fields['sellerPhoneNumber'] = phoneCtrl.text.trim();
+  //     request.fields['sellerType'] = 'INDIVIDUAL';
+  //     request.fields['plan'] = selectedPlan.value == 0 ? 'MONTHLY' : 'PAY_PER_LISTING';
 
-//     var request = http.MultipartRequest(
-//       'POST',
-//       Uri.parse("${Endpoint.baseUrl}/products"),
-//     );
+  //     // ---------- ADD IMAGE ----------
+  // if (selectedImage.value != null) {
+  //   final mimeType = selectedImage.value!.path.split('.').last.toLowerCase();
 
-//     // ---------- ADD FIELDS ----------
-//     request.headers['Authorization'] = 'Bearer ${ApiClient.to.token}';
-//     request.fields['partName'] = partNameCtrl.text.trim();
-//     request.fields['brand'] = brand.text.trim();
-//     request.fields['categoryId'] = selectedCategoryId.value!;
-//     request.fields['condition'] = 'New';
-//     request.fields['price'] = priceCtrl.text;
-//     request.fields['quantity'] = quantity.text;
-//     request.fields['description'] = descriptionCtrl.text.trim();
-//     request.fields['isPromoted'] = isPromoted.value.toString();
-//     request.fields['sellerName'] = sellerNameCtrl.text.trim();
-//     request.fields['sellerEmail'] = emailCtrl.text.trim();
-//     request.fields['sellerPhoneNumber'] = phoneCtrl.text.trim();
-//     request.fields['sellerType'] = 'INDIVIDUAL';
-//     request.fields['plan'] = selectedPlan.value == 0 ? 'MONTHLY' : 'PAY_PER_LISTING';
+  //   String type;
+  //   String subtype;
 
-//     // ---------- ADD IMAGE ----------
-// if (selectedImage.value != null) {
-//   final mimeType = selectedImage.value!.path.split('.').last.toLowerCase();
+  //   switch (mimeType) {
+  //     case 'jpg':
+  //     case 'jpeg':
+  //       type = 'image';
+  //       subtype = 'jpeg';
+  //       break;
+  //     case 'png':
+  //       type = 'image';
+  //       subtype = 'png';
+  //       break;
+  //     default:
+  //       type = 'application';
+  //       subtype = 'octet-stream';
+  //   }
 
-//   String type;
-//   String subtype;
+  //   request.files.add(
+  //     await http.MultipartFile.fromPath(
+  //       'photos', // key expected by your API
+  //       selectedImage.value!.path,
+  //       contentType: MediaType(type, subtype),
+  //     ),
+  //   );
+  // }
 
-//   switch (mimeType) {
-//     case 'jpg':
-//     case 'jpeg':
-//       type = 'image';
-//       subtype = 'jpeg';
-//       break;
-//     case 'png':
-//       type = 'image';
-//       subtype = 'png';
-//       break;
-//     default:
-//       type = 'application';
-//       subtype = 'octet-stream';
-//   }
+  //     // ---------- SEND REQUEST ----------
+  //     final streamedResponse = await request.send();
+  //     final response = await http.Response.fromStream(streamedResponse);
 
-//   request.files.add(
-//     await http.MultipartFile.fromPath(
-//       'photos', // key expected by your API
-//       selectedImage.value!.path,
-//       contentType: MediaType(type, subtype),
-//     ),
-//   );
-// }
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       EasyLoading.showSuccess("Product listed successfully 🎉");
 
-//     // ---------- SEND REQUEST ----------
-//     final streamedResponse = await request.send();
-//     final response = await http.Response.fromStream(streamedResponse);
+  //       // Refresh limits
+  //       await checkUserProductLimit();
 
-//     if (response.statusCode == 200 || response.statusCode == 201) {
-//       EasyLoading.showSuccess("Product listed successfully 🎉");
-
-//       // Refresh limits
-//       await checkUserProductLimit();
-
-//       Get.back();
-//     } else {
-//       debugPrint("Create product error: ${response.body}");
-//       EasyLoading.showError("Failed to create product");
-//     }
-//   } catch (e) {
-//     debugPrint("Create product exception: $e");
-//     EasyLoading.showError("Something went wrong");
-//   } finally {
-//     EasyLoading.dismiss();
-//   }
-// }
-
-
+  //       Get.back();
+  //     } else {
+  //       debugPrint("Create product error: ${response.body}");
+  //       EasyLoading.showError("Failed to create product");
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Create product exception: $e");
+  //     EasyLoading.showError("Something went wrong");
+  //   } finally {
+  //     EasyLoading.dismiss();
+  //   }
+  // }
 }
