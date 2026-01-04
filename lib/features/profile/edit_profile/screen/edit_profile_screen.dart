@@ -21,7 +21,7 @@ class EditProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CustomAppBar(title: "Edit Profile"),
+            CustomAppBar(title: "edit_profile"),
             SizedBox(height: 24),
 
             // Profile Avatar
@@ -89,21 +89,21 @@ class EditProfileScreen extends StatelessWidget {
             const SizedBox(height: 35),
 
             BuildField(
-              label: "First Name",
+              label: "first_name".tr,
               controller: controller.firstNameController,
             ),
             BuildField(
-              label: "Last Name",
+              label: "last_name".tr,
               controller: controller.lastNameController,
             ),
             BuildField(
-              label: "Address",
+              label: "address".tr,
               controller: controller.addressController,
             ),
-            BuildField(label: "City", controller: controller.cityController),
+            BuildField(label: "city".tr, controller: controller.cityController),
             BuildPhoneField(controller: controller),
             BuildField(
-              label: "Emirate",
+              label: "emirate".tr,
               controller: controller.emirateController,
             ),
 
@@ -120,9 +120,9 @@ class EditProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  "Save Changes",
-                  style: TextStyle(
+                child: Text(
+                  "save_changes".tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,

@@ -18,19 +18,19 @@ class LocationPageScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CustomAppBar(title: "Location"),
+            CustomAppBar(title: "location"),
             const SizedBox(height: 20),
-            const Text(
-              "Choose your current location to find nearby garages and towing services.",
+            Text(
+              "choose_location_desc".tr,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.black54),
+              style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
             const SizedBox(height: 30),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Type your area or city name",
-                style: TextStyle(
+                "type_area_city".tr,
+                style: const TextStyle(
                   fontSize: 12,
                   color: Colors.black87,
                   fontWeight: FontWeight.w400,
@@ -44,7 +44,7 @@ class LocationPageScreen extends StatelessWidget {
                   child: TextField(
                     controller: controller.searchController,
                     decoration: InputDecoration(
-                      hintText: "Search",
+                      hintText: "search".tr,
                       hintStyle: const TextStyle(
                         color: Colors.grey,
                         fontSize: 14,
@@ -109,9 +109,9 @@ class LocationPageScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  "Set as default location",
-                  style: TextStyle(
+                child: Text(
+                  "set_default_location".tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

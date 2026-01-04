@@ -23,7 +23,7 @@ class MyListingPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomAppBar(title: "My Listing"),
+              CustomAppBar(title: "my_listing"),
               const SizedBox(height: 25),
 
               SizedBox(
@@ -52,7 +52,7 @@ class MyListingPage extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              tabName,
+                              tabName.tr,
                               style: getTextStyle(
                                 color: isSelected
                                     ? Colors.white
@@ -89,13 +89,13 @@ class MyListingPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Failed to load listings',
+                            'failed_to_load_listings'.tr,
                             style: getTextStyle(fontSize: 16),
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () => controller.fetchMyListings(),
-                            child: const Text('Retry'),
+                            child: Text('retry'.tr),
                           ),
                         ],
                       ),
@@ -114,7 +114,7 @@ class MyListingPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No listings yet',
+                            'no_listings_yet'.tr,
                             style: getTextStyle(
                               fontSize: 16,
                               color: Colors.grey,
@@ -177,7 +177,7 @@ class MyListingPage extends StatelessWidget {
                                   Row(
                                     children: [
                                       Text(
-                                        "${item.price.toStringAsFixed(0)} AED",
+                                        "${item.price.toStringAsFixed(0)} ${'aed'.tr}",
                                         style: getTextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -209,7 +209,7 @@ class MyListingPage extends StatelessWidget {
 
                                     children: [
                                       actionButton(
-                                        "View details",
+                                        "view_details".tr,
                                         color: Colors.blue.shade50,
                                         textColor: Colors.blue,
                                         onTap: () {

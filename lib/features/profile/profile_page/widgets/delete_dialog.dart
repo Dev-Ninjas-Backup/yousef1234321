@@ -22,14 +22,14 @@ void showDeletelDialog() {
 
             // Title
             Text(
-              "Delete Account?",
+              "delete_account_q".tr,
               style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 12),
 
             // Subtitle
             Text(
-              "Are you sure you want to delete your account?",
+              "are_you_sure_delete_account".tr,
               // overflow: TextOverflow.ellipsis,
               // maxLines: 2,
               textAlign: TextAlign.center,
@@ -37,7 +37,7 @@ void showDeletelDialog() {
             ),
             const SizedBox(height: 12),
             Text(
-              "All your saved data, bookings, and payment history will be permanently removed. This action cannot be undone.",
+              "delete_account_description".tr,
               // overflow: TextOverflow.ellipsis,
               // maxLines: 2,
               textAlign: TextAlign.center,
@@ -60,8 +60,8 @@ void showDeletelDialog() {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      "Cancel",
+                    child: Text(
+                      "cancel".tr,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -88,7 +88,7 @@ void showDeletelDialog() {
                         children: [
                           const SizedBox(width: 8),
                           Text(
-                            "Delete Account",
+                            "delete_account".tr,
                             style: getTextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
