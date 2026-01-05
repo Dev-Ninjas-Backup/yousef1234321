@@ -21,7 +21,7 @@ class ProfileController extends GetxController {
   final phone = ''.obs;
   final role = ''.obs;
 
-  var profileItem = <ProfileModel>[].obs;
+  var profileIItem = <ProfileModel>[].obs;
 
   @override
   void onInit() {
@@ -31,7 +31,7 @@ class ProfileController extends GetxController {
   }
 
   void updateProfileItems() {
-    profileItem.value = [
+    profileIItem.value = [
       ProfileModel(
         icon: Icons.person_2_outlined,
         title: "edit_profile",
