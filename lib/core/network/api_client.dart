@@ -124,70 +124,8 @@ class ApiClient extends GetConnect {
     // Response Modifier (Global Status Code Handling)
     httpClient.addResponseModifier((request, response) {
       print("Response: ${response.statusCode} ${response.bodyString}");
-      handleGlobalStatus(response);
+      //  handleGlobalStatus(response);
       return response;
     });
-  }
-
-  void handleGlobalStatus(Response response) {
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      // Global Success Logic (Optional)
-      // Usually 200 is handled locally, but you can log it here.
-    } else if (response.statusCode == 400) {
-      // Global Bad Request Logic
-      String errorMessage = "Bad Request";
-
-      // Try to parse error message from Swagger/API response structure
-      if (response.body is Map && response.body['message'] != null) {
-        errorMessage = response.body['message'];
-      } else if (response.bodyString != null &&
-          response.bodyString!.isNotEmpty) {
-        // Fallback to body string if not a JSON map
-        errorMessage = response.bodyString!;
-      }
-
-      Get.snackbar(
-        "error".tr,
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
-      );
-    } else if (response.statusCode == 401) {
-      logout();
-      Get.snackbar(
-        "session_expired".tr,
-        "please_login".tr,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
-    } else if (response.statusCode == 404) {
-      // 404 Not Found is often a valid state (e.g. new user, empty list).
-      // We suppress the global error snackbar so controllers can handle it gracefully.
-      print("ApiClient: Resource not found (404) for ${response.request?.url}");
-
-      if (response.body is Map &&
-          response.body['message'] == 'User not found') {
-        logout();
-        // Get.snackbar(
-        //   "session_expired".tr,
-        //   "please_login".tr,
-        //   backgroundColor: Colors.redAccent,
-        //   colorText: Colors.white,
-        // );
-      }
-    } else {
-      Get.snackbar(
-        "error".tr,
-        response.statusText ?? "Unknown Error ${response.statusCode}",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
-      );
-    }
   }
 }
