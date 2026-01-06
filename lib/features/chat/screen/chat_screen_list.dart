@@ -14,12 +14,13 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   late final ChatPageController controller;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     print('\n════════════════════════════════════════════════════');
     print('🟦 [ChatScreen] initState() called');
     print('════════════════════════════════════════════════════\n');
@@ -35,6 +36,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
     print('🟦 [ChatScreen] Calling loadConversations()...');
     controller.loadConversations();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print('🟦 [ChatScreen] App resumed, refreshing conversations');
+      controller.loadConversations();
+    }
+  }
+
+  // Called when this screen becomes visible again after navigation
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh conversations when screen becomes visible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        print(
+          '🟦 [ChatScreen] didChangeDependencies - refreshing conversations',
+        );
+        controller.loadConversations();
+      }
+    });
   }
 
   @override
@@ -119,7 +149,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           '💬 [ChatList] Opening chat with recipient: $recipientId (${chat.name})',
                         );
 
-                        Get.to(() => ServiceMessage(recipientId: recipientId));
+                        Get.to(
+                          () => ServiceMessage(
+                            recipientId: recipientId,
+                            garageName: chat.name,
+                          ),
+                        );
                       },
                     );
                   },

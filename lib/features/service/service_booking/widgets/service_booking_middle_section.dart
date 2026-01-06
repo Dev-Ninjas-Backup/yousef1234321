@@ -108,12 +108,16 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                   onTap: () {
                     final garageOwnerId =
                         controller.garageDetail.value?.user?.id;
+                    final garageName = controller.garageDetail.value?.name;
                     print(
                       '📨 [Message Button] Navigating to ServiceMessage with garageOwnerId: $garageOwnerId',
                     );
 
                     if (garageOwnerId != null && garageOwnerId.isNotEmpty) {
-                      Get.to(ServiceMessage(recipientId: garageOwnerId));
+                      Get.to(ServiceMessage(
+                        recipientId: garageOwnerId,
+                        garageName: garageName,
+                      ));
                     } else {
                       print('❌ [Message Button] Garage owner ID not available');
                       Get.snackbar(

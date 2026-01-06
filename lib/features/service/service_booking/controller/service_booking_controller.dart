@@ -7,6 +7,7 @@ import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/service/service_booking/model/garage_detail_model.dart';
+import 'package:yousef1234321/features/chat/controller/chat_page_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -80,10 +81,46 @@ class ServiceBookingController extends GetxController {
     }
   }
 
+  /// Refresh the chat page controller to show new conversations in the chat list
+  void _refreshChatList() {
+    try {
+      if (Get.isRegistered<ChatPageController>()) {
+        print(
+          '🔄 [_refreshChatList] ✅ ChatPageController found, calling loadConversations()',
+        );
+        final chatController = Get.find<ChatPageController>();
+        chatController.loadConversations();
+        print(
+          '🔄 [_refreshChatList] ✅ loadConversations() called successfully',
+        );
+      } else {
+        print('⚠️ [_refreshChatList] ❌ ChatPageController not registered yet');
+        print(
+          '⚠️ [_refreshChatList] This might happen if user hasn\'t opened ChatScreen yet',
+        );
+      }
+    } catch (e) {
+      print('❌ [_refreshChatList] Exception occurred: $e');
+      print('❌ [_refreshChatList] Stack trace: ${e.toString()}');
+    }
+  }
+
   void initializeChat(String? recId) {
     print(
       '🔵 [initializeChat] Starting chat initialization with recipientId: $recId',
     );
+    print('🔵 [initializeChat] recipientId type: ${recId.runtimeType}');
+    print('🔵 [initializeChat] recipientId length: ${recId?.length}');
+
+    // Clear messages and reset state when switching conversations
+    if (recipientId.value != recId) {
+      print('🔵 [initializeChat] RecipientId changed, clearing messages');
+      print('🔵 [initializeChat] Old recipientId: ${recipientId.value}');
+      print('🔵 [initializeChat] New recipientId: $recId');
+      messages.clear();
+      conversationId.value = null;
+    }
+
     recipientId.value = recId;
     print('🔵 [initializeChat] recipientId set to: ${recipientId.value}');
     loadInitialMessages();
@@ -94,7 +131,15 @@ class ServiceBookingController extends GetxController {
 
   void _connectWebSocket() {
     try {
-      print('🟡 [_connectWebSocket] Starting WebSocket connection');
+      print('� [_connectWebSocket] Starting WebSocket connection');
+
+      // Disconnect existing socket before creating a new one
+      if (socket != null) {
+        print('� [_connectWebSocket] Disconnecting existing socket');
+        socket!.disconnect();
+        socket = null;
+      }
+
       final token = ApiClient.to.token ?? '';
       print(
         '🟡 [_connectWebSocket] Token retrieved: ${token.isNotEmpty ? '✓ Found' : '✗ Empty'}',
@@ -134,6 +179,23 @@ class ServiceBookingController extends GetxController {
             print('💬 [WebSocket] files field: ${messageData['files']}');
             print('💬 [WebSocket] file field: ${messageData['file']}');
           } catch (_) {}
+
+          // Set conversationId when server provides it (e.g., first message in new chat)
+          final serverConvId = messageData['conversationId']?.toString();
+          if (serverConvId != null && serverConvId.isNotEmpty) {
+            if (conversationId.value != serverConvId) {
+              print(
+                '💬 [WebSocket] ✅ NEW CONVERSATION CREATED! conversationId: $serverConvId',
+              );
+              print(
+                '💬 [WebSocket] Previous conversationId was: ${conversationId.value}',
+              );
+              conversationId.value = serverConvId;
+              print(
+                '💬 [WebSocket] conversationId updated to: ${conversationId.value}',
+              );
+            }
+          }
           // Determine if this message is from the user or the other person
           // If sender ID is different from recipientId, it's from the user (me)
           // If sender ID matches recipientId, it's from the other person
@@ -144,6 +206,9 @@ class ServiceBookingController extends GetxController {
           );
 
           _addMessageToList(messageData, isUser: isUserMessage);
+
+          // Refresh chat list when new messages are received to ensure conversations appear in the list
+          _refreshChatList();
         }
       });
 
@@ -157,6 +222,16 @@ class ServiceBookingController extends GetxController {
         print('❌ [WebSocket] Disconnected from server');
         isConnected.value = false;
         print('❌ [WebSocket] isConnected = false');
+      });
+
+      socket!.onError((error) {
+        print('❌ [WebSocket] Connection error: $error');
+        isConnected.value = false;
+      });
+
+      socket!.on('connect_error', (error) {
+        print('❌ [WebSocket] Connect error: $error');
+        isConnected.value = false;
       });
 
       print('🟡 [_connectWebSocket] Calling socket.connect()');
@@ -198,6 +273,19 @@ class ServiceBookingController extends GetxController {
         print(
           '📡 [_fetchConversationHistory] Found ${conversations.length} conversations',
         );
+        print(
+          '📡 [_fetchConversationHistory] Looking for recipientId: ${recipientId.value}',
+        );
+
+        // Debug: Print all participant IDs
+        for (int i = 0; i < conversations.length; i++) {
+          final conv = conversations[i];
+          final participantId = conv['participant']?['id'];
+          final participantName = conv['participant']?['name'];
+          print(
+            '📡 [_fetchConversationHistory] Conversation $i: participantId=$participantId, name=$participantName',
+          );
+        }
 
         final conversation = conversations.firstWhereOrNull(
           (conv) => conv['participant']?['id'] == recipientId.value,
@@ -205,7 +293,7 @@ class ServiceBookingController extends GetxController {
 
         if (conversation != null) {
           print(
-            '📡 [_fetchConversationHistory] Found conversation with recipientId: ${recipientId.value}',
+            '📡 [_fetchConversationHistory] ✅ Found conversation with recipientId: ${recipientId.value}',
           );
           conversationId.value = conversation['chatId'];
           print(
@@ -214,7 +302,10 @@ class ServiceBookingController extends GetxController {
           await _fetchSingleConversation(conversation['chatId']);
         } else {
           print(
-            '⚠️ [_fetchConversationHistory] No conversation found for recipientId: ${recipientId.value}',
+            '⚠️ [_fetchConversationHistory] ❌ No conversation found for recipientId: ${recipientId.value}',
+          );
+          print(
+            '⚠️ [_fetchConversationHistory] This means we\'ll create a new conversation when first message is sent',
           );
         }
       } else {
@@ -303,11 +394,22 @@ class ServiceBookingController extends GetxController {
   }
 
   void sendMessage({List<String>? filePaths}) {
-    print(
-      '📤 [sendMessage] Attempt to send message, filePaths: ${filePaths?.length ?? 0}',
-    );
+    print('\n\n');
+    print('═══════════════════════════════════════════════════════');
+    print('📤 [sendMessage] SEND MESSAGE CALLED');
+    print('═══════════════════════════════════════════════════════');
+    print('recipientId: ${recipientId.value}');
+    print('recipientId is null: ${recipientId.value == null}');
+    print('conversationId: ${conversationId.value}');
+    print('filePaths count: ${filePaths?.length ?? 0}');
+    print('socket exists: ${socket != null}');
+    print('socket connected: ${socket?.connected ?? false}');
+    print('isConnected.value: ${isConnected.value}');
+
     final text = textController.text.trim();
-    print('📤 [sendMessage] Message text length: ${text.length}');
+    print('Message text length: ${text.length}');
+    print('Message text: "$text"');
+    print('═══════════════════════════════════════════════════════\n');
 
     if (text.isEmpty && (filePaths == null || filePaths.isEmpty)) {
       print('⚠️ [sendMessage] Empty message and no files, returning');
@@ -327,23 +429,42 @@ class ServiceBookingController extends GetxController {
   }
 
   void _sendMessageViaSocket(String content) {
-    print('🔌 [_sendMessageViaSocket] Checking connection status');
-    print(
-      '🔌 [_sendMessageViaSocket] socket=$socket, connected=${socket?.connected}, isConnected=${isConnected.value}',
-    );
+    print('\n\n');
+    print('─────────────────────────────────────────────────────────');
+    print('🔌 [_sendMessageViaSocket] WEBSOCKET SEND ATTEMPT');
+    print('─────────────────────────────────────────────────────────');
+    print('socket is null: ${socket == null}');
+    print('socket connected: ${socket?.connected}');
+    print('isConnected.value: ${isConnected.value}');
+    print('recipientId.value: ${recipientId.value}');
+    print('content length: ${content.length}');
+    print('─────────────────────────────────────────────────────────\n');
 
     if (socket == null || !socket!.connected) {
-      print('❌ [_sendMessageViaSocket] Socket not connected, cannot send');
+      print('❌ [_sendMessageViaSocket] ❌ Socket not connected!');
+      print('⚠️ [_sendMessageViaSocket] Will fallback to REST API after delay');
       return;
     }
 
     if (recipientId.value == null) {
-      print('❌ [_sendMessageViaSocket] recipientId is null');
+      print('❌ [_sendMessageViaSocket] recipientId is null!');
       return;
     }
 
+    // Add optimistic message to UI immediately
+    print('💬 [_sendMessageViaSocket] Adding optimistic message to UI');
+    messages.add({
+      'id': 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      'text': content,
+      'isUser': true,
+      'time': _formatTime(DateTime.now().toIso8601String()),
+      'isTemp': true,
+      'files': [],
+    });
+    _scrollToBottom();
+
     print(
-      '🔌 [_sendMessageViaSocket] Sending message to recipientId: ${recipientId.value}',
+      '✅ [_sendMessageViaSocket] Sending WebSocket message to recipientId: ${recipientId.value}',
     );
 
     socket!.emit('private:send_message', {
@@ -351,7 +472,80 @@ class ServiceBookingController extends GetxController {
       'content': content,
       'replyToMessageId': null,
     });
-    print('🔌 [_sendMessageViaSocket] Message emitted');
+    print('✅ [_sendMessageViaSocket] ✉️ Message emitted to WebSocket');
+
+    // If conversation was just created server-side, fetch history soon
+    Future.delayed(const Duration(milliseconds: 500), () {
+      // Only refetch if we don't yet have a conversationId
+      if (conversationId.value == null || conversationId.value!.isEmpty) {
+        print(
+          '📡 [_sendMessageViaSocket] No conversationId yet, refetching history',
+        );
+        _fetchConversationHistory();
+      }
+    });
+
+    // Fallback: if still no conversation id shortly after, use REST send
+    Future.delayed(const Duration(seconds: 1), () async {
+      if (conversationId.value == null || conversationId.value!.isEmpty) {
+        print('📡 [_sendMessageViaSocket] ⚠️ Fallback to REST send for text');
+        await _sendTextMessageViaRest(content);
+        // Refetch to capture new conversation and messages
+        await Future.delayed(const Duration(milliseconds: 400));
+        _fetchConversationHistory();
+        // Refresh chat list to show new conversation
+        _refreshChatList();
+      }
+    });
+
+    // Always refresh chat list after sending a message to ensure it appears in the list
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      _refreshChatList();
+    });
+  }
+
+  Future<void> _sendTextMessageViaRest(String content) async {
+    if (recipientId.value == null) {
+      print('❌ [_sendTextMessageViaRest] recipientId is null');
+      return;
+    }
+    try {
+      final recId = recipientId.value!.trim();
+      if (recId.isEmpty) {
+        print('❌ [_sendTextMessageViaRest] recipientId is empty after trim');
+        return;
+      }
+
+      print(
+        '📡 [_sendTextMessageViaRest] 🚀 Starting REST message send to recipientId: $recId',
+      );
+      final uri = Uri.parse(
+        '${Endpoint.baseUrl}/private-chat/send-message/$recId',
+      );
+      final token = ApiClient.to.token ?? '';
+      final request = http.MultipartRequest('POST', uri);
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['content'] = content;
+      request.fields['recipientId'] = recId;
+
+      print('📡 [_sendTextMessageViaRest] POST ${request.url}');
+      final streamed = await request.send();
+      final response = await http.Response.fromStream(streamed);
+      print('📡 [_sendTextMessageViaRest] Status: ${response.statusCode}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print(
+          '✅ [_sendTextMessageViaRest] 🎉 Text message sent via REST successfully!',
+        );
+        print('✅ [_sendTextMessageViaRest] Response body: ${response.body}');
+        // Refresh chat list after successful message send
+        print('🔄 [_sendTextMessageViaRest] Calling _refreshChatList()...');
+        _refreshChatList();
+      } else {
+        print('❌ [_sendTextMessageViaRest] Failed: ${response.body}');
+      }
+    } catch (e) {
+      print('❌ [_sendTextMessageViaRest] Exception: $e');
+    }
   }
 
   Future<void> _sendMessageWithFiles(
@@ -401,6 +595,7 @@ class ServiceBookingController extends GetxController {
       final request = http.MultipartRequest('POST', uri)
         ..headers['Authorization'] = 'Bearer $token'
         ..fields['content'] = safeContent
+        ..fields['recipientId'] = recId
         // Some server implementations validate recipientId from body too.
         ..fields['recipientId'] = recId;
 
@@ -433,6 +628,8 @@ class ServiceBookingController extends GetxController {
         print('📁 [_sendMessageWithFiles] File upload successful');
         print('📁 [_sendMessageWithFiles] Response body: ${response.body}');
         // Rely on WebSocket 'private:new_message' to update UI; avoid duplicates
+        // Refresh chat list after successful file upload
+        _refreshChatList();
       } else {
         print(
           '❌ [_sendMessageWithFiles] Upload failed - Status: ${response.statusCode}',
