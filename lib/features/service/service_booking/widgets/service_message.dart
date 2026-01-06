@@ -6,6 +6,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/features/chat/controller/chat_page_controller.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
@@ -13,9 +14,12 @@ import 'dart:io';
 import '../controller/service_booking_controller.dart';
 
 class ServiceMessage extends StatelessWidget {
-  final controller = Get.put(ServiceBookingController());
+  final controller = Get.isRegistered<ServiceBookingController>()
+      ? Get.find<ServiceBookingController>()
+      : Get.put(ServiceBookingController());
   final String? recipientId;
-  final selectedFiles = <PlatformFile>[].obs;
+  final String? garageName;
+  late final selectedFiles = <PlatformFile>[].obs;
 
   String _fileNameFromUrl(String url) {
     try {
@@ -145,16 +149,31 @@ class ServiceMessage extends StatelessWidget {
     }
   }
 
-  ServiceMessage({super.key, this.recipientId}) {
+  ServiceMessage({super.key, this.recipientId, this.garageName}) {
     // Initialize chat with recipient ID
-    print(
-      '🟦 [ServiceMessage Constructor] Widget created with recipientId: $recipientId',
-    );
+    print('\n\n');
+    print('═══════════════════════════════════════════════════════');
+    print('🟦 [ServiceMessage Constructor] WIDGET CREATED');
+    print('═══════════════════════════════════════════════════════');
+    print('recipientId: $recipientId');
+    print('recipientId type: ${recipientId.runtimeType}');
+    print('recipientId is null: ${recipientId == null}');
+    print('recipientId isEmpty: ${(recipientId?.isEmpty ?? true)}');
+    print('garageName: $garageName');
+    print('controller instance: ${controller.hashCode}');
+    print('controller.recipientId.value: ${controller.recipientId.value}');
+    print('═══════════════════════════════════════════════════════\n');
+
     if (recipientId != null) {
-      print('🟦 [ServiceMessage Constructor] Initializing chat...');
+      print(
+        '✅ [ServiceMessage Constructor] recipientId is valid, calling initializeChat',
+      );
       controller.initializeChat(recipientId);
+      print(
+        '✅ [ServiceMessage Constructor] initializeChat completed, controller.recipientId=${controller.recipientId.value}',
+      );
     } else {
-      print('⚠️ [ServiceMessage Constructor] recipientId is null!');
+      print('❌ [ServiceMessage Constructor] recipientId is NULL!');
     }
   }
 
@@ -216,6 +235,10 @@ class ServiceMessage extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
+                    // Refresh chat list when going back
+                    if (Get.isRegistered<ChatPageController>()) {
+                      Get.find<ChatPageController>().loadConversations();
+                    }
                     Get.back();
                   },
                   child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
@@ -224,7 +247,7 @@ class ServiceMessage extends StatelessWidget {
                   spacing: 2,
                   children: [
                     Text(
-                      "Al Majid Auto Service",
+                      garageName ?? "Garage",
                       style: getTextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,

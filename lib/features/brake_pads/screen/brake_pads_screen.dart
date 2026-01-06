@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
+import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 
 class BrakePadsScreen extends StatelessWidget {
   const BrakePadsScreen({super.key});
@@ -301,7 +302,44 @@ class BrakePadsScreen extends StatelessWidget {
                           Icons.chat_bubble_outline,
                           Colors.blue,
                           onTap: () {
-                            EasyLoading.showInfo("opening_chat".tr);
+                            // Use createdById (actual user) instead of sellerId
+                            final userId = c.product['createdById'];
+                            final sellerName =
+                                c.product['createdBy']?['fullName'];
+
+                            print('\n\n');
+                            print('═══════════════════════════════════════');
+                            print('🟦 [BrakePadsScreen] CHAT BUTTON TAPPED');
+                            print('═══════════════════════════════════════');
+                            print('userId (createdById): $userId');
+                            print('userId type: ${userId.runtimeType}');
+                            print('userId is not null: ${userId != null}');
+                            print('userId is not empty: ${userId?.isNotEmpty}');
+                            print('sellerName: $sellerName');
+                            print('sellerName type: ${sellerName.runtimeType}');
+                            print(
+                              'product data keys: ${(c.product as Map).keys.toList()}',
+                            );
+                            print('═══════════════════════════════════════\n');
+
+                            if (userId != null && userId.isNotEmpty) {
+                              print(
+                                '✅ [BrakePadsScreen] User data valid, navigating to ServiceMessage',
+                              );
+                              Get.to(
+                                ServiceMessage(
+                                  recipientId: userId,
+                                  garageName: sellerName,
+                                ),
+                              );
+                            } else {
+                              print(
+                                '❌ [BrakePadsScreen] User data missing! userId=$userId',
+                              );
+                              EasyLoading.showError(
+                                "Seller information not available",
+                              );
+                            }
                           },
                         ),
                       ],
