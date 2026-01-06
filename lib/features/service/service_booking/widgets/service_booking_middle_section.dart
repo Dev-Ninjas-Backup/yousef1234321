@@ -114,10 +114,12 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                     );
 
                     if (garageOwnerId != null && garageOwnerId.isNotEmpty) {
-                      Get.to(ServiceMessage(
-                        recipientId: garageOwnerId,
-                        garageName: garageName,
-                      ));
+                      Get.to(
+                        ServiceMessage(
+                          recipientId: garageOwnerId,
+                          garageName: garageName,
+                        ),
+                      );
                     } else {
                       print('❌ [Message Button] Garage owner ID not available');
                       Get.snackbar(
