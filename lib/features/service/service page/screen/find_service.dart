@@ -41,13 +41,19 @@ class FindService extends StatelessWidget {
       }
 
       final currentTime = TimeOfDay.now();
-      final isOpen =
-          currentTime.hour > openTime.hour ||
-          (currentTime.hour == openTime.hour &&
-                  currentTime.minute >= openTime.minute) &&
-              (currentTime.hour < closeTime.hour ||
-                  (currentTime.hour == closeTime.hour &&
-                      currentTime.minute < closeTime.minute));
+      final currentMinutes = currentTime.hour * 60 + currentTime.minute;
+      final openMinutes = openTime.hour * 60 + openTime.minute;
+      final closeMinutes = closeTime.hour * 60 + closeTime.minute;
+
+      // Handle normal and overnight ranges correctly
+      bool isOpen;
+      if (closeMinutes > openMinutes) {
+        // same-day range
+        isOpen = currentMinutes >= openMinutes && currentMinutes < closeMinutes;
+      } else {
+        // overnight range (e.g. 8:00 PM - 4:00 AM)
+        isOpen = currentMinutes >= openMinutes || currentMinutes < closeMinutes;
+      }
 
       return {'isOpen': isOpen, 'label': isOpen ? 'open' : 'closed'};
     } catch (e) {
