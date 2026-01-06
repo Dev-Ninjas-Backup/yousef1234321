@@ -178,16 +178,6 @@ class ApiClient extends GetConnect {
         //   colorText: Colors.white,
         // );
       }
-    } else if (response.statusCode == 500) {
-      Get.snackbar(
-        "error".tr,
-        "server_error".tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(10),
-        borderRadius: 10,
-      );
     } else {
       Get.snackbar(
         "error".tr,

@@ -66,8 +66,7 @@ class SignUpController extends GetxController {
 
       // Debug: Print form data
       // ignore: avoid_function_literals_in_foreach_calls
-      formData.fields.forEach((field) {
-      });
+      formData.fields.forEach((field) {});
       print("Form Data Fields:");
       for (var field in formData.fields) {
         print("${field.key}: ${field.value}");
@@ -121,18 +120,18 @@ class SignUpController extends GetxController {
       } else {
         Get.snackbar(
           "Error",
-          "Registration failed with status code: ${response.statusCode}",
+          "Registration failed: ${response.body['message']}",
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
         );
       }
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Something went wrong: $e",
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      // Get.snackbar(
+      //   "Error",
+      //   "Something went wrong: $e",
+      //   backgroundColor: Colors.redAccent,
+      //   colorText: Colors.white,
+      // );
     } finally {
       isLoading.value = false;
     }
