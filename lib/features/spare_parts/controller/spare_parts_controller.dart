@@ -9,49 +9,10 @@ class SparePartsController extends GetxController {
   var selectedModel = RxnString();
   var selectedCategory = RxnString();
 
-  final models = [
-    "AC Repair",
-    "Battery",
-    "Engine",
-    "Tires",
-    "Electrical",
-    "Spares",
-    "Brakes",
-    "Body Work",
-  ];
-
   final RxList<String> dropDownCategories = <String>[].obs;
 
   // Use dynamic map for API-friendly parsing
-  final RxList<Map<String, dynamic>> categories = <Map<String, dynamic>>[
-    {'id': '', 'name': 'Engine', 'icon': Icons.settings},
-    {'id': '', 'name': 'Body', 'icon': Icons.directions_car},
-    {'id': '', 'name': 'Brakes', 'icon': Icons.speed},
-    {'id': '', 'name': 'Electric', 'icon': Icons.bolt},
-    {'id': '', 'name': 'Fluids', 'icon': Icons.water_drop},
-    {'id': '', 'name': 'Tools', 'icon': Icons.build},
-    {'id': '', 'name': 'Safety', 'icon': Icons.security},
-    {'id': '', 'name': 'More', 'icon': Icons.more_horiz},
-  ].obs;
-
-  final allParts = [
-    {
-      'name': 'Brake Pads',
-      'desc': 'Premium Quality',
-      'price': 89.99,
-      'rating': 4.8,
-      'image':
-          'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
-    },
-    {
-      'name': 'Oil Filter',
-      'desc': 'OEM Standard',
-      'price': 24.99,
-      'rating': 4.9,
-      'image':
-          'https://dealer26407.dealeron.com/blogs/6087/wp-content/uploads/2024/10/car-parts-1024x683.jpg',
-    },
-  ];
+  final RxList<Map<String, dynamic>> categories = <Map<String, dynamic>>[].obs;
 
   final random = Random();
 
@@ -87,8 +48,9 @@ class SparePartsController extends GetxController {
             body['data']['data'] is List) {
           for (final item in body['data']['data']) {
             if (item is Map) {
+              final id = item['id'] ?? item['_id'] ?? '';
               list.add(<String, dynamic>{
-                'id': item['id']?.toString() ?? '',
+                'id': id.toString(),
                 'name': item['name']?.toString() ?? '',
                 'icon': Icons.category,
               });
