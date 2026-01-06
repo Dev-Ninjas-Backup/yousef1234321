@@ -34,7 +34,7 @@ class LocationPageController extends GetxController {
 
   /// Get Geocoding API key
   String _getGeocodingApiKey() {
-    return GoogleMapApiKey.geocodingApiKey;
+    return GoogleMapApiKey.apiKey;
   }
 
   @override
