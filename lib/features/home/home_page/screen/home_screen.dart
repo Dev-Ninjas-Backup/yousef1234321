@@ -121,12 +121,13 @@ class HomeScreen extends StatelessWidget {
                           backgroundImage:
                               profilePhoto != null && profilePhoto.isNotEmpty
                               ? NetworkImage(profilePhoto)
-                              : NetworkImage(
-                                  "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-                                ),
+                              : null,
                           onBackgroundImageError: (exception, stackTrace) {
-                            // Fallback to default image on error
+                            // Fallback handled by showing child below
                           },
+                          child: profilePhoto == null || profilePhoto.isEmpty
+                              ? const Icon(Icons.person)
+                              : null,
                         );
                       }),
                     ),

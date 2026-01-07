@@ -103,10 +103,7 @@ class LocationPageScreen extends StatelessWidget {
                   // show a placeholder while profile load
                   if (controller.isLoadingProfile.value &&
                       controller.selectedLatLng.value == null) {
-                    return Image.asset(
-                      "assets/images/map_sample.png",
-                      fit: BoxFit.cover,
-                    );
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   final initial =

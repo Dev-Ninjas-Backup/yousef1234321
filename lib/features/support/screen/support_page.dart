@@ -72,12 +72,7 @@ class ChatPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                             8,
                           ), // or Circle if you prefer
-                          child: Image.asset(
-                            Imagepath.profile,
-                            height: 32,
-                            width: 32,
-                            fit: BoxFit.cover,
-                          ),
+                          child: Icon(Icons.person, size: 32),
                         ),
                         const SizedBox(width: 8),
                       ],
