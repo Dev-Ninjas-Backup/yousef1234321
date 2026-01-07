@@ -87,134 +87,118 @@ class SparePartsScreen extends StatelessWidget {
 
             PartsSearchSection(),
             const SizedBox(height: 16),
-            // Category section
+            // Category section - Single row horizontally scrollable
             SizedBox(
-              height: 160,
-              width: double.maxFinite,
-              child: Align(
-                alignment: Alignment.center,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 9,
-                  ),
+              height: 130,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controller.categories.length,
+                itemBuilder: (context, index) {
+                  final cat = controller.categories[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: CategoryItem(
+                      icon: cat['icon'] as IconData,
+                      title: cat['name'] as String,
+                      color: controller.getRandomColor(),
+                      onTap: () async {
+                        // extract category name
+                        final cname = (cat['name'] ?? 'category'.tr)
+                            .toString();
 
-                  scrollDirection: Axis.horizontal,
-                  itemCount: controller.categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = controller.categories[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
+                        final productsCtrl = Get.put(
+                          ProductsController(),
+                          tag: 'productsList',
+                        );
+                        await productsCtrl.fetchProducts(
+                          page: 1,
+                          limit: 20,
+                          category: cname,
+                        );
 
-                      child: GestureDetector(
-                        onTap: () async {
-                          // extract id and name safely
-                          final cid = (cat['id'] ?? '').toString();
-                          final cname = (cat['name'] ?? 'category'.tr)
-                              .toString();
-
-                          final productsCtrl = Get.put(
-                            ProductsController(),
-                            tag: 'productsList',
-                          );
-                          await productsCtrl.fetchProducts(
-                            page: 1,
-                            limit: 20,
-                            categoryId: cid,
-                          );
-
-                          // navigate to filtered All Parts screen
-                          Get.to(
-                            () => Scaffold(
-                              appBar: AppBar(title: Text(cname)),
-                              body: Obx(() {
-                                if (productsCtrl.isLoading.value)
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                                if (productsCtrl.products.isEmpty)
-                                  return Center(child: Text('no_products'.tr));
-                                return ListView.builder(
-                                  padding: const EdgeInsets.all(12),
-                                  itemCount: productsCtrl.products.length,
-                                  itemBuilder: (_, idx) {
-                                    final p = productsCtrl.products[idx];
-                                    final name =
-                                        (p is Map && p['partName'] != null)
-                                        ? p['partName'].toString()
-                                        : '${'product'.tr} ${idx + 1}';
-                                    final price =
-                                        (p is Map && p['price'] != null)
-                                        ? p['price'].toString()
-                                        : '-';
-                                    final photo =
-                                        (p is Map && p['profilePhoto'] != null)
-                                        ? p['profilePhoto'].toString()
-                                        : (p is Map &&
-                                                  p['photos'] is List &&
-                                                  p['photos'].isNotEmpty
-                                              ? p['photos'][0].toString()
-                                              : null);
-
-                                    return ListTile(
-                                      leading: photo != null
-                                          ? Image.network(
-                                              photo,
-                                              width: 56,
-                                              height: 56,
-                                              fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) =>
-                                                  Image.asset(
-                                                    Iconpath.carHomeIcon,
-                                                    width: 56,
-                                                    height: 56,
-                                                  ),
-                                            )
-                                          : Image.asset(
-                                              Iconpath.carHomeIcon,
-                                              width: 56,
-                                              height: 56,
-                                            ),
-                                      title: Text(name),
-                                      subtitle: Text(
-                                        'price'.tr.replaceAll('@price', price),
-                                      ),
-
-                                      onTap: () {
-                                        String? id;
-                                        if (p is Map) {
-                                          if (p['id'] != null)
-                                            id = p['id'].toString();
-                                          else if (p['data'] is Map &&
-                                              p['data']['id'] != null)
-                                            id = p['data']['id'].toString();
-                                        }
-                                        if (id != null)
-                                          Get.toNamed(
-                                            Approute.getBrakePadsScreen(),
-                                            arguments: id,
-                                          );
-                                      },
-                                    );
-                                  },
+                        // navigate to filtered All Parts screen
+                        Get.to(
+                          () => Scaffold(
+                            appBar: AppBar(title: Text(cname)),
+                            body: Obx(() {
+                              if (productsCtrl.isLoading.value)
+                                return const Center(
+                                  child: CircularProgressIndicator(),
                                 );
-                              }),
-                            ),
-                          );
-                        },
-                        child: CategoryItem(
-                          icon: cat['icon'] as IconData,
-                          title: cat['name'] as String,
-                          color: controller.getRandomColor(),
-                        ),
-                      ),
+                              if (productsCtrl.products.isEmpty)
+                                return Center(child: Text('no_products'.tr));
+                              return ListView.builder(
+                                padding: const EdgeInsets.all(12),
+                                itemCount: productsCtrl.products.length,
+                                itemBuilder: (_, idx) {
+                                  final p = productsCtrl.products[idx];
+                                  final name =
+                                      (p is Map && p['partName'] != null)
+                                      ? p['partName'].toString()
+                                      : '${'product'.tr} ${idx + 1}';
+                                  final price =
+                                      (p is Map && p['price'] != null)
+                                      ? p['price'].toString()
+                                      : '-';
+                                  final photo =
+                                      (p is Map && p['profilePhoto'] != null)
+                                      ? p['profilePhoto'].toString()
+                                      : (p is Map &&
+                                                p['photos'] is List &&
+                                                p['photos'].isNotEmpty
+                                            ? p['photos'][0].toString()
+                                            : null);
+
+                                  return ListTile(
+                                    leading: photo != null
+                                        ? Image.network(
+                                            photo,
+                                            width: 56,
+                                            height: 56,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (_, __, ___) =>
+                                                Image.asset(
+                                                  Iconpath.carHomeIcon,
+                                                  width: 56,
+                                                  height: 56,
+                                                ),
+                                          )
+                                        : Image.asset(
+                                            Iconpath.carHomeIcon,
+                                            width: 56,
+                                            height: 56,
+                                          ),
+                                    title: Text(name),
+                                    subtitle: Text(
+                                      'price'.tr.replaceAll('@price', price),
+                                    ),
+
+                                    onTap: () {
+                                      String? id;
+                                      if (p is Map) {
+                                        if (p['id'] != null)
+                                          id = p['id'].toString();
+                                        else if (p['data'] is Map &&
+                                            p['data']['id'] != null)
+                                          id = p['data']['id'].toString();
+                                      }
+                                      if (id != null)
+                                        Get.toNamed(
+                                          Approute.getBrakePadsScreen(),
+                                          arguments: id,
+                                        );
+                                    },
+                                  );
+                                },
+                              );
+                            }),
+                          ),
+                        );
+                      },
+                    ),
                     );
                   },
                 ),
-              ),
             ),
 
             const SizedBox(height: 20),
