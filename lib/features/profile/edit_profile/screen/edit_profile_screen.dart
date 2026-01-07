@@ -34,11 +34,16 @@ class EditProfileScreen extends StatelessWidget {
                       backgroundImage: controller.selectedImage.value != null
                           ? FileImage(controller.selectedImage.value!)
                           : (controller.profilePhotoUrl.value != null
-                                    ? NetworkImage(
-                                        controller.profilePhotoUrl.value!,
-                                      )
-                                    : AssetImage(Imagepath.profile))
-                                as ImageProvider,
+                                ? NetworkImage(
+                                    controller.profilePhotoUrl.value!,
+                                  )
+                                : null),
+                      // If there's no background image, show a person icon
+                      child:
+                          controller.selectedImage.value == null &&
+                              controller.profilePhotoUrl.value == null
+                          ? const Icon(Icons.person, size: 50)
+                          : null,
                     ),
                   ),
                   Positioned(

@@ -128,12 +128,16 @@ class ServiceBooking extends StatelessWidget {
                     Obx(() {
                       final g = controller.garageDetail.value;
                       if (g == null) {
-                        return Image.asset("assets/images/image 2.png");
+                        return Center(
+                          child: Text("No location data available"),
+                        );
                       }
                       final lat = g.garageLat;
                       final lng = g.garageLng;
                       if (lat == 0 || lng == 0) {
-                        return Image.asset("assets/images/image 2.png");
+                        return Center(
+                          child: Text("No location data available"),
+                        );
                       }
 
                       final marker = Marker(

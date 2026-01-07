@@ -8,18 +8,29 @@ class BrakePadsController extends GetxController {
   final RxMap<String, dynamic> product = <String, dynamic>{}.obs;
 
   // reactive image list; default assets used as fallback
-  final RxList<String> images = <String>[
-    'assets/images/spare_parts5.png',
-    'assets/images/spare_parts1.png',
-    'assets/images/spare_parts2.png',
-    'assets/images/spare_parts3.png',
-  ].obs;
+  final RxList<String> images = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    final productId = Get.arguments as String?;
-    if (productId != null) {
+    // Safely handle Get.arguments which may be a String or a Map
+    final args = Get.arguments;
+    String? productId;
+
+    if (args == null) {
+      productId = null;
+    } else if (args is String) {
+      productId = args;
+    } else if (args is Map) {
+      // Common keys used across the app: 'productId' or 'id'
+      if (args['productId'] != null) {
+        productId = args['productId'].toString();
+      } else if (args['id'] != null) {
+        productId = args['id'].toString();
+      }
+    }
+
+    if (productId != null && productId.isNotEmpty) {
       fetchProductDetails(productId);
     } else {
       isLoading.value = false;
