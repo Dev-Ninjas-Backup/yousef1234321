@@ -10,6 +10,7 @@ import 'package:yousef1234321/features/chat/controller/chat_page_controller.dart
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 import '../controller/service_booking_controller.dart';
 
@@ -43,7 +44,7 @@ class ServiceMessage extends StatelessWidget {
   Widget _attachmentRow(String url) {
     final fileName = _fileNameFromUrl(url);
     final ext = _fileExtensionFromUrl(url);
-    final typeLabel = ext.isEmpty ? 'FILE' : ext;
+    final typeLabel = ext.isEmpty ? 'file' : ext;
     final isHttp = url.startsWith('http://') || url.startsWith('https://');
 
     return InkWell(
@@ -72,8 +73,8 @@ class ServiceMessage extends StatelessWidget {
                     style: getTextStyle(fontSize: 12, color: Colors.black87),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    typeLabel,
+                  TranslatedText(
+                    text: typeLabel,
                     style: getTextStyle(
                       fontSize: 10,
                       color: Colors.grey.shade600,
@@ -98,8 +99,8 @@ class ServiceMessage extends StatelessWidget {
   Future<void> _downloadOrOpenFile(String url) async {
     try {
       Get.snackbar(
-        'Downloading',
-        'Starting download...',
+        'downloading'.tr,
+        'starting_download'.tr,
         snackPosition: SnackPosition.BOTTOM,
         duration: Duration(seconds: 2),
       );
@@ -112,8 +113,8 @@ class ServiceMessage extends StatelessWidget {
         final directory = await getDownloadsDirectory();
         if (directory == null) {
           Get.snackbar(
-            'Error',
-            'Downloads directory not available',
+            'error'.tr,
+            'downloads_dir_not_available'.tr,
             snackPosition: SnackPosition.BOTTOM,
           );
           return;
@@ -129,21 +130,21 @@ class ServiceMessage extends StatelessWidget {
         print("file downloaded to $filePath");
 
         Get.snackbar(
-          'Success',
-          'File downloaded to $filePath',
+          'success'.tr,
+          '${'file_downloaded_to'.tr} $filePath',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
         Get.snackbar(
-          'Download failed',
-          'Server returned status ${response.statusCode}',
+          'download_failed'.tr,
+          '${'server_error_status'.tr} ${response.statusCode}',
           snackPosition: SnackPosition.BOTTOM,
         );
       }
     } catch (e) {
       Get.snackbar(
-        'Download failed',
-        'Error: ${e.toString()}',
+        'download_failed'.tr,
+        '${'error'.tr}: ${e.toString()}',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -195,8 +196,8 @@ class ServiceMessage extends StatelessWidget {
 
         // Show selected files
         Get.snackbar(
-          'Files Selected',
-          '${result.files.length} file(s) selected. Tap send to upload.',
+          'files_selected'.tr,
+          '${result.files.length} ${'files_selected_msg'.tr}',
           snackPosition: SnackPosition.BOTTOM,
           duration: Duration(seconds: 2),
         );
@@ -206,8 +207,8 @@ class ServiceMessage extends StatelessWidget {
     } catch (e) {
       print('❌ [_pickFiles] Error: $e');
       Get.snackbar(
-        'Error',
-        'Failed to pick files: $e',
+        'error'.tr,
+        '${'failed_pick_files'.tr}: $e',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -246,18 +247,18 @@ class ServiceMessage extends StatelessWidget {
                 Column(
                   spacing: 2,
                   children: [
-                    Text(
-                      garageName ?? "Garage",
+                    TranslatedText(
+                      text: garageName ?? "garage",
                       style: getTextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Obx(
-                      () => Text(
-                        controller.isConnected.value
-                            ? "Active Now"
-                            : "Connecting...",
+                      () => TranslatedText(
+                        text: controller.isConnected.value
+                            ? "active_now"
+                            : "connecting",
                         style: getTextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,
@@ -347,9 +348,10 @@ class ServiceMessage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   // Message Text (only if not just "Attachment")
-                                  if (text.isNotEmpty && text != 'Attachment')
-                                    Text(
-                                      text,
+                                  if (text.isNotEmpty &&
+                                      text != 'attachment'.tr)
+                                    TranslatedText(
+                                      text: text,
                                       style: getTextStyle(
                                         fontSize: 15,
                                         color: Colors.black87,
@@ -358,7 +360,8 @@ class ServiceMessage extends StatelessWidget {
 
                                   // File previews (always show if present)
                                   if (files.isNotEmpty) ...[
-                                    if (text.isNotEmpty && text != 'Attachment')
+                                    if (text.isNotEmpty &&
+                                        text != 'attachment'.tr)
                                       const SizedBox(height: 8),
                                     ...files.map((e) => e.toString()).map((
                                       url,
@@ -420,8 +423,9 @@ class ServiceMessage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Selected Files (${selectedFiles.length})',
+                        TranslatedText(
+                          text:
+                              '${'selected_files'.tr} (${selectedFiles.length})',
                           style: getTextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -465,7 +469,7 @@ class ServiceMessage extends StatelessWidget {
                   child: TextField(
                     controller: controller.textController,
                     decoration: InputDecoration(
-                      hintText: "Type your message",
+                      hintText: "type_your_message".tr,
                       hintStyle: const TextStyle(fontSize: 15),
                       // suffixIcon: GestureDetector(
                       //   onTap: _pickFiles,

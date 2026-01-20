@@ -63,7 +63,7 @@ class ServiceReviewController extends GetxController {
         serviceQualityRating.value == 0 ||
         timelinessRating.value == 0 ||
         valueForMoneyRating.value == 0) {
-      EasyLoading.showToast("Incomplete, Please rate all categories");
+      EasyLoading.showToast("incomplete_rating".tr);
       return;
     }
     _submitToServer();
@@ -75,7 +75,7 @@ class ServiceReviewController extends GetxController {
     final dynamic rawGarageId = args != null ? args['garageId'] : null;
     final String? garageId = rawGarageId?.toString();
     if (garageId == null || garageId.isEmpty) {
-      EasyLoading.showError('Garage id not found');
+      EasyLoading.showError('garage_id_not_found'.tr);
       return;
     }
 
@@ -124,7 +124,7 @@ class ServiceReviewController extends GetxController {
           print(
             'Backend reported error when creating review: ${res.bodyString}',
           );
-          EasyLoading.showError('Failed to submit review');
+          EasyLoading.showError('submit_review_failed'.tr);
         } else {
           Get.dialog(
             Dialog(child: Image.asset("assets/images/thankyou.png")),
@@ -135,7 +135,7 @@ class ServiceReviewController extends GetxController {
             if (Get.isDialogOpen == true) Get.back();
           });
 
-          EasyLoading.showSuccess('Review submitted');
+          EasyLoading.showSuccess('review_submitted'.tr);
           resetForm();
           // Go back to previous screen
           Future.delayed(const Duration(milliseconds: 500), () {
@@ -144,12 +144,12 @@ class ServiceReviewController extends GetxController {
         }
       } else {
         print('Failed to post review: ${res.statusCode} ${res.bodyString}');
-        EasyLoading.showError('Failed to submit review');
+        EasyLoading.showError('submit_review_failed'.tr);
       }
     } catch (e, st) {
       print('Error submitting review: $e');
       print(st);
-      EasyLoading.showError('Failed to submit review');
+      EasyLoading.showError('submit_review_failed'.tr);
     } finally {
       isSubmitting.value = false;
     }

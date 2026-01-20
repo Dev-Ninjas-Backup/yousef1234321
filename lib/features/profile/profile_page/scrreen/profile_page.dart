@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 
 import '../widgets/delete_dialog.dart';
@@ -97,9 +98,9 @@ class ProfilePage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Obx(
-                                () => Text(
-                                  controller.fullName.value.isEmpty
-                                      ? "user".tr
+                                () => TranslatedText(
+                                  text: controller.fullName.value.isEmpty
+                                      ? "user"
                                       : controller.fullName.value,
                                   style: getTextStyle(
                                     fontSize: 24,
@@ -109,15 +110,21 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                               Obx(
-                                () => Text(
-                                  controller.email.value.isEmpty
-                                      ? "default_email".tr
-                                      : controller.email.value,
-                                  style: getTextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
+                                () => controller.email.value.isEmpty
+                                    ? TranslatedText(
+                                        text: "default_email",
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      )
+                                    : Text(
+                                        controller.email.value,
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),
@@ -157,8 +164,8 @@ class ProfilePage extends StatelessWidget {
                                     controller.profileItem[index].icon,
                                     size: 24,
                                   ),
-                                  Text(
-                                    controller.profileItem[index].title.tr,
+                                  TranslatedText(
+                                    text: controller.profileItem[index].title,
                                     style: getTextStyle(fontSize: 16),
                                   ),
                                 ],
@@ -219,8 +226,8 @@ class ProfilePage extends StatelessWidget {
                                   ),
                                 )
                               else
-                                Text(
-                                  "logout".tr,
+                                TranslatedText(
+                                  text: "logout",
                                   textAlign: TextAlign.center,
                                   style: getTextStyle(
                                     fontSize: 16,
@@ -257,8 +264,8 @@ class ProfilePage extends StatelessWidget {
                           child: Row(
                             spacing: 4,
                             children: [
-                              Text(
-                                "delete_account".tr,
+                              TranslatedText(
+                                text: "delete_account",
                                 style: getTextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,

@@ -4,6 +4,7 @@ import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/service/rate_service/screen/service_review_scree.dart'
     show ServiceReviewScreen;
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../widgets/operation_houre.dart';
 import '../widgets/service_booking_middle_section.dart';
@@ -32,14 +33,14 @@ class ServiceBooking extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                Text(
-                  "Failed to load garage details",
+                TranslatedText(
+                  text: "failed_load_garage",
                   style: getTextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.fetchGarageDetails(),
-                  child: const Text("Retry"),
+                  child: const TranslatedText(text: "retry"),
                 ),
               ],
             ),
@@ -67,8 +68,8 @@ class ServiceBooking extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // --- Location ---
-                    Text(
-                      "Location & Map",
+                    TranslatedText(
+                      text: "location_map",
                       style: getTextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -80,10 +81,14 @@ class ServiceBooking extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Text(
-                            controller.garageDetail.value?.formattedAddress ??
+                          child: TranslatedText(
+                            text:
+                                controller
+                                    .garageDetail
+                                    .value
+                                    ?.formattedAddress ??
                                 controller.garageDetail.value?.address ??
-                                "Al Qusais Industrial Area 2, Dubai, UAE",
+                                "default_address",
                             style: getTextStyle(fontSize: 12),
                           ),
                         ),
@@ -94,7 +99,9 @@ class ServiceBooking extends StatelessWidget {
                             final lat = g.garageLat;
                             final lng = g.garageLng;
                             if (lat == 0 || lng == 0) {
-                              EasyLoading.showError('Location not available');
+                              EasyLoading.showError(
+                                'location_not_available'.tr,
+                              );
                               return;
                             }
 
@@ -106,14 +113,14 @@ class ServiceBooking extends StatelessWidget {
                                 uri,
                                 mode: LaunchMode.externalApplication,
                               )) {
-                                EasyLoading.showError('Could not open maps');
+                                EasyLoading.showError('could_not_open_maps'.tr);
                               }
                             } catch (e) {
-                              EasyLoading.showError('Could not open maps');
+                              EasyLoading.showError('could_not_open_maps'.tr);
                             }
                           },
-                          child: Text(
-                            "See location",
+                          child: TranslatedText(
+                            text: "see_location",
                             style: getTextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.w500,
@@ -129,14 +136,14 @@ class ServiceBooking extends StatelessWidget {
                       final g = controller.garageDetail.value;
                       if (g == null) {
                         return Center(
-                          child: Text("No location data available"),
+                          child: TranslatedText(text: "no_location_data"),
                         );
                       }
                       final lat = g.garageLat;
                       final lng = g.garageLng;
                       if (lat == 0 || lng == 0) {
                         return Center(
-                          child: Text("No location data available"),
+                          child: TranslatedText(text: "no_location_data"),
                         );
                       }
 
@@ -190,8 +197,8 @@ class ServiceBooking extends StatelessWidget {
                           size: 18,
                           color: Colors.white,
                         ),
-                        label: Text(
-                          "Write review",
+                        label: TranslatedText(
+                          text: "write_review",
                           style: getTextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 12,

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 import '../controller/service_controller.dart';
@@ -104,8 +105,8 @@ class FindService extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'nearby_garages'.tr,
+                TranslatedText(
+                  text: 'nearby_garages',
                   style: getTextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -128,8 +129,8 @@ class FindService extends StatelessWidget {
                   onTap: () {
                     // Optional: Navigate to full garage list
                   },
-                  child: Text(
-                    'view_all'.tr,
+                  child: TranslatedText(
+                    text: 'view_all',
                     style: getTextStyle(
                       color: AppColors.splashButtonColor,
                       fontSize: 14,
@@ -150,8 +151,8 @@ class FindService extends StatelessWidget {
 
                 if (controller.garages.isEmpty) {
                   return Center(
-                    child: Text(
-                      'no_garages_available'.tr,
+                    child: TranslatedText(
+                      text: 'no_garages_available',
                       style: TextStyle(color: Colors.grey),
                     ),
                   );
@@ -212,8 +213,8 @@ class FindService extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(
-                                        name,
+                                      TranslatedText(
+                                        text: name,
                                         style: getTextStyle(
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -249,8 +250,8 @@ class FindService extends StatelessWidget {
                                         color: AppColors.subTextColor,
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(
-                                        'distance_km'.tr.replaceAll(
+                                      TranslatedText(
+                                        text: 'distance_km'.tr.replaceAll(
                                           '@distance',
                                           distance,
                                         ),
@@ -277,8 +278,8 @@ class FindService extends StatelessWidget {
                                                   ? const Color(0xFFDCFCE7)
                                                   : const Color(0xFFF3F4F6),
                                             ),
-                                            child: Text(
-                                              isOpen ? 'open'.tr : 'closed'.tr,
+                                            child: TranslatedText(
+                                              text: isOpen ? 'open' : 'closed',
                                               style: getTextStyle(
                                                 fontSize: 12,
                                                 color: isOpen
@@ -300,8 +301,8 @@ class FindService extends StatelessWidget {
                                   ),
 
                                   const SizedBox(height: 6),
-                                  Text(
-                                    g.address ?? '',
+                                  TranslatedText(
+                                    text: g.address ?? '',
                                     style: getTextStyle(
                                       fontSize: 12,
                                       color: AppColors.subTextColor,

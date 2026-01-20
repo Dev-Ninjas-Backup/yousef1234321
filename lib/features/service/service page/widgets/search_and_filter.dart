@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/style/global_text_style.dart';
@@ -36,7 +37,7 @@ class SearchAndFilter extends StatelessWidget {
                 decimal: true,
               ),
               decoration: InputDecoration(
-                hintText: "Radius (km)",
+                hintText: "radius_km".tr,
                 prefixIcon: GestureDetector(
                   onTap: () => controller.loadCurrentLocation(),
                   child: Obx(() {
@@ -94,8 +95,8 @@ class SearchAndFilter extends StatelessWidget {
                           color: Colors.white,
                         ),
                       )
-                    : Text(
-                        'Find Garage',
+                    : TranslatedText(
+                        text: 'find_garage',
                         style: getTextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w500,

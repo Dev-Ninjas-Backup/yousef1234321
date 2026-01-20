@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
@@ -27,8 +28,8 @@ class SearchSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Find Car Services Near You",
+          const TranslatedText(
+            text: "find_car_services_near_you",
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -36,8 +37,8 @@ class SearchSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            "Emergency repairs, maintenance & more",
+          TranslatedText(
+            text: "emergency_repairs_subtitle",
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -57,8 +58,8 @@ class SearchSection extends StatelessWidget {
                         () => DropdownButtonFormField<String>(
                           value: controller.selectedLocation.value,
                           isExpanded: true,
-                          hint: Text(
-                            "Location",
+                          hint: TranslatedText(
+                            text: "location",
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -69,10 +70,8 @@ class SearchSection extends StatelessWidget {
                               .map(
                                 (location) => DropdownMenuItem(
                                   value: location,
-                                  child: Text(
-                                    location,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                  child: TranslatedText(
+                                    text: location,
                                     style: getTextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -108,8 +107,8 @@ class SearchSection extends StatelessWidget {
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
                           value: controller.selectedService.value,
-                          hint: Text(
-                            "Service type",
+                          hint: TranslatedText(
+                            text: "service_type",
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -122,8 +121,8 @@ class SearchSection extends StatelessWidget {
                                     .map(
                                       (service) => DropdownMenuItem(
                                         value: service,
-                                        child: Text(
-                                          service,
+                                        child: TranslatedText(
+                                          text: service,
                                           style: getTextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400,
@@ -178,7 +177,7 @@ class SearchSection extends StatelessWidget {
                             double? lat;
                             double? lng;
                             try {
-                              EasyLoading.show(status: 'Locating...');
+                              EasyLoading.show(status: 'locating'.tr);
                               LocationPermission permission =
                                   await Geolocator.checkPermission();
                               if (permission == LocationPermission.denied) {
@@ -218,7 +217,7 @@ class SearchSection extends StatelessWidget {
                             );
                           }
                         : null,
-                    child: const Text("Search garage"),
+                    child: const TranslatedText(text: "search_garage"),
                   );
                 }),
               ],

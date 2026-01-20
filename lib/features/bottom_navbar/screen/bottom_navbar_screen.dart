@@ -118,6 +118,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/chat/screen/chat_screen_list.dart';
 import 'package:yousef1234321/features/home/home_page/screen/home_screen.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
@@ -149,11 +150,11 @@ class BottomNavbarScreen extends StatelessWidget {
     ];
 
     final List<String> labels = [
-      "nav_service".tr,
-      "nav_spare_parts".tr,
-      "home".tr,
-      "chat".tr,
-      "profile".tr,
+      "nav_service",
+      "nav_spare_parts",
+      "home",
+      "chat",
+      "profile",
     ];
 
     return Obx(
@@ -218,14 +219,13 @@ class BottomNavbarScreen extends StatelessWidget {
 
                       SizedBox(
                         width: 70, // fix width for each label
-                        child: Text(
-                          labels[index],
+                        child: TranslatedText(
+                          text: labels[index],
                           textAlign: TextAlign.center,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
                           style: TextStyle(
                             fontSize: 12,
                             color: isSelected ? Colors.blue : Colors.grey,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),

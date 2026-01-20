@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/call_dialog.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/constants/iconpath.dart';
 import '../../../../core/common/style/global_text_style.dart';
@@ -29,8 +29,8 @@ class ServiceBookingMiddleSection extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    garage?.name ?? "Loading...",
+                  TranslatedText(
+                    text: garage?.name ?? "loading",
                     style: getTextStyle(fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 4),
@@ -46,8 +46,8 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Text(
-                        "• ${garage?.city ?? ''}",
+                      TranslatedText(
+                        text: "• ${garage?.city ?? ''}",
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.subTextColor,
@@ -72,8 +72,8 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                               color: Colors.blue.withValues(alpha: .1),
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            child: Text(
-                              garage.brandExpertise.first,
+                            child: TranslatedText(
+                              text: garage.brandExpertise.first,
                               style: getTextStyle(
                                 color: Colors.blue,
                                 fontSize: 12,
@@ -81,7 +81,10 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                             ),
                           ),
                         Text(
-                          garage.services.take(3).join(" • "),
+                          garage.services
+                              .take(3)
+                              .map((s) => controller.mapServiceToKey(s).tr)
+                              .join(" • "),
                           style: getTextStyle(
                             fontSize: 16,
                             color: AppColors.subTextColor,
@@ -156,7 +159,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
             final lat = g.garageLat;
             final lng = g.garageLng;
             if (lat == 0 || lng == 0) {
-              EasyLoading.showError('Location not available');
+              EasyLoading.showError('location_not_available'.tr);
               return;
             }
 
@@ -165,10 +168,10 @@ class ServiceBookingMiddleSection extends StatelessWidget {
             );
             try {
               if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-                EasyLoading.showError('Could not open maps');
+                EasyLoading.showError('could_not_open_maps'.tr);
               }
             } catch (e) {
-              EasyLoading.showError('Could not open maps');
+              EasyLoading.showError('could_not_open_maps'.tr);
             }
           },
           icon: const Icon(
@@ -176,8 +179,8 @@ class ServiceBookingMiddleSection extends StatelessWidget {
             size: 18,
             color: Colors.white,
           ),
-          label: Text(
-            "See location",
+          label: TranslatedText(
+            text: "see_location",
             style: getTextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 12,
@@ -189,15 +192,13 @@ class ServiceBookingMiddleSection extends StatelessWidget {
         const SizedBox(height: 32),
 
         // Garage Overview
-        Text(
-          "Garage Overview",
+        TranslatedText(
+          text: "garage_overview",
           style: getTextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         const SizedBox(height: 14),
-        Text(
-          garage?.description ??
-              "Established in 2015, Al Noor Auto Garage is a certified multi-brand car service provider in Dubai. "
-                  "Our expert mechanics handle everything from diagnostics to full repairs using advanced equipment and genuine parts.",
+        TranslatedText(
+          text: garage?.description ?? "default_garage_description",
           style: getTextStyle(color: AppColors.subTextColor, fontSize: 12),
         ),
 

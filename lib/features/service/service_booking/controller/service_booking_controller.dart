@@ -717,7 +717,7 @@ class ServiceBookingController extends GetxController {
 
     try {
       final dateTime = DateTime.parse(dateTimeString);
-      final format = DateFormat('h:mm a');
+      final format = DateFormat('h:mm a', Get.locale?.languageCode);
       return format.format(dateTime);
     } catch (e) {
       final now = TimeOfDay.now();
@@ -773,7 +773,7 @@ class ServiceBookingController extends GetxController {
               garageDetail.value!.services.isNotEmpty) {
             services.value = garageDetail.value!.services.map((serviceName) {
               return {
-                "title": _mapServiceToKey(serviceName),
+                "title": mapServiceToKey(serviceName),
                 "icon": _getServiceIcon(serviceName),
               };
             }).toList();
@@ -797,7 +797,7 @@ class ServiceBookingController extends GetxController {
     }
   }
 
-  String _mapServiceToKey(String serviceName) {
+  String mapServiceToKey(String serviceName) {
     final lower = serviceName.toLowerCase();
     if (lower.contains('ac') || lower.contains('air')) return 'ac_service';
     if (lower.contains('battery')) return 'battery_replacement';

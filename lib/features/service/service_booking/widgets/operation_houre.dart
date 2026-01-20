@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/common/style/global_text_style.dart';
+import '../../../../core/common/widgets/translated_text.dart';
 import '../controller/service_booking_controller.dart';
 
 class OperationHour extends StatelessWidget {
@@ -8,7 +10,7 @@ class OperationHour extends StatelessWidget {
 
   Map<String, dynamic> _getOpenStatus() {
     final garage = controller.garageDetail.value;
-    if (garage == null) return {'isOpen': false, 'label': 'Closed'};
+    if (garage == null) return {'isOpen': false, 'label': 'closed'};
 
     final now = DateTime.now();
     final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
@@ -19,21 +21,21 @@ class OperationHour extends StatelessWidget {
         : garage.weekdaysHours;
 
     if (hoursString.isEmpty) {
-      return {'isOpen': false, 'label': 'Closed'};
+      return {'isOpen': false, 'label': 'closed'};
     }
 
     try {
       // Parse hours like "08:00 AM - 08:00 PM"
       final parts = hoursString.split('-');
       if (parts.length != 2) {
-        return {'isOpen': false, 'label': 'Closed'};
+        return {'isOpen': false, 'label': 'closed'};
       }
 
       final openTime = _parseTime(parts[0].trim());
       final closeTime = _parseTime(parts[1].trim());
 
       if (openTime == null || closeTime == null) {
-        return {'isOpen': false, 'label': 'Closed'};
+        return {'isOpen': false, 'label': 'closed'};
       }
 
       final currentTime = TimeOfDay.now();
@@ -44,9 +46,9 @@ class OperationHour extends StatelessWidget {
       final isOpen =
           currentMinutes >= openMinutes && currentMinutes < closeMinutes;
 
-      return {'isOpen': isOpen, 'label': isOpen ? 'Open' : 'Closed'};
+      return {'isOpen': isOpen, 'label': isOpen ? 'open' : 'closed'};
     } catch (e) {
-      return {'isOpen': false, 'label': 'Closed'};
+      return {'isOpen': false, 'label': 'closed'};
     }
   }
 
@@ -86,8 +88,8 @@ class OperationHour extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Operating Hours",
+        TranslatedText(
+          text: "operating_hours",
           style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
@@ -95,8 +97,8 @@ class OperationHour extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              garage?.weekdaysHours ?? "Sat – Thu: 8:00 AM – 8:00 PM",
+            TranslatedText(
+              text: garage?.weekdaysHours ?? "default_weekdays_hours",
               style: getTextStyle(fontSize: 12),
             ),
             Container(
@@ -105,8 +107,8 @@ class OperationHour extends StatelessWidget {
                 color: isOpen ? Colors.green.shade100 : Colors.red.shade100,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                statusLabel,
+              child: TranslatedText(
+                text: statusLabel,
                 style: getTextStyle(
                   fontSize: 12,
                   color: isOpen ? Colors.green : Colors.red,
@@ -121,7 +123,7 @@ class OperationHour extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Weekend: ${garage.weekendsHours}",
+                "${'weekend'.tr}: ${garage.weekendsHours}",
                 style: getTextStyle(fontSize: 12),
               ),
             ],

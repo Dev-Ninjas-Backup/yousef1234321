@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class PartItem extends StatelessWidget {
   final String image;
@@ -81,10 +82,18 @@ class PartItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(
-                  desc,
+                TranslatedText(
+                  text: name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 4),
+                TranslatedText(
+                  text: desc,
                   style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
                 ),
                 const SizedBox(height: 6),
                 Row(

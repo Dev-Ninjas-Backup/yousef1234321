@@ -3,6 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
@@ -66,6 +67,27 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  String _getServiceKey(String serviceName) {
+    final lowerName = serviceName.toLowerCase().trim();
+
+    if (lowerName.contains('ac') ||
+        lowerName.contains('air') ||
+        lowerName.contains('conditioning')) {
+      return 'ac_repair';
+    } else if (lowerName.contains('battery')) {
+      return 'battery';
+    } else if (lowerName.contains('tire') || lowerName.contains('wheel')) {
+      return 'tires';
+    } else if (lowerName.contains('engine')) {
+      return 'engine';
+    } else if (lowerName.contains('electric')) {
+      return 'electrical';
+    } else if (lowerName.contains('spare')) {
+      return 'spares';
+    }
+    return serviceName;
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
@@ -82,18 +104,22 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
-                    SizedBox(width: 8),
-                    Text(
-                      "sayara_hub".tr,
-                      style: getTextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: TranslatedText(
+                          text: "sayara_hub",
+                          style: getTextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   children: [
@@ -117,15 +143,19 @@ class HomeScreen extends StatelessWidget {
                         final profilePhoto =
                             profileController.profilePhoto.value;
 
+                        ImageProvider? backgroundImage;
+                        if (profilePhoto != null && profilePhoto.isNotEmpty) {
+                          backgroundImage = NetworkImage(profilePhoto);
+                        }
+
                         return CircleAvatar(
-                          backgroundImage:
-                              profilePhoto != null && profilePhoto.isNotEmpty
-                              ? NetworkImage(profilePhoto)
+                          backgroundImage: backgroundImage,
+                          onBackgroundImageError: backgroundImage != null
+                              ? (exception, stackTrace) {
+                                  // Log error
+                                }
                               : null,
-                          onBackgroundImageError: (exception, stackTrace) {
-                            // Fallback handled by showing child below
-                          },
-                          child: profilePhoto == null || profilePhoto.isEmpty
+                          child: backgroundImage == null
                               ? const Icon(Icons.person)
                               : null,
                         );
@@ -149,8 +179,8 @@ class HomeScreen extends StatelessWidget {
                   Icon(Icons.warning_amber_rounded, color: Colors.white),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      "emergency_service".tr,
+                    child: TranslatedText(
+                      text: "emergency_service",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -169,8 +199,8 @@ class HomeScreen extends StatelessWidget {
                         "Emergency Service not available at the moment".tr,
                       );
                     },
-                    child: Text(
-                      "search_now".tr,
+                    child: TranslatedText(
+                      text: "search_now",
                       style: TextStyle(color: Colors.red),
                     ),
                   ),
@@ -178,8 +208,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              "popular_services".tr,
+            TranslatedText(
+              text: "popular_services",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -268,7 +298,7 @@ class HomeScreen extends StatelessWidget {
                             },
                             child: Center(
                               child: ServiceChip(
-                                label: service.tr,
+                                label: _getServiceKey(service),
                                 icon: _getIconForService(service),
                               ),
                             ),
@@ -294,7 +324,7 @@ class HomeScreen extends StatelessWidget {
                               },
                               child: Center(
                                 child: ServiceChip(
-                                  label: service.tr,
+                                  label: _getServiceKey(service),
                                   icon: _getIconForService(service),
                                 ),
                               ),
@@ -310,15 +340,15 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "top_rated_garages".tr,
+                TranslatedText(
+                  text: "top_rated_garages",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextButton(
                   onPressed: () {
                     Get.toNamed(Approute.getGarageListPage());
                   },
-                  child: Text("view_all".tr),
+                  child: TranslatedText(text: "view_all"),
                 ),
               ],
             ),
@@ -334,8 +364,8 @@ class HomeScreen extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsets.all(20.0),
                   child: Center(
-                    child: Text(
-                      'no_garages_available'.tr,
+                    child: TranslatedText(
+                      text: 'no_garages_available',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),
