@@ -15,15 +15,41 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class ServiceBooking extends StatelessWidget {
-  final controller = Get.put(ServiceBookingController());
   ServiceBooking({super.key});
+  
   @override
   Widget build(BuildContext context) {
+    // Delete any existing controller and create a fresh one to ensure onInit is called
+    Get.delete<ServiceBookingController>();
+    final controller = Get.put(ServiceBookingController());
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: Obx(() {
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        // Check if garage ID is missing
+        if (controller.currentGarageId == null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.location_off, size: 48, color: Colors.orange),
+                const SizedBox(height: 16),
+                TranslatedText(
+                  text: "no_garage_selected",
+                  style: getTextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => Get.back(),
+                  child: const TranslatedText(text: "go_back"),
+                ),
+              ],
+            ),
+          );
         }
 
         if (controller.hasError.value) {
@@ -45,6 +71,11 @@ class ServiceBooking extends StatelessWidget {
               ],
             ),
           );
+        }
+
+        // Show loading state if garage data hasn't been loaded yet
+        if (controller.garageDetail.value == null && !controller.hasError.value) {
+          return const Center(child: CircularProgressIndicator());
         }
 
         return SingleChildScrollView(

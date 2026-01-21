@@ -15,7 +15,18 @@ class ChatTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25,
-            backgroundImage: NetworkImage(chat.imageUrl),
+            backgroundColor: Colors.blue,
+            backgroundImage: chat.isInitial ? null : NetworkImage(chat.imageUrl),
+            child: chat.isInitial
+                ? Text(
+                    chat.initial ?? '?',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                : null,
           ),
           if (chat.unreadCount > 0)
             Positioned(

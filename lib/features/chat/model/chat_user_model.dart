@@ -5,6 +5,7 @@ class ChatUserModel {
   final String time;
   final String imageUrl;
   final int unreadCount;
+  final String? initial; // First letter of name if no profile photo
 
   ChatUserModel({
     required this.id,
@@ -13,5 +14,9 @@ class ChatUserModel {
     required this.time,
     required this.imageUrl,
     this.unreadCount = 0,
+    this.initial,
   });
+
+  /// Check if displaying initial instead of image
+  bool get isInitial => initial != null;
 }

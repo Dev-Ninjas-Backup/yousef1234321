@@ -99,19 +99,43 @@ class ServiceBookingMiddleSection extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () {
-                    showCallDialog(
-                      garageName: garage?.name,
-                      phoneNumber: garage?.garagePhone,
-                    );
+                    // Use garagePhone first, then fallback to user phone
+                    final phoneNumber = garage?.garagePhone ?? garage?.user?.phone;
+                    print('📞 [Call Button] Phone number: $phoneNumber');
+                    
+                    if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                      showCallDialog(
+                        garageName: garage?.name,
+                        phoneNumber: phoneNumber,
+                      );
+                    } else {
+                      Get.snackbar(
+                        'Error',
+                        'Phone number not available',
+                        snackPosition: SnackPosition.BOTTOM,
+                      );
+                    }
                   },
                   child: Image.asset(Iconpath.callIcon, height: 36, width: 36),
                 ),
                 SizedBox(width: 10),
                 GestureDetector(
                   onTap: () {
-                    final garageOwnerId =
-                        controller.garageDetail.value?.user?.id;
-                    final garageName = controller.garageDetail.value?.name;
+                    // Debug the garage detail structure
+                    print('🔍 [Debug] Full garage detail: ${controller.garageDetail.value}');
+                    print('🔍 [Debug] Garage user: ${controller.garageDetail.value?.user}');
+                    print('🔍 [Debug] Garage userId field: ${controller.garageDetail.value?.userId}');
+                    
+                    // Try multiple ways to get the owner ID
+                    String? garageOwnerId = controller.garageDetail.value?.user?.id;
+                    
+                    // Fallback to userId field if user.id is not available
+                    if (garageOwnerId == null || garageOwnerId.isEmpty) {
+                      garageOwnerId = controller.garageDetail.value?.userId;
+                      print('🔄 [Message Button] Using userId fallback: $garageOwnerId');
+                    }
+                    
+                    final garageName = controller.garageDetail.value?.user!.fullName;
                     print(
                       '📨 [Message Button] Navigating to ServiceMessage with garageOwnerId: $garageOwnerId',
                     );
@@ -125,6 +149,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                       );
                     } else {
                       print('❌ [Message Button] Garage owner ID not available');
+                      print('❌ [Message Button] Available data: user=${controller.garageDetail.value?.user}, userId=${controller.garageDetail.value?.userId}');
                       Get.snackbar(
                         'Error',
                         'Unable to open chat - garage owner information not loaded',
