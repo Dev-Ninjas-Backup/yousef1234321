@@ -113,8 +113,10 @@ class SparePartsScreen extends StatelessWidget {
                         onTap: () async {
                           // extract id and name safely
                           final cid = (cat['id'] ?? '').toString();
-                          final cname = (cat['name'] ?? 'category'.tr)
-                              .toString();
+                          final cname =
+                              ((cat['name'] as String?)?.toLowerCase().tr ??
+                                      'category'.tr)
+                                  .toString();
 
                           final productsCtrl = Get.put(
                             ProductsController(),
@@ -207,7 +209,7 @@ class SparePartsScreen extends StatelessWidget {
                         },
                         child: CategoryItem(
                           icon: cat['icon'] as IconData,
-                          title: cat['name'] as String,
+                          title: (cat['name'] as String).toLowerCase().tr,
                           color: controller.getRandomColor(),
                         ),
                       ),

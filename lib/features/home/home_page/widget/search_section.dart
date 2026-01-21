@@ -27,8 +27,8 @@ class SearchSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Find Car Services Near You",
+          Text(
+            "find_car_services_near_you".tr,
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -37,7 +37,7 @@ class SearchSection extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            "Emergency repairs, maintenance & more",
+            "emergency_repairs_subtitle".tr,
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -58,7 +58,7 @@ class SearchSection extends StatelessWidget {
                           value: controller.selectedLocation.value,
                           isExpanded: true,
                           hint: Text(
-                            "Location",
+                            "location".tr,
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -109,7 +109,7 @@ class SearchSection extends StatelessWidget {
                           isExpanded: true,
                           value: controller.selectedService.value,
                           hint: Text(
-                            "Service type",
+                            "service_type_hint".tr,
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -123,7 +123,7 @@ class SearchSection extends StatelessWidget {
                                       (service) => DropdownMenuItem(
                                         value: service,
                                         child: Text(
-                                          service,
+                                          service.tr,
                                           style: getTextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400,
@@ -218,7 +218,7 @@ class SearchSection extends StatelessWidget {
                             );
                           }
                         : null,
-                    child: const Text("Search garage"),
+                    child: Text("search_garage".tr),
                   );
                 }),
               ],

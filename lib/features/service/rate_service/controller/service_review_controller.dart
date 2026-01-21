@@ -63,7 +63,7 @@ class ServiceReviewController extends GetxController {
         serviceQualityRating.value == 0 ||
         timelinessRating.value == 0 ||
         valueForMoneyRating.value == 0) {
-      EasyLoading.showToast("Incomplete, Please rate all categories");
+      EasyLoading.showToast("incomplete_rating".tr);
       return;
     }
     _submitToServer();
@@ -75,7 +75,7 @@ class ServiceReviewController extends GetxController {
     final dynamic rawGarageId = args != null ? args['garageId'] : null;
     final String? garageId = rawGarageId?.toString();
     if (garageId == null || garageId.isEmpty) {
-      EasyLoading.showError('Garage id not found');
+      EasyLoading.showError('garage_id_not_found'.tr);
       return;
     }
 
@@ -124,10 +124,51 @@ class ServiceReviewController extends GetxController {
           print(
             'Backend reported error when creating review: ${res.bodyString}',
           );
-          EasyLoading.showError('Failed to submit review');
+          EasyLoading.showError('failed_submit_review'.tr);
         } else {
           Get.dialog(
-            Dialog(child: Image.asset("assets/images/thankyou.png")),
+            Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.green.shade100,
+                      child: Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green.shade700,
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'thank_you'.tr,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'feedback_submitted_successfully'.tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             barrierDismissible: false,
           );
 
@@ -135,7 +176,7 @@ class ServiceReviewController extends GetxController {
             if (Get.isDialogOpen == true) Get.back();
           });
 
-          EasyLoading.showSuccess('Review submitted');
+          EasyLoading.showSuccess('review_submitted'.tr);
           resetForm();
           // Go back to previous screen
           Future.delayed(const Duration(milliseconds: 500), () {
@@ -144,12 +185,12 @@ class ServiceReviewController extends GetxController {
         }
       } else {
         print('Failed to post review: ${res.statusCode} ${res.bodyString}');
-        EasyLoading.showError('Failed to submit review');
+        EasyLoading.showError('failed_submit_review'.tr);
       }
     } catch (e, st) {
       print('Error submitting review: $e');
       print(st);
-      EasyLoading.showError('Failed to submit review');
+      EasyLoading.showError('failed_submit_review'.tr);
     } finally {
       isSubmitting.value = false;
     }

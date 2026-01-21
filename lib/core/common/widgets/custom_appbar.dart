@@ -20,7 +20,7 @@ class CustomAppBar extends StatelessWidget {
           child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
         ),
         Text(
-          title.tr,
+          title,
           style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         SizedBox(width: 44),

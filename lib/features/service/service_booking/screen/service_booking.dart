@@ -33,13 +33,13 @@ class ServiceBooking extends StatelessWidget {
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
                 Text(
-                  "Failed to load garage details",
+                  "failed_load_garage".tr,
                   style: getTextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.fetchGarageDetails(),
-                  child: const Text("Retry"),
+                  child: Text("retry".tr),
                 ),
               ],
             ),
@@ -68,7 +68,7 @@ class ServiceBooking extends StatelessWidget {
 
                     // --- Location ---
                     Text(
-                      "Location & Map",
+                      "location_and_map".tr,
                       style: getTextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -83,7 +83,7 @@ class ServiceBooking extends StatelessWidget {
                           child: Text(
                             controller.garageDetail.value?.formattedAddress ??
                                 controller.garageDetail.value?.address ??
-                                "Al Qusais Industrial Area 2, Dubai, UAE",
+                                "address_not_available".tr,
                             style: getTextStyle(fontSize: 12),
                           ),
                         ),
@@ -94,7 +94,9 @@ class ServiceBooking extends StatelessWidget {
                             final lat = g.garageLat;
                             final lng = g.garageLng;
                             if (lat == 0 || lng == 0) {
-                              EasyLoading.showError('Location not available');
+                              EasyLoading.showError(
+                                'location_not_available'.tr,
+                              );
                               return;
                             }
 
@@ -106,14 +108,14 @@ class ServiceBooking extends StatelessWidget {
                                 uri,
                                 mode: LaunchMode.externalApplication,
                               )) {
-                                EasyLoading.showError('Could not open maps');
+                                EasyLoading.showError('could_not_open_maps'.tr);
                               }
                             } catch (e) {
-                              EasyLoading.showError('Could not open maps');
+                              EasyLoading.showError('could_not_open_maps'.tr);
                             }
                           },
                           child: Text(
-                            "See location",
+                            "see_location".tr,
                             style: getTextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.w500,
@@ -187,7 +189,7 @@ class ServiceBooking extends StatelessWidget {
                           color: Colors.white,
                         ),
                         label: Text(
-                          "Write review",
+                          "write_review".tr,
                           style: getTextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
