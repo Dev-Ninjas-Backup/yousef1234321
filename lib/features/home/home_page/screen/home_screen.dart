@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/features/home/home_page/widget/search_section.dart';
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
 import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
+import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -64,6 +67,27 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
+  String _getServiceKey(String serviceName) {
+    final lowerName = serviceName.toLowerCase().trim();
+
+    if (lowerName.contains('ac') ||
+        lowerName.contains('air') ||
+        lowerName.contains('conditioning')) {
+      return 'ac_repair';
+    } else if (lowerName.contains('battery')) {
+      return 'battery';
+    } else if (lowerName.contains('tire') || lowerName.contains('wheel')) {
+      return 'tires';
+    } else if (lowerName.contains('engine')) {
+      return 'engine';
+    } else if (lowerName.contains('electric')) {
+      return 'electrical';
+    } else if (lowerName.contains('spare')) {
+      return 'spares';
+    }
+    return serviceName;
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(HomeController());
@@ -80,18 +104,22 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
-                    SizedBox(width: 8),
-                    Text(
-                      "sayara_hub".tr,
-                      style: getTextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: TranslatedText(
+                          text: "sayara_hub",
+                          style: getTextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Row(
                   children: [
@@ -110,11 +138,28 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(width: 12),
                     Tooltip(
                       message: "profile".tr,
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-                        ),
-                      ),
+                      child: Obx(() {
+                        final profileController = Get.find<ProfileController>();
+                        final profilePhoto =
+                            profileController.profilePhoto.value;
+
+                        ImageProvider? backgroundImage;
+                        if (profilePhoto != null && profilePhoto.isNotEmpty) {
+                          backgroundImage = NetworkImage(profilePhoto);
+                        }
+
+                        return CircleAvatar(
+                          backgroundImage: backgroundImage,
+                          onBackgroundImageError: backgroundImage != null
+                              ? (exception, stackTrace) {
+                                  // Log error
+                                }
+                              : null,
+                          child: backgroundImage == null
+                              ? const Icon(Icons.person)
+                              : null,
+                        );
+                      }),
                     ),
                   ],
                 ),
@@ -134,8 +179,8 @@ class HomeScreen extends StatelessWidget {
                   Icon(Icons.warning_amber_rounded, color: Colors.white),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      "emergency_service".tr,
+                    child: TranslatedText(
+                      text: "emergency_service",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -149,9 +194,13 @@ class HomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {},
-                    child: Text(
-                      "search_now".tr,
+                    onPressed: () {
+                      EasyLoading.showInfo(
+                        "Emergency Service not available at the moment".tr,
+                      );
+                    },
+                    child: TranslatedText(
+                      text: "search_now",
                       style: TextStyle(color: Colors.red),
                     ),
                   ),
@@ -159,8 +208,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text(
-              "popular_services".tr,
+            TranslatedText(
+              text: "popular_services",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
@@ -194,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                             },
                             child: Center(
                               child: ServiceChip(
-                                label: service.tr,
+                                label: _getServiceKey(service),
                                 icon: _getIconForService(service),
                               ),
                             ),
@@ -220,7 +269,7 @@ class HomeScreen extends StatelessWidget {
                               },
                               child: Center(
                                 child: ServiceChip(
-                                  label: service.tr,
+                                  label: _getServiceKey(service),
                                   icon: _getIconForService(service),
                                 ),
                               ),
@@ -236,15 +285,15 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "top_rated_garages".tr,
+                TranslatedText(
+                  text: "top_rated_garages",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextButton(
                   onPressed: () {
                     Get.toNamed(Approute.getGarageListPage());
                   },
-                  child: Text("view_all".tr),
+                  child: TranslatedText(text: "view_all"),
                 ),
               ],
             ),
@@ -260,8 +309,8 @@ class HomeScreen extends StatelessWidget {
                 return Padding(
                   padding: EdgeInsets.all(20.0),
                   child: Center(
-                    child: Text(
-                      'no_garages_available'.tr,
+                    child: TranslatedText(
+                      text: 'no_garages_available',
                       style: TextStyle(color: Colors.grey),
                     ),
                   ),

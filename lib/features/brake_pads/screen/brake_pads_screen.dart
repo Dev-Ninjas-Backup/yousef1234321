@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
+import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class BrakePadsScreen extends StatelessWidget {
   const BrakePadsScreen({super.key});
@@ -26,6 +28,9 @@ class BrakePadsScreen extends StatelessWidget {
           fontWeight: FontWeight.w500,
           fontSize: 12.sp,
         ),
+      child: TranslatedText(
+        text: text,
+        style: TextStyle(color: color, fontWeight: FontWeight.w500),
       ),
     );
 
@@ -65,6 +70,11 @@ class BrakePadsScreen extends StatelessWidget {
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                         ),
+                    TranslatedText(
+                      text: "brake_pads",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(width: 40.w),
@@ -131,6 +141,9 @@ class BrakePadsScreen extends StatelessWidget {
                         child: Text(
                           "discount_tag".tr,
                           style: TextStyle(
+                        child: TranslatedText(
+                          text: "discount_tag",
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 12.sp,
@@ -211,6 +224,13 @@ class BrakePadsScreen extends StatelessWidget {
                 SizedBox(height: 8.h),
                 Text(
                   (c.product['brand']?.toString() ?? '').tr,
+                TranslatedText(
+                  text: c.product['partName']?.toString() ?? "brake_pads",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                TranslatedText(
+                  text: c.product['brand']?.toString() ?? '',
                   style: TextStyle(
                     color: const Color.fromARGB(255, 14, 14, 14),
                     fontSize: 14.sp,
@@ -224,6 +244,10 @@ class BrakePadsScreen extends StatelessWidget {
                   alignment: WrapAlignment.spaceBetween,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
+                    badge("in_stock", Colors.green),
+                    const SizedBox(width: 8),
+                    badge("oem_quality", Colors.blue),
+                    const Spacer(),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -302,6 +326,17 @@ class BrakePadsScreen extends StatelessWidget {
                           Text(
                             (c.product['condition']?.toString() ?? "na".tr).tr,
                             style: TextStyle(
+                          TranslatedText(
+                            text: "condition",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          TranslatedText(
+                            text: c.product['condition']?.toString() ?? "na",
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 14.sp,
                             ),
@@ -330,6 +365,62 @@ class BrakePadsScreen extends StatelessWidget {
                     //     ),
                     //   ],
                     // ),
+                    Row(
+                      children: [
+                        _contactButton(
+                          Icons.call,
+                          Colors.blue,
+                          onTap: () {
+                            _showConfirmCallDialog(context);
+                          },
+                        ),
+                        const SizedBox(width: 10),
+                        _contactButton(
+                          Icons.chat_bubble_outline,
+                          Colors.blue,
+                          onTap: () {
+                            // Use createdById (actual user) instead of sellerId
+                            final userId = c.product['createdById'];
+                            final sellerName =
+                                c.product['createdBy']?['fullName'];
+
+                            print('\n\n');
+                            print('═══════════════════════════════════════');
+                            print('🟦 [BrakePadsScreen] CHAT BUTTON TAPPED');
+                            print('═══════════════════════════════════════');
+                            print('userId (createdById): $userId');
+                            print('userId type: ${userId.runtimeType}');
+                            print('userId is not null: ${userId != null}');
+                            print('userId is not empty: ${userId?.isNotEmpty}');
+                            print('sellerName: $sellerName');
+                            print('sellerName type: ${sellerName.runtimeType}');
+                            print(
+                              'product data keys: ${(c.product as Map).keys.toList()}',
+                            );
+                            print('═══════════════════════════════════════\n');
+
+                            if (userId != null && userId.isNotEmpty) {
+                              print(
+                                '✅ [BrakePadsScreen] User data valid, navigating to ServiceMessage',
+                              );
+                              Get.to(
+                                ServiceMessage(
+                                  recipientId: userId,
+                                  garageName: sellerName,
+                                ),
+                              );
+                            } else {
+                              print(
+                                '❌ [BrakePadsScreen] User data missing! userId=$userId',
+                              );
+                              EasyLoading.showError(
+                                "seller_info_unavailable".tr,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ],
                 ),
 
@@ -339,6 +430,10 @@ class BrakePadsScreen extends StatelessWidget {
                   "key_features".tr,
                   style: TextStyle(
                     fontSize: 16.sp,
+                TranslatedText(
+                  text: "key_features",
+                  style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -351,6 +446,7 @@ class BrakePadsScreen extends StatelessWidget {
                       (c.product['description']?.toString() ??
                               "no_description".tr)
                           .tr,
+                      c.product['description']?.toString() ?? "no_description",
                     ),
                   ],
                 ),
@@ -419,6 +515,11 @@ class BrakePadsScreen extends StatelessWidget {
                     "confirm_call".tr,
                     style: TextStyle(
                       fontSize: 18.sp,
+                  height: 24,
+                  child: TranslatedText(
+                    text: "confirm_call",
+                    style: const TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -429,6 +530,9 @@ class BrakePadsScreen extends StatelessWidget {
                     '@garageName',
                     garageName,
                   ),
+                const SizedBox(height: 8),
+                TranslatedText(
+                  text: "call_confirmation_msg",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
@@ -452,8 +556,8 @@ class BrakePadsScreen extends StatelessWidget {
                       ),
                       onPressed: () => Get.back(),
                       child: SizedBox(
-                        child: Text(
-                          "cancel".tr,
+                        child: TranslatedText(
+                          text: "cancel",
                           style: const TextStyle(color: Colors.red),
                         ),
                       ),
@@ -476,6 +580,8 @@ class BrakePadsScreen extends StatelessWidget {
                       ),
                       icon: Icon(Icons.phone, size: 19.5.sp),
                       label: Text("call_now".tr),
+                      icon: const Icon(Icons.phone, size: 19.5),
+                      label: TranslatedText(text: "call_now"),
                     ),
                   ],
                 ),
@@ -502,6 +608,13 @@ class _FeatureItem extends StatelessWidget {
         Text(
           text,
           style: TextStyle(fontSize: 14.sp, color: Colors.black87),
+        const Icon(Icons.check_circle, color: Colors.green, size: 18),
+        const SizedBox(width: 8),
+        Expanded(
+          child: TranslatedText(
+            text: text,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
         ),
       ],
     ),

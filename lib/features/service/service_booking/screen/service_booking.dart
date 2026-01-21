@@ -4,6 +4,7 @@ import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/service/rate_service/screen/service_review_scree.dart'
     show ServiceReviewScreen;
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../widgets/operation_houre.dart';
 import '../widgets/service_booking_middle_section.dart';
@@ -34,12 +35,15 @@ class ServiceBooking extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   "failed_load_garage".tr,
+                TranslatedText(
+                  text: "failed_load_garage",
                   style: getTextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.fetchGarageDetails(),
                   child: Text("retry".tr),
+                  child: const TranslatedText(text: "retry"),
                 ),
               ],
             ),
@@ -69,6 +73,8 @@ class ServiceBooking extends StatelessWidget {
                     // --- Location ---
                     Text(
                       "location_and_map".tr,
+                    TranslatedText(
+                      text: "location_map",
                       style: getTextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -80,10 +86,15 @@ class ServiceBooking extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
-                          child: Text(
-                            controller.garageDetail.value?.formattedAddress ??
+                          child: TranslatedText(
+                            text:
+                                controller
+                                    .garageDetail
+                                    .value
+                                    ?.formattedAddress ??
                                 controller.garageDetail.value?.address ??
                                 "address_not_available".tr,
+                                "default_address",
                             style: getTextStyle(fontSize: 12),
                           ),
                         ),
@@ -116,6 +127,8 @@ class ServiceBooking extends StatelessWidget {
                           },
                           child: Text(
                             "see_location".tr,
+                          child: TranslatedText(
+                            text: "see_location",
                             style: getTextStyle(
                               color: Colors.red,
                               fontWeight: FontWeight.w500,
@@ -130,12 +143,16 @@ class ServiceBooking extends StatelessWidget {
                     Obx(() {
                       final g = controller.garageDetail.value;
                       if (g == null) {
-                        return Image.asset("assets/images/image 2.png");
+                        return Center(
+                          child: TranslatedText(text: "no_location_data"),
+                        );
                       }
                       final lat = g.garageLat;
                       final lng = g.garageLng;
                       if (lat == 0 || lng == 0) {
-                        return Image.asset("assets/images/image 2.png");
+                        return Center(
+                          child: TranslatedText(text: "no_location_data"),
+                        );
                       }
 
                       final marker = Marker(
@@ -190,6 +207,8 @@ class ServiceBooking extends StatelessWidget {
                         ),
                         label: Text(
                           "write_review".tr,
+                        label: TranslatedText(
+                          text: "write_review",
                           style: getTextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 12,

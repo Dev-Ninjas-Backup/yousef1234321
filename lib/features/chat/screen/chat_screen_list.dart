@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import '../controller/chat_page_controller.dart';
 import '../widget/build_user_list_item.dart';
@@ -15,12 +16,13 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   late final ChatPageController controller;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     print('\n════════════════════════════════════════════════════');
     print('🟦 [ChatScreen] initState() called');
     print('════════════════════════════════════════════════════\n');
@@ -36,6 +38,35 @@ class _ChatScreenState extends State<ChatScreen> {
 
     print('🟦 [ChatScreen] Calling loadConversations()...');
     controller.loadConversations();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      print('🟦 [ChatScreen] App resumed, refreshing conversations');
+      controller.loadConversations();
+    }
+  }
+
+  // Called when this screen becomes visible again after navigation
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh conversations when screen becomes visible
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        print(
+          '🟦 [ChatScreen] didChangeDependencies - refreshing conversations',
+        );
+        controller.loadConversations();
+      }
+    });
   }
 
   @override
@@ -55,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Header Title
-            CustomAppBar(title: "chat".tr),
+            CustomAppBar(title: "chat"),
             const SizedBox(height: 12), // Reduced gap
             /// 🔍 Search Bar
             Container(
@@ -97,7 +128,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   print(
                     '🎨 [ChatScreen] Chat list is empty, showing no conversations message',
                   );
-                  return Center(child: Text('no_conversations'.tr));
+                  return Center(
+                    child: TranslatedText(text: 'no_conversations'),
+                  );
                 }
 
                 print(
@@ -124,6 +157,12 @@ class _ChatScreenState extends State<ChatScreen> {
                           recipientId,
                         ); // Initialize chat for this recipient
                         Get.to(() => ServiceMessage(recipientId: recipientId));
+                        Get.to(
+                          () => ServiceMessage(
+                            recipientId: recipientId,
+                            garageName: chat.name,
+                          ),
+                        );
                       },
                     );
                   },

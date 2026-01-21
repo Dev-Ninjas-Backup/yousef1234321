@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 import '../constants/iconpath.dart';
 import '../style/global_text_style.dart';
@@ -21,6 +22,8 @@ class CustomAppBar extends StatelessWidget {
         ),
         Text(
           title,
+        TranslatedText(
+          text: title,
           style: getTextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         SizedBox(width: 44),

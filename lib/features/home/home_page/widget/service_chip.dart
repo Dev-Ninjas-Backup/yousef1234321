@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class ServiceChip extends StatelessWidget {
   final String label;
@@ -37,11 +38,10 @@ class ServiceChip extends StatelessWidget {
           children: [
             Image.asset(icon, scale: 3),
             Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: TranslatedText(
+                text: label,
                 style: const TextStyle(
+                  overflow: TextOverflow.ellipsis,
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
                 ),

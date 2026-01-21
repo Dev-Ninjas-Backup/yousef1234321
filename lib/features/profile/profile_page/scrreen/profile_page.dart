@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 
 import '../widgets/delete_dialog.dart';
@@ -12,7 +13,7 @@ class ProfilePage extends StatelessWidget {
   final controller = Get.put(ProfileController());
   ProfilePage({super.key});
 
-  Widget _buildProfileImage() {
+  Widget buildProfileImage() {
     // Display API profile photo or default avatar
     if (controller.profilePhoto.value != null &&
         controller.profilePhoto.value!.isNotEmpty) {
@@ -94,13 +95,15 @@ class ProfilePage extends StatelessWidget {
                                 () => ClipRRect(
                                   borderRadius: BorderRadius.circular(100.r),
                                   child: _buildProfileImage(),
+                                  borderRadius: BorderRadius.circular(100),
+                                  child: buildProfileImage(),
                                 ),
                               ),
                               SizedBox(height: 8.h),
                               Obx(
-                                () => Text(
-                                  controller.fullName.value.isEmpty
-                                      ? "user".tr
+                                () => TranslatedText(
+                                  text: controller.fullName.value.isEmpty
+                                      ? "user"
                                       : controller.fullName.value,
                                   style: getTextStyle(
                                     fontSize: 24.sp,
@@ -119,6 +122,21 @@ class ProfilePage extends StatelessWidget {
                                     color: Colors.grey.shade600,
                                   ),
                                 ),
+                                () => controller.email.value.isEmpty
+                                    ? TranslatedText(
+                                        text: "default_email",
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      )
+                                    : Text(
+                                        controller.email.value,
+                                        style: getTextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),
@@ -162,6 +180,9 @@ class ProfilePage extends StatelessWidget {
                                   Text(
                                     controller.profileItem[index].title.tr,
                                     style: getTextStyle(fontSize: 16.sp),
+                                  TranslatedText(
+                                    text: controller.profileItem[index].title,
+                                    style: getTextStyle(fontSize: 16),
                                   ),
                                 ],
                               ),
@@ -226,6 +247,28 @@ class ProfilePage extends StatelessWidget {
                                       ),
                                       overflow: TextOverflow.ellipsis,
                                     ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            spacing: 4,
+                            children: [
+                              if (controller.isLoggingOut.value)
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              else
+                                TranslatedText(
+                                  text: "logout",
+                                  textAlign: TextAlign.center,
+                                  style: getTextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
                                   ),
                                 SizedBox(width: 4.w),
                                 Icon(
@@ -264,6 +307,12 @@ class ProfilePage extends StatelessWidget {
                                     color: Colors.red,
                                   ),
                                   overflow: TextOverflow.ellipsis,
+                              TranslatedText(
+                                text: "delete_account",
+                                style: getTextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.red,
                                 ),
                               ),
                               SizedBox(width: 4.w),

@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -20,7 +21,7 @@ class ProfileController extends GetxController {
   final phone = ''.obs;
   final role = ''.obs;
 
-  var profileItem = <ProfileModel>[].obs;
+  var profileIItem = <ProfileModel>[].obs;
 
   @override
   void onInit() {
@@ -30,7 +31,7 @@ class ProfileController extends GetxController {
   }
 
   void updateProfileItems() {
-    profileItem.value = [
+    profileIItem.value = [
       ProfileModel(
         icon: Icons.person_2_outlined,
         title: "edit_profile",
@@ -147,4 +148,57 @@ class ProfileController extends GetxController {
       isLoggingOut.value = false;
     }
   }
+
+  var profileItem = [
+    ProfileModel(
+      icon: Icons.person_2_outlined,
+      title: "Profile",
+      ontap: () {
+        Get.toNamed(Approute.editProfileScreen);
+      },
+    ),
+    ProfileModel(
+      icon: Icons.list,
+      title: "My Listing",
+      ontap: () {
+        Get.toNamed(Approute.myListingPage);
+      },
+    ),
+    ProfileModel(
+      icon: Icons.location_on_outlined,
+      title: "Location",
+      ontap: () {
+        Get.toNamed(Approute.locationPageScreen);
+      },
+    ),
+    ProfileModel(
+      icon: Icons.settings,
+      title: "App Settings",
+      ontap: () {
+        EasyLoading.showInfo("App Settings not available at the moment");
+      },
+    ),
+
+    ProfileModel(
+      icon: Icons.language,
+      title: "Language",
+      ontap: () {
+        Get.toNamed(Approute.languageScreen);
+      },
+    ),
+    ProfileModel(
+      icon: Icons.contact_support_rounded,
+      title: "Help & Support",
+      ontap: () {
+        Get.toNamed(Approute.helpSupportScreen);
+      },
+    ),
+    ProfileModel(
+      icon: Icons.security,
+      title: "Legal & Security",
+      ontap: () {
+        EasyLoading.showInfo("Legal & Security not available at the moment");
+      },
+    ),
+  ];
 }

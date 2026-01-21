@@ -32,10 +32,20 @@ class LocationPageController extends GetxController {
   final RxBool isSaving = false.obs;
   final RxBool isLoadingProfile = false.obs;
 
+  /// Get Geocoding API key
+  String _getGeocodingApiKey() {
+    return GoogleMapApiKey.apiKey;
+  }
+
   @override
   void onInit() {
     super.onInit();
     _loadSavedLocationFromProfile();
+  }
+
+  /// Check if a LatLng coordinate is valid (within acceptable ranges)
+  bool _isValidCoordinate(double lat, double lng) {
+    return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
   }
 
   Future<void> _loadSavedLocationFromProfile() async {
@@ -55,7 +65,9 @@ class LocationPageController extends GetxController {
           final parsedLng = (lng is num)
               ? lng.toDouble()
               : double.tryParse(lng.toString());
-          if (parsedLat != null && parsedLng != null) {
+          if (parsedLat != null &&
+              parsedLng != null &&
+              _isValidCoordinate(parsedLat, parsedLng)) {
             selectedLatLng.value = LatLng(parsedLat, parsedLng);
             // populate address for saved coordinates
             await reverseGeocode(selectedLatLng.value!);
@@ -71,6 +83,11 @@ class LocationPageController extends GetxController {
                 zoom: 15,
               );
             }
+          } else {
+            print(
+              'Invalid coordinates from profile: lat=$parsedLat, lng=$parsedLng',
+            );
+            // Don't set selectedLatLng - let it remain null so map uses hardcoded default
           }
         }
       }
@@ -157,13 +174,23 @@ class LocationPageController extends GetxController {
     final query = searchController.text.trim();
     if (query.isEmpty) return;
     try {
+      EasyLoading.show(status: 'Searching location...');
+      final apiKey = _getGeocodingApiKey();
+      print('Using Geocoding API Key: $apiKey');
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=${GoogleMapApiKey.apiKey}',
+        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey',
       );
+      print('Geocoding URL: $url');
       final res = await http.get(url);
+      print('Geocoding Response Status: ${res.statusCode}');
+      print('Geocoding Response Body: ${res.body}');
+
       if (res.statusCode == 200) {
         final body = json.decode(res.body) as Map<String, dynamic>;
-        if ((body['results'] as List).isNotEmpty) {
+        final status = body['status'] as String?;
+        print('Geocoding Status: $status');
+
+        if (status == 'OK' && (body['results'] as List).isNotEmpty) {
           final loc = body['results'][0]['geometry']['location'];
           final lat = (loc['lat'] as num).toDouble();
           final lng = (loc['lng'] as num).toDouble();
@@ -177,11 +204,16 @@ class LocationPageController extends GetxController {
           } else {
             _pendingCamera = CameraPosition(target: latLng, zoom: 15);
           }
+          EasyLoading.dismiss();
         } else {
-          EasyLoading.showError('Location not found');
+          final errorMsg = body['error_message'] ?? 'Location not found';
+          print('Geocoding Error: $errorMsg');
+          EasyLoading.showError(errorMsg ?? 'Location not found');
         }
       } else {
-        EasyLoading.showError('Failed to search location');
+        EasyLoading.showError(
+          'Failed to search location (Status: ${res.statusCode})',
+        );
       }
     } catch (e, st) {
       print('Geocoding error: $e');
@@ -226,16 +258,28 @@ class LocationPageController extends GetxController {
   /// Reverse geocode to get a human-readable address for a lat/lng
   Future<void> reverseGeocode(LatLng latLng) async {
     try {
+      final apiKey = _getGeocodingApiKey();
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}&key=${GoogleMapApiKey.apiKey}',
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}&key=$apiKey',
       );
+      print('Reverse Geocoding URL: $url');
       final res = await http.get(url);
+      print('Reverse Geocoding Response Status: ${res.statusCode}');
+      print('Reverse Geocoding Response Body: ${res.body}');
+
       if (res.statusCode == 200) {
         final body = json.decode(res.body) as Map<String, dynamic>;
-        if ((body['results'] as List).isNotEmpty) {
+        final status = body['status'] as String?;
+        print('Reverse Geocoding Status: $status');
+
+        if (status == 'OK' && (body['results'] as List).isNotEmpty) {
           final address = body['results'][0]['formatted_address'] as String?;
           resolvedAddress.value = address ?? '';
+          print('Resolved Address: ${resolvedAddress.value}');
           return;
+        } else {
+          final errorMsg = body['error_message'] ?? 'No results found';
+          print('Reverse Geocoding Error: $errorMsg');
         }
       }
       resolvedAddress.value = '';

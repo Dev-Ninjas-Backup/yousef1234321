@@ -11,6 +11,8 @@ import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+
 import '../../../core/common/style/global_text_style.dart';
 
 class SparePartsScreen extends StatelessWidget {
@@ -57,8 +59,8 @@ class SparePartsScreen extends StatelessWidget {
                   children: [
                     Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
                     SizedBox(width: 8),
-                    Text(
-                      'sayara_hub'.tr,
+                    TranslatedText(
+                      text: 'sayara_hub',
                       style: getTextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w700,
@@ -87,20 +89,33 @@ class SparePartsScreen extends StatelessWidget {
 
             PartsSearchSection(),
             const SizedBox(height: 16),
-            // Category section
+            // Category section - Single row horizontally scrollable
             SizedBox(
-              height: 160,
-              width: double.maxFinite,
-              child: Align(
-                alignment: Alignment.center,
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 5,
-                    mainAxisSpacing: 9,
-                  ),
+              height: 130,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controller.categories.length,
+                itemBuilder: (context, index) {
+                  final cat = controller.categories[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: CategoryItem(
+                      icon: cat['icon'] as IconData,
+                      title: cat['name'] as String,
+                      color: controller.getRandomColor(),
+                      onTap: () async {
+                        // extract category name
+                        final cname = (cat['name'] ?? 'category').toString();
+
+                        final productsCtrl = Get.put(
+                          ProductsController(),
+                          tag: 'productsList',
+                        );
+                        await productsCtrl.fetchProducts(
+                          page: 1,
+                          limit: 20,
+                          category: cname,
+                        );
 
                   scrollDirection: Axis.horizontal,
                   itemCount: controller.categories.length,
@@ -216,6 +231,11 @@ class SparePartsScreen extends StatelessWidget {
                     );
                   },
                 ),
+                        _openProductListScreen(cname, productsCtrl);
+                      },
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -232,8 +252,8 @@ class SparePartsScreen extends StatelessWidget {
                     children: [
                       SizedBox(height: 20),
 
-                      Text(
-                        'have_spare_parts_to_sell'.tr,
+                      TranslatedText(
+                        text: 'have_spare_parts_to_sell',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -241,8 +261,8 @@ class SparePartsScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'list_your_car_parts'.tr,
+                      TranslatedText(
+                        text: 'list_your_car_parts',
                         style: TextStyle(color: Colors.white70),
                         textAlign: TextAlign.center,
                       ),
@@ -260,8 +280,8 @@ class SparePartsScreen extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              'sell_now'.tr,
+                            TranslatedText(
+                              text: 'sell_now',
                               style: TextStyle(color: Colors.blue),
                             ),
                             SizedBox(width: 5),
@@ -305,8 +325,8 @@ class SparePartsScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          titleKey.tr,
+        TranslatedText(
+          text: titleKey,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
 
@@ -320,86 +340,9 @@ class SparePartsScreen extends StatelessWidget {
             );
             await productsCtrl.fetchProducts(page: 1, limit: 10);
 
-            // Open a new simple screen to display fetched products
-            Get.to(
-              () => Scaffold(
-                appBar: AppBar(title: Text('all_spare_parts'.tr)),
-                body: Obx(() {
-                  if (productsCtrl.isLoading.value) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (productsCtrl.products.isEmpty) {
-                    return Center(child: Text('no_products'.tr));
-                  }
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: productsCtrl.products.length,
-                    itemBuilder: (_, idx) {
-                      final p = productsCtrl.products[idx];
-                      // Keep UI simple: show name/price if available, others null
-                      final name = (p is Map && p['partName'] != null)
-                          ? p['partName'].toString()
-                          : '${'product'.tr} ${idx + 1}';
-                      final price = (p is Map && p['price'] != null)
-                          ? p['price'].toString()
-                          : '-';
-                      // prefer normalized profilePhoto if present
-                      final photoUrl =
-                          (p is Map &&
-                              p['profilePhoto'] != null &&
-                              p['profilePhoto'].toString().isNotEmpty)
-                          ? p['profilePhoto'].toString()
-                          : (p is Map &&
-                                p['photos'] is List &&
-                                p['photos'].isNotEmpty)
-                          ? p['photos'][0].toString()
-                          : null;
-                      return ListTile(
-                        leading: photoUrl != null
-                            ? Image.network(
-                                photoUrl,
-                                width: 56,
-                                height: 56,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Image.asset(
-                                  Iconpath.carHomeIcon,
-                                  width: 56,
-                                  height: 56,
-                                ),
-                              )
-                            : Image.asset(
-                                Iconpath.carHomeIcon,
-                                width: 56,
-                                height: 56,
-                              ),
-                        title: Text(name),
-                        subtitle: Text('price'.tr.replaceAll('@price', price)),
-                        onTap: () {
-                          // robust id extraction for different response shapes
-                          String? id;
-                          if (p is Map) {
-                            if (p['id'] != null)
-                              id = p['id'].toString();
-                            else if (p['data'] is Map &&
-                                p['data']['id'] != null)
-                              id = p['data']['id'].toString();
-                          }
-                          if (id != null) {
-                            // navigate to details route and pass only the id
-                            Get.toNamed(
-                              Approute.getBrakePadsScreen(),
-                              arguments: id,
-                            );
-                          }
-                        },
-                      );
-                    },
-                  );
-                }),
-              ),
-            );
+            _openProductListScreen('all_spare_parts', productsCtrl);
           },
-          child: Text("see_all".tr),
+          child: TranslatedText(text: "see_all"),
         ),
       ],
     );
@@ -421,8 +364,8 @@ class SparePartsScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  err,
+                TranslatedText(
+                  text: err,
                   style: const TextStyle(fontSize: 16, color: Colors.red),
                 ),
                 const SizedBox(height: 8),
@@ -435,7 +378,7 @@ class SparePartsScreen extends StatelessWidget {
                       search: productsCtrl.currentSearch.value,
                     );
                   },
-                  child: Text('retry'.tr),
+                  child: TranslatedText(text: 'retry'),
                 ),
               ],
             ),
@@ -444,7 +387,7 @@ class SparePartsScreen extends StatelessWidget {
 
         // empty list (no items)
         if (productsCtrl.products.isEmpty) {
-          return Center(child: Text('no_products_available'.tr));
+          return Center(child: TranslatedText(text: 'no_products_available'));
         }
 
         return ListView.builder(
@@ -511,73 +454,7 @@ class SparePartsScreen extends StatelessWidget {
         // open the same 'See All' full list
         final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
         await productsCtrl.fetchProducts(page: 1, limit: 10);
-        Get.to(
-          () => Scaffold(
-            appBar: AppBar(title: Text(titleKey.tr)),
-            body: Obx(() {
-              if (productsCtrl.isLoading.value)
-                return const Center(child: CircularProgressIndicator());
-              if (productsCtrl.products.isEmpty)
-                return Center(child: Text('no_products'.tr));
-              return ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: productsCtrl.products.length,
-                itemBuilder: (_, idx) {
-                  final p = productsCtrl.products[idx];
-                  final name = (p is Map && p['partName'] != null)
-                      ? p['partName'].toString()
-                      : '${'product'.tr} ${idx + 1}';
-                  final price = (p is Map && p['price'] != null)
-                      ? p['price'].toString()
-                      : '-';
-                  final photo = (p is Map && p['profilePhoto'] != null)
-                      ? p['profilePhoto'].toString()
-                      : (p is Map &&
-                                p['photos'] is List &&
-                                p['photos'].isNotEmpty
-                            ? p['photos'][0].toString()
-                            : null);
-
-                  return ListTile(
-                    leading: photo != null
-                        ? Image.network(
-                            photo,
-                            width: 56,
-                            height: 56,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              Iconpath.carHomeIcon,
-                              width: 56,
-                              height: 56,
-                            ),
-                          )
-                        : Image.asset(
-                            Iconpath.carHomeIcon,
-                            width: 56,
-                            height: 56,
-                          ),
-                    title: Text(name),
-                    subtitle: Text('price'.tr.replaceAll('@price', price)),
-                    onTap: () {
-                      String? id;
-                      if (p is Map) {
-                        if (p['id'] != null)
-                          id = p['id'].toString();
-                        else if (p['data'] is Map && p['data']['id'] != null)
-                          id = p['data']['id'].toString();
-                      }
-                      if (id != null)
-                        Get.toNamed(
-                          Approute.getBrakePadsScreen(),
-                          arguments: id,
-                        );
-                    },
-                  );
-                },
-              );
-            }),
-          ),
-        );
+        _openProductListScreen(titleKey.tr, productsCtrl);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 0),
@@ -605,16 +482,16 @@ class SparePartsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'explore'.tr.replaceAll('@title', titleKey.tr),
+                  TranslatedText(
+                    text: 'explore'.tr.replaceAll('@title', titleKey.tr),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    'find_best_spare_parts'.tr,
+                  TranslatedText(
+                    text: 'find_best_spare_parts',
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                 ],
@@ -627,81 +504,78 @@ class SparePartsScreen extends StatelessWidget {
                   tag: 'productsList',
                 );
                 await productsCtrl.fetchProducts(page: 1, limit: 10);
-                Get.to(
-                  () => Scaffold(
-                    appBar: AppBar(title: Text(titleKey.tr)),
-                    body: Obx(() {
-                      if (productsCtrl.isLoading.value)
-                        return const Center(child: CircularProgressIndicator());
-                      if (productsCtrl.products.isEmpty)
-                        return Center(child: Text('no_products'.tr));
-                      return ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: productsCtrl.products.length,
-                        itemBuilder: (_, idx) {
-                          final p = productsCtrl.products[idx];
-                          final name = (p is Map && p['partName'] != null)
-                              ? p['partName'].toString()
-                              : '${'product'.tr} ${idx + 1}';
-                          final price = (p is Map && p['price'] != null)
-                              ? p['price'].toString()
-                              : '-';
-                          final photo = (p is Map && p['profilePhoto'] != null)
-                              ? p['profilePhoto'].toString()
-                              : (p is Map &&
-                                        p['photos'] is List &&
-                                        p['photos'].isNotEmpty
-                                    ? p['photos'][0].toString()
-                                    : null);
-
-                          return ListTile(
-                            leading: photo != null
-                                ? Image.network(
-                                    photo,
-                                    width: 56,
-                                    height: 56,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Image.asset(
-                                      Iconpath.carHomeIcon,
-                                      width: 56,
-                                      height: 56,
-                                    ),
-                                  )
-                                : Image.asset(
-                                    Iconpath.carHomeIcon,
-                                    width: 56,
-                                    height: 56,
-                                  ),
-                            title: Text(name),
-                            subtitle: Text(
-                              'price'.tr.replaceAll('@price', price),
-                            ),
-                            onTap: () {
-                              String? id;
-                              if (p is Map) {
-                                if (p['id'] != null)
-                                  id = p['id'].toString();
-                                else if (p['data'] is Map &&
-                                    p['data']['id'] != null)
-                                  id = p['data']['id'].toString();
-                              }
-                              if (id != null)
-                                Get.toNamed(
-                                  Approute.getBrakePadsScreen(),
-                                  arguments: id,
-                                );
-                            },
-                          );
-                        },
-                      );
-                    }),
-                  ),
-                );
+                _openProductListScreen(titleKey.tr, productsCtrl);
               },
-              child: Text('see_all'.tr),
+              child: TranslatedText(text: 'see_all'),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Reusable method to open product list screen
+  void _openProductListScreen(String title, ProductsController productsCtrl) {
+    Get.to(
+      () => Scaffold(
+        appBar: AppBar(title: TranslatedText(text: title)),
+        body: Obx(() {
+          if (productsCtrl.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (productsCtrl.products.isEmpty) {
+            return Center(child: TranslatedText(text: 'no_products'));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: productsCtrl.products.length,
+            itemBuilder: (_, idx) {
+              final p = productsCtrl.products[idx];
+              final name = (p is Map && p['partName'] != null)
+                  ? p['partName'].toString()
+                  : 'product ${idx + 1}';
+              final price = (p is Map && p['price'] != null)
+                  ? p['price'].toString()
+                  : '-';
+              final photo = (p is Map && p['profilePhoto'] != null)
+                  ? p['profilePhoto'].toString()
+                  : (p is Map && p['photos'] is List && p['photos'].isNotEmpty
+                        ? p['photos'][0].toString()
+                        : null);
+
+              return ListTile(
+                leading: photo != null
+                    ? Image.network(
+                        photo,
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          Iconpath.carHomeIcon,
+                          width: 56,
+                          height: 56,
+                        ),
+                      )
+                    : Image.asset(Iconpath.carHomeIcon, width: 56, height: 56),
+                title: TranslatedText(text: name),
+                subtitle: TranslatedText(
+                  text: 'price'.tr.replaceAll('@price', price),
+                ),
+                onTap: () {
+                  String? id;
+                  if (p is Map) {
+                    if (p['id'] != null)
+                      id = p['id'].toString();
+                    else if (p['data'] is Map && p['data']['id'] != null)
+                      id = p['data']['id'].toString();
+                  }
+                  if (id != null)
+                    Get.toNamed(Approute.getBrakePadsScreen(), arguments: id);
+                },
+              );
+            },
+          );
+        }),
       ),
     );
   }

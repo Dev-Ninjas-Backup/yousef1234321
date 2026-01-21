@@ -125,6 +125,7 @@ class ServiceReviewController extends GetxController {
             'Backend reported error when creating review: ${res.bodyString}',
           );
           EasyLoading.showError('failed_submit_review'.tr);
+          EasyLoading.showError('submit_review_failed'.tr);
         } else {
           Get.dialog(
             Dialog(
@@ -186,11 +187,13 @@ class ServiceReviewController extends GetxController {
       } else {
         print('Failed to post review: ${res.statusCode} ${res.bodyString}');
         EasyLoading.showError('failed_submit_review'.tr);
+        EasyLoading.showError('submit_review_failed'.tr);
       }
     } catch (e, st) {
       print('Error submitting review: $e');
       print(st);
       EasyLoading.showError('failed_submit_review'.tr);
+      EasyLoading.showError('submit_review_failed'.tr);
     } finally {
       isSubmitting.value = false;
     }

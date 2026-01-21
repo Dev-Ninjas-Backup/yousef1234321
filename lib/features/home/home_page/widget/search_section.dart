@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
@@ -29,6 +30,8 @@ class SearchSection extends StatelessWidget {
         children: [
           Text(
             "find_car_services_near_you".tr,
+          const TranslatedText(
+            text: "find_car_services_near_you",
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -38,6 +41,8 @@ class SearchSection extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             "emergency_repairs_subtitle".tr,
+          TranslatedText(
+            text: "emergency_repairs_subtitle",
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -59,6 +64,8 @@ class SearchSection extends StatelessWidget {
                           isExpanded: true,
                           hint: Text(
                             "location".tr,
+                          hint: TranslatedText(
+                            text: "location",
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -69,10 +76,8 @@ class SearchSection extends StatelessWidget {
                               .map(
                                 (location) => DropdownMenuItem(
                                   value: location,
-                                  child: Text(
-                                    location,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                  child: TranslatedText(
+                                    text: location,
                                     style: getTextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w400,
@@ -110,6 +115,8 @@ class SearchSection extends StatelessWidget {
                           value: controller.selectedService.value,
                           hint: Text(
                             "service_type_hint".tr,
+                          hint: TranslatedText(
+                            text: "service_type",
                             style: getTextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -124,6 +131,8 @@ class SearchSection extends StatelessWidget {
                                         value: service,
                                         child: Text(
                                           service.tr,
+                                        child: TranslatedText(
+                                          text: service,
                                           style: getTextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400,
@@ -178,7 +187,7 @@ class SearchSection extends StatelessWidget {
                             double? lat;
                             double? lng;
                             try {
-                              EasyLoading.show(status: 'Locating...');
+                              EasyLoading.show(status: 'locating'.tr);
                               LocationPermission permission =
                                   await Geolocator.checkPermission();
                               if (permission == LocationPermission.denied) {
@@ -219,6 +228,7 @@ class SearchSection extends StatelessWidget {
                           }
                         : null,
                     child: Text("search_garage".tr),
+                    child: const TranslatedText(text: "search_garage"),
                   );
                 }),
               ],

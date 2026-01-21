@@ -129,8 +129,8 @@ class Approute {
 
     //PARTS DEATAILS
     GetPage(name: partsDetailsScreen, page: () => const PartsDetailsScreen()),
-    GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
 
+    GetPage(name: brakePadsScreen, page: () => BrakePadsScreen()),
     GetPage(name: payment, page: () => Payment()),
 
     // help support

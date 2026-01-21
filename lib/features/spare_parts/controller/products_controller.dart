@@ -26,6 +26,7 @@ class ProductsController extends GetxController {
     int page = 1,
     int limit = 10,
     String? categoryId,
+    String? category,
     String? search,
   }) async {
     try {
@@ -35,13 +36,16 @@ class ProductsController extends GetxController {
       error.value = null;
 
       // remember current category for loadMore
-      currentCategoryId.value = categoryId;
+      currentCategoryId.value = categoryId ?? category;
       // remember current search term
       currentSearch.value = search;
 
       var url = '${Endpoint.products}?page=$page&limit=$limit';
       if (categoryId != null && categoryId.isNotEmpty) {
         url = '$url&categoryId=$categoryId';
+      }
+      if (category != null && category.isNotEmpty) {
+        url = '$url&category=${Uri.encodeQueryComponent(category)}';
       }
       if (search != null && search.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(search)}';
@@ -60,6 +64,7 @@ class ProductsController extends GetxController {
         final altUrl =
             '${Endpoint.baseUrl}${Endpoint.products}?page=$page&limit=$limit'
             '${categoryId != null && categoryId.isNotEmpty ? '&categoryId=$categoryId' : ''}'
+            '${category != null && category.isNotEmpty ? '&category=${Uri.encodeQueryComponent(category)}' : ''}'
             '${search != null && search.isNotEmpty ? '&search=${Uri.encodeQueryComponent(search)}' : ''}';
         try {
           print('[ProductsController] retry GET $altUrl');
