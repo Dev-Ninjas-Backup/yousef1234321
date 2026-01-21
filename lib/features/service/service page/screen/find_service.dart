@@ -97,7 +97,7 @@ class FindService extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomAppBar(title: "find_service"),
+            const CustomAppBar(title: "service"),
             const SizedBox(height: 32),
             SearchAndFilter(controller: controller),
             const SizedBox(height: 20),

@@ -64,7 +64,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(title: "Search nearby garage"),
+              CustomAppBar(title: "search_nearby_garage".tr),
               const SizedBox(height: 24),
 
               // Search bar + filter
@@ -147,7 +147,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            item,
+                            item.tr,
                             style: TextStyle(
                               color: isSelected ? Colors.black : Colors.black,
                             ),
@@ -212,7 +212,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                 icon: BitmapDescriptor.defaultMarkerWithHue(
                                   BitmapDescriptor.hueAzure,
                                 ),
-                                infoWindow: const InfoWindow(title: 'You'),
+                                infoWindow: InfoWindow(title: 'you'.tr),
                               ),
                             },
                             gestureRecognizers:
@@ -350,7 +350,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  g.name,
+                                  g.name.tr,
                                   style: getTextStyle(
                                     fontWeight: FontWeight.w600,
                                   ),

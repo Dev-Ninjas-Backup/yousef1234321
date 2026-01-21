@@ -243,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                             },
                             child: Center(
                               child: ServiceChip(
-                                label: _getServiceKey(service),
+                                label: _getServiceKey(service).tr,
                                 icon: _getIconForService(service),
                               ),
                             ),
@@ -269,7 +269,7 @@ class HomeScreen extends StatelessWidget {
                               },
                               child: Center(
                                 child: ServiceChip(
-                                  label: _getServiceKey(service),
+                                  label: _getServiceKey(service).tr,
                                   icon: _getIconForService(service),
                                 ),
                               ),

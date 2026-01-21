@@ -29,7 +29,7 @@ class ServiceBookingController extends GetxController {
     Imagepath.onboarding1,
   ].obs;
 
-  var services = [
+  var services = <Map<String, dynamic>>[
     {"title": "ac_service", "icon": Iconpath.acIcon},
     {"title": "battery_replacement", "icon": Iconpath.batterryIcon},
     {"title": "tires", "icon": Iconpath.tire},
@@ -52,6 +52,8 @@ class ServiceBookingController extends GetxController {
     if (args != null && args is Map && args['garageId'] != null) {
       garageId = args['garageId'];
       fetchGarageDetails();
+    } else {
+      fetchServices();
     }
 
     super.onInit();
@@ -771,9 +773,13 @@ class ServiceBookingController extends GetxController {
           // Update services from API
           if (garageDetail.value?.services != null &&
               garageDetail.value!.services.isNotEmpty) {
-            services.value = garageDetail.value!.services.map((serviceName) {
+            print(
+              '✅ Garage specific services found: ${garageDetail.value!.services.length}',
+            );
+            services.value = garageDetail.value!.services.map((item) {
+              final serviceName = item.toString();
               return {
-                "title": mapServiceToKey(serviceName),
+                "title": serviceName,
                 "icon": _getServiceIcon(serviceName),
               };
             }).toList();
@@ -794,6 +800,33 @@ class ServiceBookingController extends GetxController {
       hasError.value = true;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchServices() async {
+    try {
+      print('📡 Fetching global services list...');
+      // Fetching services from backend API: /services
+      final response = await ApiClient.to.get('/services');
+      print('📡 Services API Status: ${response.statusCode}');
+
+      if (response.statusCode == 200 && response.body['success'] == true) {
+        final data = response.body['data'];
+        if (data is List) {
+          final fetchedServices = data.map((item) {
+            final name = (item is Map ? item['name'] ?? '' : item.toString())
+                .toString();
+            return {"title": name, "icon": _getServiceIcon(name)};
+          }).toList();
+
+          if (fetchedServices.isNotEmpty) {
+            services.value = fetchedServices;
+            print('✅ Global services loaded: ${services.length}');
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching services: $e');
     }
   }
 
