@@ -125,11 +125,15 @@ import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_co
 import 'package:yousef1234321/features/spare_parts/screen/spare_parts_screen.dart';
 import '../../profile/profile_page/scrreen/profile_page.dart';
 import '../../service/service page/screen/find_service.dart';
+import '../../service/service_booking/controller/service_booking_controller.dart';
 
 class BottomNavbarScreen extends StatelessWidget {
   BottomNavbarScreen({super.key});
 
   final BottomNavbarController controller = Get.put(BottomNavbarController());
+  final ServiceBookingController serviceBookingController = Get.put(
+    ServiceBookingController(),
+  ); // Initialize chat controller globally
 
   @override
   Widget build(BuildContext context) {

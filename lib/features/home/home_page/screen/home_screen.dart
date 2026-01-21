@@ -214,61 +214,6 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // removed unsupported `spacing` properties from Column/Row widgets
-            // Column(
-            //   children: [
-            //     Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "ac_repair".tr,
-            //             icon: Iconpath.acIcon,
-            //           ),
-            //         ),
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "battery".tr,
-            //             icon: Iconpath.batterryIcon,
-            //           ),
-            //         ),
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "engine".tr,
-            //             icon: Iconpath.engineIcon,
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //     const SizedBox(height: 10),
-            //     Row(
-            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       children: [
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "tires".tr,
-            //             icon: Iconpath.wheelIcon,
-            //           ),
-            //         ),
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "electrical".tr,
-            //             icon: Iconpath.electricIcon,
-            //           ),
-            //         ),
-            //         Expanded(
-            //           child: ServiceChip(
-            //             label: "spares".tr,
-            //             icon: Iconpath.spareIcon,
-            //             onTap: () {
-            //               Get.toNamed(Approute.getBrakePadsScreen());
-            //             },
-            //           ),
-            //         ),
-            //       ],
-            //     ),
-            //   ],
-            // ),
             Obx(() {
               // Get services from controller, limit to 6
               final services = controller.serviceTypes.take(6).toList();

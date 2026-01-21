@@ -77,18 +77,18 @@ class _SignInScreenState extends State<SignInScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    const Text(
-                      'Sign In Now',
-                      style: TextStyle(
+                    Text(
+                      'signInNow'.tr,
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Please sign in to continue our app',
-                      style: TextStyle(
+                    Text(
+                      'signInToContinue'.tr,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppColors.subTextColor,
@@ -101,7 +101,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
-                        hintText: "Email address",
+                        hintText: "emailAddress".tr,
                         prefixIcon: const Icon(Icons.email_outlined),
                         contentPadding: const EdgeInsets.symmetric(
                           vertical: 18,
@@ -121,7 +121,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         controller: _passwordController,
                         obscureText: !controller.isPasswordVisible.value,
                         decoration: InputDecoration(
-                          hintText: "Password",
+                          hintText: "password".tr,
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -151,9 +151,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         onTap: () {
                           Get.toNamed(Approute.forgetPasswordScreen);
                         },
-                        child: const Text(
-                          "Forget Password?",
-                          style: TextStyle(
+                        child: Text(
+                          "forgotPassword".tr,
+                          style: const TextStyle(
                             color: AppColors.splashButtonColor,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -163,7 +163,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const SizedBox(height: 40),
                     CustomButton(
-                      title: 'Sign In',
+                      title: 'signIn'.tr,
                       onPressed: () {
                         // Pass local controller values to avoid relying on possibly
                         // disposed controllers inside the SignInController.
@@ -177,7 +177,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        text: "Don't have an account? ",
+                        text: "dontHaveAccount".tr,
                         style: const TextStyle(
                           color: AppColors.subTextColor,
                           fontSize: 14,
@@ -185,7 +185,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                         children: [
                           TextSpan(
-                            text: "  Sign Up",
+                            text: "signUp".tr,
                             style: const TextStyle(
                               color: AppColors.splashButtonColor,
                               fontSize: 15,

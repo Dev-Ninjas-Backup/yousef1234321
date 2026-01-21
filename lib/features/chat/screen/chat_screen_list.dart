@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
+import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import '../controller/chat_page_controller.dart';
@@ -152,6 +153,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           '💬 [ChatList] Opening chat with recipient: $recipientId (${chat.name})',
                         );
 
+                        Get.find<ServiceBookingController>().initializeChat(
+                          recipientId,
+                        ); // Initialize chat for this recipient
+                        Get.to(() => ServiceMessage(recipientId: recipientId));
                         Get.to(
                           () => ServiceMessage(
                             recipientId: recipientId,

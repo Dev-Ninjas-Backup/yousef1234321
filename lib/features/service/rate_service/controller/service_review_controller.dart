@@ -124,10 +124,52 @@ class ServiceReviewController extends GetxController {
           print(
             'Backend reported error when creating review: ${res.bodyString}',
           );
+          EasyLoading.showError('failed_submit_review'.tr);
           EasyLoading.showError('submit_review_failed'.tr);
         } else {
           Get.dialog(
-            Dialog(child: Image.asset("assets/images/thankyou.png")),
+            Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 32,
+                  horizontal: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.green.shade100,
+                      child: Icon(
+                        Icons.check_circle_outline,
+                        color: Colors.green.shade700,
+                        size: 40,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'thank_you'.tr,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'feedback_submitted_successfully'.tr,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             barrierDismissible: false,
           );
 
@@ -144,11 +186,13 @@ class ServiceReviewController extends GetxController {
         }
       } else {
         print('Failed to post review: ${res.statusCode} ${res.bodyString}');
+        EasyLoading.showError('failed_submit_review'.tr);
         EasyLoading.showError('submit_review_failed'.tr);
       }
     } catch (e, st) {
       print('Error submitting review: $e');
       print(st);
+      EasyLoading.showError('failed_submit_review'.tr);
       EasyLoading.showError('submit_review_failed'.tr);
     } finally {
       isSubmitting.value = false;

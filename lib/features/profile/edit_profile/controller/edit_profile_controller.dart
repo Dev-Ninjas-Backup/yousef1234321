@@ -138,15 +138,15 @@ class EditProfileController extends GetxController {
               : profilePhotoUrl.value;
           Get.back();
           Get.snackbar(
-            'Success',
-            respData['message'] ?? 'Profile updated successfully',
+            'success'.tr,
+            respData['message'] ?? 'profile_updated_success'.tr,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
         } else {
           Get.snackbar(
-            'Error',
-            result.errorMessage ?? 'Update failed',
+            'error'.tr,
+            result.errorMessage ?? 'update_failed'.tr,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
           );
@@ -176,15 +176,15 @@ class EditProfileController extends GetxController {
           await profileController.fetchProfile();
           Get.back();
           Get.snackbar(
-            'Success',
-            respData['message'] ?? 'Profile updated successfully',
+            'success'.tr,
+            respData['message'] ?? 'profile_updated_success'.tr,
             backgroundColor: Colors.green,
             colorText: Colors.white,
           );
         } else {
           Get.snackbar(
-            'Error',
-            result.errorMessage ?? 'Update failed',
+            'error'.tr,
+            result.errorMessage ?? 'update_failed'.tr,
             backgroundColor: Colors.redAccent,
             colorText: Colors.white,
           );
@@ -193,8 +193,8 @@ class EditProfileController extends GetxController {
     } catch (e) {
       print('Profile submit error: $e');
       Get.snackbar(
-        'Error',
-        'Failed to update profile: $e',
+        'error'.tr,
+        'failed_update_profile'.tr.replaceAll('@error', e.toString()),
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );

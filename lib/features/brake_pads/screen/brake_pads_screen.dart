@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
@@ -15,11 +16,18 @@ class BrakePadsScreen extends StatelessWidget {
     final c = Get.put(BrakePadsController());
 
     Widget badge(String text, Color color) => Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(6.r),
       ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.w500,
+          fontSize: 12.sp,
+        ),
       child: TranslatedText(
         text: text,
         style: TextStyle(color: color, fontWeight: FontWeight.w500),
@@ -32,7 +40,7 @@ class BrakePadsScreen extends StatelessWidget {
         child: Obx(
           () => SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -42,18 +50,26 @@ class BrakePadsScreen extends StatelessWidget {
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
-                        padding: const EdgeInsets.all(8),
+                        padding: EdgeInsets.all(8.w),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.arrow_back,
                           color: Colors.black,
-                          size: 22,
+                          size: 22.sp,
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: Text(
+                        "brake_pads".tr,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                     TranslatedText(
                       text: "brake_pads",
                       style: TextStyle(
@@ -61,17 +77,17 @@ class BrakePadsScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(width: 40),
+                    SizedBox(width: 40.w),
                   ],
                 ),
 
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 Stack(
                   children: [
                     AspectRatio(
                       aspectRatio: 1,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12.r),
                         child: Builder(
                           builder: (_) {
                             final img =
@@ -111,44 +127,47 @@ class BrakePadsScreen extends StatelessWidget {
 
                     // Discount Tag
                     Positioned(
-                      top: 10,
-                      right: 10,
+                      top: 10.h,
+                      right: 10.w,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
+                        child: Text(
+                          "discount_tag".tr,
+                          style: TextStyle(
                         child: TranslatedText(
                           text: "discount_tag",
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                           ),
                         ),
                       ),
                     ),
                     Positioned(
-                      bottom: 10,
-                      right: 10,
+                      bottom: 10.h,
+                      right: 10.w,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Text(
                           "${c.selectedImageIndex.value + 1}/${c.images.length}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 12,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -157,13 +176,13 @@ class BrakePadsScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 SizedBox(
-                  height: 70,
+                  height: 70.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: c.images.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    separatorBuilder: (_, __) => SizedBox(width: 10.w),
                     itemBuilder: (_, i) {
                       final selected = c.selectedImageIndex.value == i;
                       final img = c.images[i].toString();
@@ -173,15 +192,15 @@ class BrakePadsScreen extends StatelessWidget {
                       return GestureDetector(
                         onTap: () => c.changeImage(i),
                         child: Container(
-                          width: 70,
+                          width: 70.w,
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: selected
                                   ? Colors.blue
                                   : Colors.grey.shade300,
-                              width: 2,
+                              width: 2.w,
                             ),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.r),
                             image: DecorationImage(
                               image: provider,
                               fit: BoxFit.cover,
@@ -193,8 +212,18 @@ class BrakePadsScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                SizedBox(height: 25.h),
                 // product info
+                Text(
+                  (c.product['partName']?.toString() ?? "brake_pads".tr).tr,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  (c.product['brand']?.toString() ?? '').tr,
                 TranslatedText(
                   text: c.product['partName']?.toString() ?? "brake_pads",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
@@ -204,32 +233,46 @@ class BrakePadsScreen extends StatelessWidget {
                   text: c.product['brand']?.toString() ?? '',
                   style: TextStyle(
                     color: const Color.fromARGB(255, 14, 14, 14),
-                    fontSize: 14,
+                    fontSize: 14.sp,
                   ),
                 ),
 
-                const SizedBox(height: 12),
-                Row(
+                SizedBox(height: 12.h),
+                Wrap(
+                  spacing: 8.0.w,
+                  runSpacing: 8.0.h,
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     badge("in_stock", Colors.green),
                     const SizedBox(width: 8),
                     badge("oem_quality", Colors.blue),
                     const Spacer(),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        badge("in_stock".tr, Colors.green),
+                        SizedBox(width: 8.w),
+                        badge("oem_quality".tr, Colors.blue),
+                      ],
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         ...List.generate(
                           5,
-                          (index) => const Icon(
+                          (index) => Icon(
                             Icons.star,
                             color: Colors.amber,
-                            size: 18,
+                            size: 18.sp,
                           ),
                         ),
+                        SizedBox(width: 4.w),
                         Text(
                           c.product['rating']?.toString() ?? '(0.0)',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                           ),
                         ),
                       ],
@@ -237,33 +280,34 @@ class BrakePadsScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
 
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 // Price
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
                       '\$${c.product['price']?.toString() ?? '0'}',
-                      style: const TextStyle(
-                        fontSize: 22,
+                      style: TextStyle(
+                        fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(width: 7),
+                    SizedBox(width: 7.w),
                     if (c.product['promoCost'] != null)
                       Text(
                         '\$${c.product['promoCost'].toString()}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           decoration: TextDecoration.lineThrough,
                           color: Colors.grey,
+                          fontSize: 14.sp,
                         ),
                       ),
                   ],
                 ),
 
-                const SizedBox(height: 30),
+                SizedBox(height: 30.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -271,6 +315,17 @@ class BrakePadsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            "condition".tr,
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Text(
+                            (c.product['condition']?.toString() ?? "na".tr).tr,
+                            style: TextStyle(
                           TranslatedText(
                             text: "condition",
                             style: const TextStyle(
@@ -283,12 +338,33 @@ class BrakePadsScreen extends StatelessWidget {
                             text: c.product['condition']?.toString() ?? "na",
                             style: const TextStyle(
                               color: Colors.grey,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                             ),
                           ),
                         ],
                       ),
                     ),
+                    // Row(
+                    //   children: [
+                    //     _contactButton(
+                    //       Icons.call,
+                    //       Colors.blue,
+                    //       onTap: () {
+                    //         final garageName =
+                    //             c.product['brand']?.toString() ?? 'the seller';
+                    //         _showConfirmCallDialog(context, garageName.tr);
+                    //       },
+                    //     ),
+                    //     SizedBox(width: 10.w),
+                    //     _contactButton(
+                    //       Icons.chat_bubble_outline,
+                    //       Colors.blue,
+                    //       onTap: () {
+                    //         EasyLoading.showInfo("opening_chat".tr);
+                    //       },
+                    //     ),
+                    //   ],
+                    // ),
                     Row(
                       children: [
                         _contactButton(
@@ -348,8 +424,12 @@ class BrakePadsScreen extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 30),
+                SizedBox(height: 30.h),
 
+                Text(
+                  "key_features".tr,
+                  style: TextStyle(
+                    fontSize: 16.sp,
                 TranslatedText(
                   text: "key_features",
                   style: const TextStyle(
@@ -357,18 +437,21 @@ class BrakePadsScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
 
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _FeatureItem(
+                      (c.product['description']?.toString() ??
+                              "no_description".tr)
+                          .tr,
                       c.product['description']?.toString() ?? "no_description",
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 40),
+                SizedBox(height: 40.h),
               ],
             ),
           ),
@@ -385,33 +468,33 @@ class BrakePadsScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10.w),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14.r),
         ),
-        child: Icon(icon, color: color, size: 22),
+        child: Icon(icon, color: color, size: 22.sp),
       ),
     );
   }
 
-  static void _showConfirmCallDialog(BuildContext context) {
+  static void _showConfirmCallDialog(BuildContext context, String garageName) {
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (_) {
         return Center(
           child: Container(
-            width: 300,
-            padding: const EdgeInsets.all(20),
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.circular(18.r),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
+                  blurRadius: 12.r,
+                  offset: Offset(0, 6.h),
                 ),
               ],
             ),
@@ -419,14 +502,19 @@ class BrakePadsScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  child: const CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Color(0xFF00C853),
-                    child: Icon(Icons.call, color: Colors.white, size: 30),
+                  child: CircleAvatar(
+                    radius: 28.r,
+                    backgroundColor: const Color(0xFF00C853),
+                    child: Icon(Icons.call, color: Colors.white, size: 30.sp),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16.h),
                 SizedBox(
+                  height: 24.h,
+                  child: Text(
+                    "confirm_call".tr,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                   height: 24,
                   child: TranslatedText(
                     text: "confirm_call",
@@ -436,16 +524,22 @@ class BrakePadsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 8.h),
+                Text(
+                  "call_confirmation_msg".tr.replaceAll(
+                    '@garageName',
+                    garageName,
+                  ),
                 const SizedBox(height: 8),
                 TranslatedText(
                   text: "call_confirmation_msg",
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
-                    fontSize: 14,
+                    fontSize: 14.sp,
                   ),
                 ),
-                const SizedBox(height: 22),
+                SizedBox(height: 22.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -453,11 +547,11 @@ class BrakePadsScreen extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 10,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 10.h,
                         ),
                       ),
                       onPressed: () => Get.back(),
@@ -477,13 +571,15 @@ class BrakePadsScreen extends StatelessWidget {
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 18.w,
+                          vertical: 10.h,
                         ),
                       ),
+                      icon: Icon(Icons.phone, size: 19.5.sp),
+                      label: Text("call_now".tr),
                       icon: const Icon(Icons.phone, size: 19.5),
                       label: TranslatedText(text: "call_now"),
                     ),
@@ -504,9 +600,14 @@ class _FeatureItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4),
+    padding: EdgeInsets.symmetric(vertical: 4.h),
     child: Row(
       children: [
+        Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
+        SizedBox(width: 8.w),
+        Text(
+          text,
+          style: TextStyle(fontSize: 14.sp, color: Colors.black87),
         const Icon(Icons.check_circle, color: Colors.green, size: 18),
         const SizedBox(width: 8),
         Expanded(

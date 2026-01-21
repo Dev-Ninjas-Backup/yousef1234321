@@ -28,6 +28,8 @@ class SearchSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            "find_car_services_near_you".tr,
           const TranslatedText(
             text: "find_car_services_near_you",
             style: TextStyle(
@@ -37,6 +39,8 @@ class SearchSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
+          Text(
+            "emergency_repairs_subtitle".tr,
           TranslatedText(
             text: "emergency_repairs_subtitle",
             style: TextStyle(color: Colors.white70, fontSize: 14),
@@ -58,6 +62,8 @@ class SearchSection extends StatelessWidget {
                         () => DropdownButtonFormField<String>(
                           value: controller.selectedLocation.value,
                           isExpanded: true,
+                          hint: Text(
+                            "location".tr,
                           hint: TranslatedText(
                             text: "location",
                             style: getTextStyle(
@@ -107,6 +113,8 @@ class SearchSection extends StatelessWidget {
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
                           value: controller.selectedService.value,
+                          hint: Text(
+                            "service_type_hint".tr,
                           hint: TranslatedText(
                             text: "service_type",
                             style: getTextStyle(
@@ -121,6 +129,8 @@ class SearchSection extends StatelessWidget {
                                     .map(
                                       (service) => DropdownMenuItem(
                                         value: service,
+                                        child: Text(
+                                          service.tr,
                                         child: TranslatedText(
                                           text: service,
                                           style: getTextStyle(
@@ -217,6 +227,7 @@ class SearchSection extends StatelessWidget {
                             );
                           }
                         : null,
+                    child: Text("search_garage".tr),
                     child: const TranslatedText(text: "search_garage"),
                   );
                 }),

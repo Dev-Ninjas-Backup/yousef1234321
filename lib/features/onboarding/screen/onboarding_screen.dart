@@ -1,6 +1,3 @@
-
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
@@ -113,120 +110,124 @@ class OnboardingScreen extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Title, description, indicators
-                      Column(
-                        children: [
-                          Text(
-                            onboardingData[index]['title']!,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Title, description, indicators
+                        Column(
+                          children: [
+                            Text(
+                              onboardingData[index]['title']!,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            onboardingData[index]['description']!,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF333333),
+                            const SizedBox(height: 16),
+                            Text(
+                              onboardingData[index]['description']!,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF333333),
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 24),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(
-                              onboardingData.length,
-                              (i) => Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 4,
-                                ),
-                                height: 7,
-                                width: i == index ? 45 : 13,
-                                decoration: BoxDecoration(
-                                  color: i == index
-                                      ? AppColors.splashButtonColor
-                                      : const Color(0xFFD9D9D9),
-                                  borderRadius: BorderRadius.circular(16),
+                            const SizedBox(height: 24),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                onboardingData.length,
+                                (i) => Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  height: 7,
+                                  width: i == index ? 45 : 13,
+                                  decoration: BoxDecoration(
+                                    color: i == index
+                                        ? AppColors.splashButtonColor
+                                        : const Color(0xFFD9D9D9),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-
-                      // Bottom buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (index > 0)
+                          ],
+                        ),
+                        SizedBox(height: 40), // Add some space before buttons
+                        // Bottom buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (index > 0)
+                              GestureDetector(
+                                onTap: () {
+                                  Get.offAllNamed('/signInScreen');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      width: 1,
+                                      color: AppColors.splashButtonColor,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: const Center(
+                                    child: Text(
+                                      'Skip',
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            if (index > 0) const SizedBox(width: 16),
                             GestureDetector(
-                              onTap: () {
-                                Get.offAllNamed('/signInScreen');
-                              },
+                              onTap: controller.nextPage,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 16,
                                 ),
-                                width: 120,
+                                width: 160,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    width: 1,
-                                    color: AppColors.splashButtonColor,
-                                  ),
+                                  color: AppColors.splashButtonColor,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
-                                child: const Center(
-                                  child: Text(
-                                    'Skip',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      index == 0 ? 'Get Started' : 'Next',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
-                                  ),
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.white,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          if (index > 0) const SizedBox(width: 16),
-                          GestureDetector(
-                            onTap: controller.nextPage,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              width: 160,
-                              decoration: BoxDecoration(
-                                color: AppColors.splashButtonColor,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    index == 0 ? 'Get Started' : 'Next',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  const Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
