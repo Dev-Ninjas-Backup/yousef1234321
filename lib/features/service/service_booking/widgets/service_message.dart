@@ -247,11 +247,13 @@ class ServiceMessage extends StatelessWidget {
                 Column(
                   spacing: 2,
                   children: [
-                    TranslatedText(
-                      text: garageName ?? "garage",
-                      style: getTextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                    Obx(
+                      () => TranslatedText(
+                        text: controller.otherParticipantName.value ?? garageName ?? "garage",
+                        style: getTextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     Obx(

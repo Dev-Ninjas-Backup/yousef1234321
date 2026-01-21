@@ -94,6 +94,11 @@ class ChatPageController extends GetxController {
                     '👤 [ChatPageController] Extracted - ID: $userId, Name: $fullName, LastMsg: $lastMsg',
                   );
 
+                  // Extract first letter if profilePhoto is null or empty
+                  final profilePhoto = participant['profilePhoto'];
+                  final isPhotoAvailable = profilePhoto != null && profilePhoto.toString().isNotEmpty;
+                  final firstLetter = fullName.isNotEmpty ? fullName[0].toUpperCase() : '?';
+
                   final user = ChatUserModel(
                     id: userId,
                     name: fullName,
@@ -101,10 +106,9 @@ class ChatPageController extends GetxController {
                     time: _formatTime(
                       lastMsgTime ?? conv['updatedAt'] ?? DateTime.now(),
                     ),
-                    imageUrl:
-                        participant['profilePhoto'] ??
-                        'https://i.pravatar.cc/150?img=${users.length}',
+                    imageUrl: isPhotoAvailable ? profilePhoto : '',
                     unreadCount: conv['unreadCount'] ?? 0,
+                    initial: !isPhotoAvailable ? firstLetter : null,
                   );
                   users.add(user);
                   print(

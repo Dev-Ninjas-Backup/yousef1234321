@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
@@ -321,9 +322,15 @@ class BrakePadsScreen extends StatelessWidget {
                           Icons.call,
                           Colors.blue,
                           onTap: () {
-                            final garageName =
-                                c.product['brand']?.toString() ?? 'Seller';
-                            _showConfirmCallDialog(context, garageName);
+                            final phoneNumber =
+                                c.product['seller']?['phoneNumber']?.toString() ?? '';
+                            final sellerName =
+                                c.product['seller']?['name']?.toString() ?? 'Seller';
+                            _showConfirmCallDialog(
+                              context,
+                              sellerName,
+                              phoneNumber,
+                            );
                           },
                         ),
                         const SizedBox(width: 10),
@@ -423,7 +430,11 @@ class BrakePadsScreen extends StatelessWidget {
     );
   }
 
-  static void _showConfirmCallDialog(BuildContext context, String garageName) {
+  static void _showConfirmCallDialog(
+    BuildContext context,
+    String sellerName,
+    String phoneNumber,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: true,
@@ -466,16 +477,30 @@ class BrakePadsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  "call_confirmation_msg".tr.replaceAll(
-                    '@garageName',
-                    garageName,
-                  ),
+                  "call_confirmation_msg".tr
+                      .replaceAll('@garageName', sellerName)
+                      .replaceAll('@phoneNumber', phoneNumber),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
                     fontSize: 14.sp,
                   ),
                 ),
+                if (phoneNumber.isNotEmpty)
+                  Column(
+                    children: [
+                      SizedBox(height: 12.h),
+                      Text(
+                        phoneNumber,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 SizedBox(height: 22.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -500,10 +525,12 @@ class BrakePadsScreen extends StatelessWidget {
                       ),
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        Get.back();
-                        EasyLoading.showSuccess("calling_msg".tr);
-                      },
+                      onPressed: phoneNumber.isEmpty
+                          ? null
+                          : () async {
+                              Get.back();
+                              _makePhoneCall(phoneNumber);
+                            },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
@@ -526,6 +553,22 @@ class BrakePadsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  static Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    try {
+      if (await canLaunchUrl(launchUri)) {
+        await launchUrl(launchUri);
+      } else {
+        EasyLoading.showError('unable_to_call'.tr);
+      }
+    } catch (e) {
+      EasyLoading.showError('error_calling'.tr);
+    }
   }
 }
 
