@@ -111,6 +111,8 @@ class ServiceBookingController extends GetxController {
   var isConnected = false.obs;
   var recipientId = RxnString();
   var conversationId = RxnString();
+  var otherParticipantName = RxnString(); // Store the name of the other participant
+  var conversationParticipants = <Map<String, dynamic>>[].obs; // Store all participants
   TextEditingController textController = TextEditingController();
   ScrollController chatScrollController = ScrollController();
   IO.Socket? socket;
@@ -369,6 +371,27 @@ class ServiceBookingController extends GetxController {
       );
 
       if (response.statusCode == 200) {
+        // Extract and store participants
+        final participants = response.body['participants'] as List? ?? [];
+        conversationParticipants.value = participants.cast<Map<String, dynamic>>();
+        
+        // Find the other participant (not the current user)
+        final currentUserId = ApiClient.to.userId;
+        print('📡 [_fetchSingleConversation] Current user ID: $currentUserId');
+        
+        final otherParticipant = participants.firstWhereOrNull(
+          (p) => p['id'] != currentUserId,
+        );
+        
+        if (otherParticipant != null) {
+          otherParticipantName.value = otherParticipant['fullName'] ?? 'Unknown User';
+          print(
+            '📡 [_fetchSingleConversation] Other participant: ${otherParticipantName.value}',
+          );
+        } else {
+          print('⚠️ [_fetchSingleConversation] Could not find other participant');
+        }
+
         final messageList = response.body['messages'] as List;
         print(
           '📡 [_fetchSingleConversation] Loaded ${messageList.length} messages from history',

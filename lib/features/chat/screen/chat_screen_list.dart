@@ -157,12 +157,6 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           recipientId,
                         ); // Initialize chat for this recipient
                         Get.to(() => ServiceMessage(recipientId: recipientId));
-                        Get.to(
-                          () => ServiceMessage(
-                            recipientId: recipientId,
-                            garageName: chat.name,
-                          ),
-                        );
                       },
                     );
                   },
