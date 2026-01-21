@@ -33,8 +33,6 @@ class ServiceBooking extends StatelessWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                Text(
-                  "failed_load_garage".tr,
                 TranslatedText(
                   text: "failed_load_garage",
                   style: getTextStyle(fontSize: 16),
@@ -42,7 +40,6 @@ class ServiceBooking extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => controller.fetchGarageDetails(),
-                  child: Text("retry".tr),
                   child: const TranslatedText(text: "retry"),
                 ),
               ],
@@ -71,8 +68,6 @@ class ServiceBooking extends StatelessWidget {
                     const SizedBox(height: 24),
 
                     // --- Location ---
-                    Text(
-                      "location_and_map".tr,
                     TranslatedText(
                       text: "location_map",
                       style: getTextStyle(
@@ -93,8 +88,7 @@ class ServiceBooking extends StatelessWidget {
                                     .value
                                     ?.formattedAddress ??
                                 controller.garageDetail.value?.address ??
-                                "address_not_available".tr,
-                                "default_address",
+                                "address_not_available",
                             style: getTextStyle(fontSize: 12),
                           ),
                         ),
@@ -125,8 +119,6 @@ class ServiceBooking extends StatelessWidget {
                               EasyLoading.showError('could_not_open_maps'.tr);
                             }
                           },
-                          child: Text(
-                            "see_location".tr,
                           child: TranslatedText(
                             text: "see_location",
                             style: getTextStyle(
@@ -205,8 +197,6 @@ class ServiceBooking extends StatelessWidget {
                           size: 18,
                           color: Colors.white,
                         ),
-                        label: Text(
-                          "write_review".tr,
                         label: TranslatedText(
                           text: "write_review",
                           style: getTextStyle(
