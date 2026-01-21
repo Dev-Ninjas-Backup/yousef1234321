@@ -29,7 +29,7 @@ class PartsDetailsScreen extends StatelessWidget {
         TextField(
           controller: controller,
           decoration: InputDecoration(
-            hintText: hint ?? "Type here",
+            hintText: hint ?? "type_here".tr,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           ),
         ),
@@ -54,18 +54,21 @@ class PartsDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomAppBar(title: "Create listing"),
+            CustomAppBar(title: "create_listing".tr),
 
             const SizedBox(height: 27),
-            const Text(
-              "Part Information",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              "part_information".tr,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: textField("Part Name *", controller: c.partNameCtrl),
+                  child: textField(
+                    "${'part_name'.tr} *",
+                    controller: c.partNameCtrl,
+                  ),
                 ),
                 const SizedBox(width: 22.5),
                 // Expanded(
@@ -83,18 +86,20 @@ class PartsDetailsScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Listing Plan',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                Text(
+                  'listing_plan'.tr,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 12),
 
                 /// Monthly Subscription (Recommended)
                 Obx(
                   () => _planTile(
-                    title: 'Monthly Subscription - 100 AED',
-                    subtitle:
-                        'Unlimited spare parts listings for 30 days. Best value for sellers with multiple parts.',
+                    title: 'monthly_subscription_title'.tr,
+                    subtitle: 'monthly_subscription_desc'.tr,
                     value: 0,
                     isRecommended: true,
                     selectedValue: c.selectedPlan.value,
@@ -107,9 +112,8 @@ class PartsDetailsScreen extends StatelessWidget {
                 /// Pay Per Listing
                 Obx(
                   () => _planTile(
-                    title: 'Pay Per Listing',
-                    subtitle:
-                        'No subscription required. Use auto-renewal option below.',
+                    title: 'pay_per_listing'.tr,
+                    subtitle: 'pay_per_listing_desc'.tr,
                     value: 1,
                     isRecommended: false,
                     selectedValue: c.selectedPlan.value,
@@ -131,7 +135,15 @@ class PartsDetailsScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         child: Text(
-                          "Monthly Active until ${c.productMonthlyEndsAt.value?.toLocal().toString().split(' ').first}",
+                          "monthly_active_until".trParams({
+                            'date':
+                                c.productMonthlyEndsAt.value
+                                    ?.toLocal()
+                                    .toString()
+                                    .split(' ')
+                                    .first ??
+                                '',
+                          }),
                         ),
                       ),
                     );
@@ -150,7 +162,7 @@ class PartsDetailsScreen extends StatelessWidget {
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: const Text("Pay Now (Monthly)"),
+                        child: Text("pay_now_monthly".tr),
                       ),
                     );
                   }
@@ -161,9 +173,7 @@ class PartsDetailsScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (c.productCredits.value > 0) {
-                          EasyLoading.showSuccess(
-                            "Using available product credit",
-                          );
+                          EasyLoading.showSuccess("using_credit".tr);
                           return;
                         }
                         await c.createPayPerListingPayment();
@@ -172,7 +182,7 @@ class PartsDetailsScreen extends StatelessWidget {
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text("Pay Now (Per Listing)"),
+                      child: Text("pay_now_per_listing".tr),
                     ),
                   );
                 }),
@@ -184,19 +194,26 @@ class PartsDetailsScreen extends StatelessWidget {
             PromoteListingView(),
             const SizedBox(height: 22.5),
 
-            textField("Brand *", hint: "Type here...", controller: c.brand),
+            textField(
+              "${'brand'.tr} *",
+              hint: "type_here".tr,
+              controller: c.brand,
+            ),
 
             const SizedBox(height: 24),
-            const Text(
-              "2.Pricing & Availability",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              "pricing_availability".tr,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
 
             const SizedBox(height: 24),
             Row(
               children: [
                 Expanded(
-                  child: textField("Price [AED] *", controller: c.priceCtrl),
+                  child: textField(
+                    "${'price_aed'.tr} *",
+                    controller: c.priceCtrl,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 // Expanded(
@@ -211,125 +228,149 @@ class PartsDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 24),
             textField(
-              "Quantity *",
-              hint: "Type here...",
+              "${'quantity'.tr} *",
+              hint: "type_here".tr,
               controller: c.quantity,
             ),
             const SizedBox(height: 20),
 
             textField(
-              "Description *",
-              hint: "Type here...",
+              "${'description'.tr} *",
+              hint: "type_here".tr,
               controller: c.descriptionCtrl,
             ),
 
             const SizedBox(height: 20),
-            const Text(
-              "Upload Photo *",
-              style: TextStyle(fontWeight: FontWeight.w600),
+            Text(
+              "${'upload_photo'.tr} *",
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
-Obx(
-  () => GestureDetector(
-    onTap: c.pickImages, // select more images
-    child: Container(
-      height: 140,
-      width: double.infinity,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: c.selectedImages.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.add_circle_outline, color: Colors.blue, size: 36),
-                  SizedBox(height: 4),
-                  Text("Add Photos"),
-                ],
+            Obx(
+              () => GestureDetector(
+                onTap: c.pickImages, // select more images
+                child: Container(
+                  height: 140,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: c.selectedImages.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.add_circle_outline,
+                                color: Colors.blue,
+                                size: 36,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                "add_photos".tr,
+                              ), // This needs to be const removed if using .tr, but Text("...".tr) is not const
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount:
+                              c.selectedImages.length + 1, // +1 for add button
+                          itemBuilder: (_, index) {
+                            if (index == c.selectedImages.length) {
+                              // Last item = add more button
+                              return GestureDetector(
+                                onTap: c.pickImages,
+                                child: Container(
+                                  width: 120,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  ),
+                                  child: const Center(
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.blue,
+                                      size: 32,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+
+                            final img = c.selectedImages[index];
+                            return Stack(
+                              children: [
+                                Container(
+                                  width: 120,
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      File(img.path),
+                                      fit: BoxFit.cover,
+                                      width: 120,
+                                      height: 120,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 2,
+                                  right: 2,
+                                  child: GestureDetector(
+                                    onTap: () => c.removeImage(index),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                ),
               ),
-            )
-          : ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: c.selectedImages.length + 1, // +1 for add button
-              itemBuilder: (_, index) {
-                if (index == c.selectedImages.length) {
-                  // Last item = add more button
-                  return GestureDetector(
-                    onTap: c.pickImages,
-                    child: Container(
-                      width: 120,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.shade400),
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.add, color: Colors.blue, size: 32),
-                      ),
-                    ),
-                  );
-                }
-
-                final img = c.selectedImages[index];
-                return Stack(
-                  children: [
-                    Container(
-                      width: 120,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.file(
-                          File(img.path),
-                          fit: BoxFit.cover,
-                          width: 120,
-                          height: 120,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 2,
-                      right: 2,
-                      child: GestureDetector(
-                        onTap: () => c.removeImage(index),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
             ),
-    ),
-  ),
-),
-
 
             const SizedBox(height: 20),
-            const Text(
-              "Seller Information",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              "seller_information".tr,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            textField("Seller Name *", controller: c.sellerNameCtrl),
+            textField("${'seller_name'.tr} *", controller: c.sellerNameCtrl),
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: textField("Email *", controller: c.emailCtrl)),
+                Expanded(
+                  child: textField(
+                    "${'emailAddress'.tr} *",
+                    controller: c.emailCtrl,
+                  ),
+                ),
                 const SizedBox(width: 24),
                 Expanded(
-                  child: textField("Contact Number *", controller: c.phoneCtrl),
+                  child: textField(
+                    "${'contact_number'.tr} *",
+                    controller: c.phoneCtrl,
+                  ),
                 ),
               ],
             ),
@@ -345,8 +386,8 @@ Obx(
                 SizedBox(height: 28),
                 Expanded(
                   child: Text(
-                    "I confirm this part information is accurate.",
-                    style: TextStyle(fontSize: 14),
+                    "confirm_info_accurate".tr,
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ),
               ],
@@ -358,15 +399,13 @@ Obx(
             //   style: TextStyle(color: Colors.red, fontSize: 12),
             // ),
 
-       //     const SizedBox(height: 20),
+            //     const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
                   if (!c.isConfirmed.value) {
-                    EasyLoading.showError(
-                      "Error, Please confirm part information.",
-                    );
+                    EasyLoading.showError("error_confirm_info".tr);
                     return;
                   }
 
@@ -393,9 +432,9 @@ Obx(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  "List Part Now",
-                  style: TextStyle(
+                child: Text(
+                  "list_part_now".tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
@@ -460,9 +499,12 @@ Widget _planTile({
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text(
-                          'Recommended',
-                          style: TextStyle(fontSize: 11, color: Colors.white),
+                        child: Text(
+                          'recommended'.tr,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     Flexible(
@@ -506,9 +548,9 @@ Widget categoryDropdown(PartsDetailsController c) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Category *",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        Text(
+          "${'category'.tr} *",
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
         const SizedBox(height: 6),
         Container(
@@ -520,12 +562,12 @@ Widget categoryDropdown(PartsDetailsController c) {
           child: DropdownButton<String>(
             value: c.selectedCategoryId.value,
             isExpanded: true,
-            hint: const Text("Select"),
+            hint: Text("select".tr),
             underline: const SizedBox(),
             items: c.categories.map((cat) {
               return DropdownMenuItem<String>(
                 value: cat.id, // store id
-                child: Text(cat.name), // show name
+                child: Text(cat.name.tr), // show name
               );
             }).toList(),
             onChanged: (value) {

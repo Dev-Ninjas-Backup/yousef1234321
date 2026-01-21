@@ -44,6 +44,7 @@ class LanguageScreen extends StatelessWidget {
                           lang['code']!,
                           lang['country']!,
                         );
+                        _updateBackendLanguage(lang['code']!);
                       },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 12),
@@ -97,5 +98,25 @@ class LanguageScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _updateBackendLanguage(String langCode) async {
+    final connect = GetConnect();
+    connect.timeout = const Duration(seconds: 10);
+    // Note: Ideally, use the base URL from endpoint.dart if available
+    const baseUrl = 'https://yousef-softvence.saikat.com.bd';
+
+    try {
+      debugPrint('🌐 Updating backend language to: $langCode');
+      final response = await connect.get('$baseUrl/?lang=$langCode');
+
+      if (response.status.hasError) {
+        debugPrint('❌ Backend Language Sync Failed: ${response.statusText}');
+      } else {
+        debugPrint('✅ Backend Language Sync Success: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error updating backend language: $e');
+    }
   }
 }

@@ -44,9 +44,9 @@ class PromoteListingView extends StatelessWidget {
                               color: Colors.orange,
                             ),
                             const SizedBox(width: 6),
-                            const Text(
-                              'Promote This Listing',
-                              style: TextStyle(
+                            Text(
+                              'promote_this_listing'.tr,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -61,9 +61,9 @@ class PromoteListingView extends StatelessWidget {
                                 color: Colors.orange,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Text(
-                                'Featured',
-                                style: TextStyle(
+                              child: Text(
+                                'featured'.tr,
+                                style: const TextStyle(
                                   fontSize: 11,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
@@ -75,8 +75,11 @@ class PromoteListingView extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           controller.promotionCredits.value > 0
-                              ? 'You have ${controller.promotionCredits.value} promotion credits available.'
-                              : 'Promote this listing for 20 AED.',
+                              ? 'promotion_credits_available'.trParams({
+                                  'credits': controller.promotionCredits.value
+                                      .toString(),
+                                })
+                              : 'promote_for_amount'.trParams({'amount': '20'}),
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey.shade700,
@@ -105,8 +108,8 @@ class PromoteListingView extends StatelessWidget {
                     ),
                     child: Text(
                       controller.promotionCredits.value > 0
-                          ? "Use Promotion Credit"
-                          : "Pay 20 AED for Promotion",
+                          ? "use_promotion_credit".tr
+                          : "pay_for_promotion".trParams({'amount': '20'}),
                     ),
                   ),
                 ),

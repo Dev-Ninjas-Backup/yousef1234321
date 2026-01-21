@@ -3,22 +3,26 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/style/global_text_style.dart';
 import '../controller/service_booking_controller.dart';
+
 class ServiceOffered extends StatelessWidget {
   const ServiceOffered({super.key, required this.controller});
   final ServiceBookingController controller;
   @override
   Widget build(BuildContext context) {
-    return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // --- Services Offered ---
-        Text(
-          "Services Offered",
-          style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        Obx(
-          () => GridView.builder(
+    return Obx(() {
+      if (controller.services.isEmpty) {
+        return const SizedBox.shrink();
+      }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // --- Services Offered ---
+          Text(
+            "services_offered".tr,
+            style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 12),
+          GridView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -49,24 +53,26 @@ class ServiceOffered extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      item["icon"]!,
+                      item["icon"]?.toString() ?? '',
                       height: 32,
                       width: 32,
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      item["title"]!,
+                      (item["title"]?.toString() ?? '').tr,
                       textAlign: TextAlign.center,
                       style: getTextStyle(fontSize: 14),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               );
             },
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }
