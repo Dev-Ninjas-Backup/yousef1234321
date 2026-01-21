@@ -21,16 +21,13 @@ class BrakePadsScreen extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6.r),
       ),
-      child: Text(
-        text,
+      child: TranslatedText(
+        text: text,
         style: TextStyle(
           color: color,
           fontWeight: FontWeight.w500,
           fontSize: 12.sp,
         ),
-      child: TranslatedText(
-        text: text,
-        style: TextStyle(color: color, fontWeight: FontWeight.w500),
       ),
     );
 
@@ -63,18 +60,13 @@ class BrakePadsScreen extends StatelessWidget {
                       ),
                     ),
                     Expanded(
-                      child: Text(
-                        "brake_pads".tr,
+                      child: TranslatedText(
+                        text: "brake_pads",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                         ),
-                    TranslatedText(
-                      text: "brake_pads",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     SizedBox(width: 40.w),
@@ -138,12 +130,9 @@ class BrakePadsScreen extends StatelessWidget {
                           color: Colors.redAccent,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
-                        child: Text(
-                          "discount_tag".tr,
-                          style: TextStyle(
                         child: TranslatedText(
                           text: "discount_tag",
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 12.sp,
@@ -214,21 +203,14 @@ class BrakePadsScreen extends StatelessWidget {
 
                 SizedBox(height: 25.h),
                 // product info
-                Text(
-                  (c.product['partName']?.toString() ?? "brake_pads".tr).tr,
+                TranslatedText(
+                  text: c.product['partName']?.toString() ?? "brake_pads",
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 SizedBox(height: 8.h),
-                Text(
-                  (c.product['brand']?.toString() ?? '').tr,
-                TranslatedText(
-                  text: c.product['partName']?.toString() ?? "brake_pads",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
                 TranslatedText(
                   text: c.product['brand']?.toString() ?? '',
                   style: TextStyle(
@@ -315,28 +297,17 @@ class BrakePadsScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "condition".tr,
+                          TranslatedText(
+                            text: "condition",
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           SizedBox(height: 4.h),
-                          Text(
-                            (c.product['condition']?.toString() ?? "na".tr).tr,
-                            style: TextStyle(
-                          TranslatedText(
-                            text: "condition",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
                           TranslatedText(
                             text: c.product['condition']?.toString() ?? "na",
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14.sp,
                             ),
@@ -344,34 +315,15 @@ class BrakePadsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Row(
-                    //   children: [
-                    //     _contactButton(
-                    //       Icons.call,
-                    //       Colors.blue,
-                    //       onTap: () {
-                    //         final garageName =
-                    //             c.product['brand']?.toString() ?? 'the seller';
-                    //         _showConfirmCallDialog(context, garageName.tr);
-                    //       },
-                    //     ),
-                    //     SizedBox(width: 10.w),
-                    //     _contactButton(
-                    //       Icons.chat_bubble_outline,
-                    //       Colors.blue,
-                    //       onTap: () {
-                    //         EasyLoading.showInfo("opening_chat".tr);
-                    //       },
-                    //     ),
-                    //   ],
-                    // ),
                     Row(
                       children: [
                         _contactButton(
                           Icons.call,
                           Colors.blue,
                           onTap: () {
-                            _showConfirmCallDialog(context);
+                            final garageName =
+                                c.product['brand']?.toString() ?? 'Seller';
+                            _showConfirmCallDialog(context, garageName);
                           },
                         ),
                         const SizedBox(width: 10),
@@ -426,14 +378,10 @@ class BrakePadsScreen extends StatelessWidget {
 
                 SizedBox(height: 30.h),
 
-                Text(
-                  "key_features".tr,
-                  style: TextStyle(
-                    fontSize: 16.sp,
                 TranslatedText(
                   text: "key_features",
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: TextStyle(
+                    fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -443,9 +391,6 @@ class BrakePadsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _FeatureItem(
-                      (c.product['description']?.toString() ??
-                              "no_description".tr)
-                          .tr,
                       c.product['description']?.toString() ?? "no_description",
                     ),
                   ],
@@ -511,15 +456,10 @@ class BrakePadsScreen extends StatelessWidget {
                 SizedBox(height: 16.h),
                 SizedBox(
                   height: 24.h,
-                  child: Text(
-                    "confirm_call".tr,
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                  height: 24,
                   child: TranslatedText(
                     text: "confirm_call",
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -530,9 +470,6 @@ class BrakePadsScreen extends StatelessWidget {
                     '@garageName',
                     garageName,
                   ),
-                const SizedBox(height: 8),
-                TranslatedText(
-                  text: "call_confirmation_msg",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
@@ -579,8 +516,6 @@ class BrakePadsScreen extends StatelessWidget {
                         ),
                       ),
                       icon: Icon(Icons.phone, size: 19.5.sp),
-                      label: Text("call_now".tr),
-                      icon: const Icon(Icons.phone, size: 19.5),
                       label: TranslatedText(text: "call_now"),
                     ),
                   ],
@@ -605,15 +540,10 @@ class _FeatureItem extends StatelessWidget {
       children: [
         Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
         SizedBox(width: 8.w),
-        Text(
-          text,
-          style: TextStyle(fontSize: 14.sp, color: Colors.black87),
-        const Icon(Icons.check_circle, color: Colors.green, size: 18),
-        const SizedBox(width: 8),
         Expanded(
           child: TranslatedText(
             text: text,
-            style: const TextStyle(fontSize: 14, color: Colors.black87),
+            style: TextStyle(fontSize: 14.sp, color: Colors.black87),
           ),
         ),
       ],

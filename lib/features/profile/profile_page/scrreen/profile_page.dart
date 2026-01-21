@@ -94,16 +94,14 @@ class ProfilePage extends StatelessWidget {
                               Obx(
                                 () => ClipRRect(
                                   borderRadius: BorderRadius.circular(100.r),
-                                  child: _buildProfileImage(),
-                                  borderRadius: BorderRadius.circular(100),
                                   child: buildProfileImage(),
                                 ),
                               ),
                               SizedBox(height: 8.h),
                               Obx(
-                                () => TranslatedText(
-                                  text: controller.fullName.value.isEmpty
-                                      ? "user"
+                                () => Text(
+                                  controller.fullName.value.isEmpty
+                                      ? "user".tr
                                       : controller.fullName.value,
                                   style: getTextStyle(
                                     fontSize: 24.sp,
@@ -113,27 +111,18 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                               Obx(
-                                () => Text(
-                                  controller.email.value.isEmpty
-                                      ? "default_email".tr
-                                      : controller.email.value,
-                                  style: getTextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
                                 () => controller.email.value.isEmpty
                                     ? TranslatedText(
                                         text: "default_email",
                                         style: getTextStyle(
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           color: Colors.grey.shade600,
                                         ),
                                       )
                                     : Text(
                                         controller.email.value,
                                         style: getTextStyle(
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                           color: Colors.grey.shade600,
                                         ),
                                       ),
@@ -177,12 +166,9 @@ class ProfilePage extends StatelessWidget {
                                     size: 24.sp,
                                   ),
                                   SizedBox(width: 4.w),
-                                  Text(
-                                    controller.profileItem[index].title.tr,
-                                    style: getTextStyle(fontSize: 16.sp),
                                   TranslatedText(
                                     text: controller.profileItem[index].title,
-                                    style: getTextStyle(fontSize: 16),
+                                    style: getTextStyle(fontSize: 16.sp),
                                   ),
                                 ],
                               ),
@@ -236,46 +222,25 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   )
                                 else
-                                  Flexible(
-                                    child: Text(
-                                      "logout".tr,
-                                      textAlign: TextAlign.center,
-                                      style: getTextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w600,
+                                  Row(
+                                    children: [
+                                      TranslatedText(
+                                        text: "logout",
+                                        textAlign: TextAlign.center,
+                                        style: getTextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                      Icon(
+                                        Icons.logout_sharp,
+                                        size: 24.sp,
                                         color: Colors.white,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            spacing: 4,
-                            children: [
-                              if (controller.isLoggingOut.value)
-                                SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                                    ],
                                   ),
-                                )
-                              else
-                                TranslatedText(
-                                  text: "logout",
-                                  textAlign: TextAlign.center,
-                                  style: getTextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                SizedBox(width: 4.w),
-                                Icon(
-                                  Icons.logout_sharp,
-                                  size: 24.sp,
-                                  color: Colors.white,
-                                ),
                               ],
                             ),
                           ),
@@ -299,20 +264,13 @@ class ProfilePage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Flexible(
-                                child: Text(
-                                  "delete_account".tr,
+                                child: TranslatedText(
+                                  text: "delete_account",
                                   style: getTextStyle(
                                     fontSize: 16.sp,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.red,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                              TranslatedText(
-                                text: "delete_account",
-                                style: getTextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.red,
                                 ),
                               ),
                               SizedBox(width: 4.w),
