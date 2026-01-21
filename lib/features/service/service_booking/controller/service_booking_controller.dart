@@ -14,10 +14,17 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 
 class ServiceBookingController extends GetxController {
+  ServiceBookingController() {
+    print('🏗️ [ServiceBookingController] Constructor called');
+  }
+
   final Rx<GarageDetailModel?> garageDetail = Rx<GarageDetailModel?>(null);
   final isLoading = false.obs;
   final hasError = false.obs;
   String? garageId;
+  
+  /// Get the current garage ID
+  String? get currentGarageId => garageId;
   var images = [
     Imagepath.onboarding1,
     Imagepath.onboarding1,
@@ -44,14 +51,31 @@ class ServiceBookingController extends GetxController {
 
   @override
   void onInit() {
+    print('🚀 [ServiceBookingController.onInit] onInit called');
     pageController = PageController(initialPage: 0);
     loadInitialMessages();
 
     // Get garage ID from arguments
     final args = Get.arguments;
-    if (args != null && args is Map && args['garageId'] != null) {
-      garageId = args['garageId'];
-      fetchGarageDetails();
+    print('🔍 [ServiceBookingController.onInit] Arguments received: $args');
+    print('🔍 [ServiceBookingController.onInit] Arguments type: ${args.runtimeType}');
+    
+    if (args != null && args is Map) {
+      print('🔍 [ServiceBookingController.onInit] Arguments keys: ${args.keys}');
+      print('🔍 [ServiceBookingController.onInit] garageId value: ${args['garageId']}');
+      print('🔍 [ServiceBookingController.onInit] garageId type: ${args['garageId'].runtimeType}');
+      
+      if (args['garageId'] != null) {
+        garageId = args['garageId'].toString();
+        print('✅ [ServiceBookingController.onInit] garageId set to: $garageId');
+        fetchGarageDetails();
+      } else {
+        print('❌ [ServiceBookingController.onInit] garageId is null in arguments');
+      }
+    } else {
+      print('❌ [ServiceBookingController.onInit] Arguments are null or not a Map!');
+      print('❌ [ServiceBookingController.onInit] Args: $args');
+      print('❌ [ServiceBookingController.onInit] Cannot load garage details without garageId');
     }
 
     super.onInit();
@@ -63,6 +87,22 @@ class ServiceBookingController extends GetxController {
     chatScrollController.dispose();
     socket?.disconnect();
     super.onClose();
+  }
+
+  /// Set garage ID and fetch details - useful when navigating programmatically
+  void setGarageId(String id) {
+    print('🆔 [setGarageId] Setting garageId to: $id');
+    garageId = id;
+    fetchGarageDetails();
+  }
+
+  /// Clear garage data - useful when navigating between different garages
+  void clearGarageData() {
+    print('🧹 [clearGarageData] Clearing garage data');
+    garageDetail.value = null;
+    garageId = null;
+    hasError.value = false;
+    isLoading.value = false;
   }
 
   // Service messaging - Real-time Chat with WebSocket & REST API
@@ -739,28 +779,53 @@ class ServiceBookingController extends GetxController {
   }
 
   Future<void> fetchGarageDetails() async {
-    if (garageId == null) return;
+    print('🔍 [fetchGarageDetails] Called with garageId: $garageId');
+    
+    if (garageId == null) {
+      print('❌ [fetchGarageDetails] garageId is null, returning');
+      return;
+    }
 
     try {
       isLoading.value = true;
       hasError.value = false;
       print(
-        'ServiceBookingController: Fetching garage details for ID: $garageId',
+        '📡 [fetchGarageDetails] Fetching garage details for ID: $garageId',
       );
 
-      final response = await ApiClient.to.get(
-        '${Endpoint.garageDetails}/$garageId',
-      );
+      final endpoint = '${Endpoint.garageDetails}/$garageId';
+      print('📡 [fetchGarageDetails] Using endpoint: $endpoint');
 
-      print('ServiceBookingController: Response status=${response.statusCode}');
+      final response = await ApiClient.to.get(endpoint);
+
+      print('📡 [fetchGarageDetails] Response status=${response.statusCode}');
+      print('📡 [fetchGarageDetails] Response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
+        print('📡 [fetchGarageDetails] Response body structure: ${body?.keys}');
+        print('📡 [fetchGarageDetails] Success field: ${body?['success']}');
+        print('📡 [fetchGarageDetails] Data field exists: ${body?['data'] != null}');
+        
         if (body != null && body['success'] == true && body['data'] != null) {
-          garageDetail.value = GarageDetailModel.fromJson(body['data']);
-          print(
-            'ServiceBookingController: Garage details loaded: ${garageDetail.value?.name}',
-          );
+          print('📡 [fetchGarageDetails] Attempting to parse GarageDetailModel...');
+          try {
+            garageDetail.value = GarageDetailModel.fromJson(body['data']);
+            print(
+              '✅ [fetchGarageDetails] Garage details loaded: ${garageDetail.value?.name}',
+            );
+            print(
+              '✅ [fetchGarageDetails] User data: ${garageDetail.value?.user}',
+            );
+            print(
+              '✅ [fetchGarageDetails] UserId: ${garageDetail.value?.userId}',
+            );
+          } catch (parseError, parseStack) {
+            print('❌ [fetchGarageDetails] Model parsing failed: $parseError');
+            print('❌ [fetchGarageDetails] Parse stack: $parseStack');
+            hasError.value = true;
+            return;
+          }
 
           // Update images with cover photo if available
           if (garageDetail.value?.coverPhoto != null &&
