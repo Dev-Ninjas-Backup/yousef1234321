@@ -145,7 +145,7 @@ class GarageCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text("${garage.distance} km"),
+                        Text("${garage.distance} ${'km'.tr}"),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -159,11 +159,11 @@ class GarageCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isOpen
                                 ? AppColors.greenOpacity
-                                : Colors.red.withValues(alpha:  0.1),
+                                : Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            statusLabel,
+                            statusLabel.tr,
                             style: TextStyle(
                               color: isOpen ? Colors.green : Colors.red,
                               fontSize: 10,
