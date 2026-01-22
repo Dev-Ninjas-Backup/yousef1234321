@@ -17,9 +17,9 @@ class GarageListScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 52),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: CustomAppBar(title: "All Garages"),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: CustomAppBar(title: "All Garages".tr),
           ),
           const SizedBox(height: 16),
 
@@ -30,7 +30,7 @@ class GarageListScreen extends StatelessWidget {
               controller: controller.searchController,
               onChanged: controller.onSearch,
               decoration: InputDecoration(
-                hintText: "Search garages...",
+                hintText: "Search garages...".tr,
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: const Color(0xFFF9FAFB),
@@ -55,70 +55,70 @@ class GarageListScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 // City Filter
-                // Obx(
-                //   () => FilterChip(
-                //     label: Text(
-                //       controller.selectedCity.value ?? 'City',
-                //       style: TextStyle(
-                //         color: controller.selectedCity.value != null
-                //             ? Colors.white
-                //             : Colors.black87,
-                //         fontSize: 14,
-                //       ),
-                //     ),
-                //     selected: controller.selectedCity.value != null,
-                //     selectedColor: AppColors.primaryColor,
-                //     backgroundColor: const Color(0xFFF9FAFB),
-                //     onSelected: (_) => _showCityPicker(context, controller),
-                //   ),
-                // ),
-                // const SizedBox(width: 8),
+                Obx(
+                  () => FilterChip(
+                    label: Text(
+                      controller.selectedCity.value ?? 'City',
+                      style: TextStyle(
+                        color: controller.selectedCity.value != null
+                            ? Colors.white
+                            : Colors.black87,
+                        fontSize: 14,
+                      ),
+                    ),
+                    selected: controller.selectedCity.value != null,
+                    selectedColor: AppColors.primaryColor,
+                    backgroundColor: const Color(0xFFF9FAFB),
+                    onSelected: (_) => _showCityPicker(context, controller),
+                  ),
+                ),
+                const SizedBox(width: 8),
 
                 // // Emirate Filter
-                // Obx(
-                //   () => FilterChip(
-                //     label: Text(
-                //       controller.selectedEmirate.value ?? 'Emirate',
-                //       style: TextStyle(
-                //         color: controller.selectedEmirate.value != null
-                //             ? Colors.white
-                //             : Colors.black87,
-                //         fontSize: 14,
-                //       ),
-                //     ),
-                //     selected: controller.selectedEmirate.value != null,
-                //     selectedColor: AppColors.primaryColor,
-                //     backgroundColor: const Color(0xFFF9FAFB),
-                //     onSelected: (_) => _showEmiratePicker(context, controller),
-                //   ),
-                // ),
-                // const SizedBox(width: 8),
+                Obx(
+                  () => FilterChip(
+                    label: Text(
+                      controller.selectedEmirate.value ?? 'Emirate',
+                      style: TextStyle(
+                        color: controller.selectedEmirate.value != null
+                            ? Colors.white
+                            : Colors.black87,
+                        fontSize: 14,
+                      ),
+                    ),
+                    selected: controller.selectedEmirate.value != null,
+                    selectedColor: AppColors.primaryColor,
+                    backgroundColor: const Color(0xFFF9FAFB),
+                    onSelected: (_) => _showEmiratePicker(context, controller),
+                  ),
+                ),
+                const SizedBox(width: 8),
 
                 // // Service Filter
-                // Obx(
-                //   () => FilterChip(
-                //     label: Text(
-                //       controller.selectedService.value ?? 'Service',
-                //       style: TextStyle(
-                //         color: controller.selectedService.value != null
-                //             ? Colors.white
-                //             : Colors.black87,
-                //         fontSize: 14,
-                //       ),
-                //     ),
-                //     selected: controller.selectedService.value != null,
-                //     selectedColor: AppColors.primaryColor,
-                //     backgroundColor: const Color(0xFFF9FAFB),
-                //     onSelected: (_) => _showServicePicker(context, controller),
-                //   ),
-                // ),
-                // const SizedBox(width: 8),
+                Obx(
+                  () => FilterChip(
+                    label: Text(
+                      controller.selectedService.value ?? 'Service',
+                      style: TextStyle(
+                        color: controller.selectedService.value != null
+                            ? Colors.white
+                            : Colors.black87,
+                        fontSize: 14,
+                      ),
+                    ),
+                    selected: controller.selectedService.value != null,
+                    selectedColor: AppColors.primaryColor,
+                    backgroundColor: const Color(0xFFF9FAFB),
+                    onSelected: (_) => _showServicePicker(context, controller),
+                  ),
+                ),
+                const SizedBox(width: 8),
 
                 // Status Filter
                 Obx(
                   () => FilterChip(
                     label: Text(
-                      controller.selectedStatus.value,
+                      controller.selectedStatus.value.tr,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                     selected: true,
@@ -140,12 +140,12 @@ class GarageListScreen extends StatelessWidget {
                   if (!hasFilters) return const SizedBox.shrink();
 
                   return ActionChip(
-                    label: const Text(
-                      'Clear',
-                      style: TextStyle(color: Colors.red, fontSize: 14),
+                    label: Text(
+                      'Clear'.tr,
+                      style: const TextStyle(color: Colors.red, fontSize: 14),
                     ),
 
-                    backgroundColor: Colors.red.withValues(alpha:  0.1),
+                    backgroundColor: Colors.red.withValues(alpha: 0.1),
 
                     onPressed: controller.clearFilters,
                   );
@@ -163,9 +163,9 @@ class GarageListScreen extends StatelessWidget {
               }
 
               if (controller.garages.isEmpty) {
-                return const Center(
+                return Center(
                   child: Text(
-                    'No garages found',
+                    'No garages found'.tr,
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 );
@@ -196,106 +196,106 @@ class GarageListScreen extends StatelessWidget {
     );
   }
 
-  // void _showCityPicker(BuildContext context, GarageListController controller) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Container(
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           const Text(
-  //             'Select City',
-  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //           ),
-  //           const SizedBox(height: 16),
-  //           ...controller.cities.map(
-  //             (city) => ListTile(
-  //               title: Text(city),
-  //               onTap: () {
-  //                 controller.selectedCity.value = city;
-  //                 controller.applyFilters();
-  //                 Navigator.pop(context);
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _showCityPicker(BuildContext context, GarageListController controller) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Select City',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...controller.cities.map(
+              (city) => ListTile(
+                title: Text(city),
+                onTap: () {
+                  controller.selectedCity.value = city;
+                  controller.applyFilters();
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // void _showEmiratePicker(
-  //   BuildContext context,
-  //   GarageListController controller,
-  // ) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Container(
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           const Text(
-  //             'Select Emirate',
-  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //           ),
-  //           const SizedBox(height: 16),
-  //           ...controller.emirates.map(
-  //             (emirate) => ListTile(
-  //               title: Text(emirate),
-  //               onTap: () {
-  //                 controller.selectedEmirate.value = emirate;
-  //                 controller.applyFilters();
-  //                 Navigator.pop(context);
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _showEmiratePicker(
+    BuildContext context,
+    GarageListController controller,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Select Emirate',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...controller.emirates.map(
+              (emirate) => ListTile(
+                title: Text(emirate),
+                onTap: () {
+                  controller.selectedEmirate.value = emirate;
+                  controller.applyFilters();
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
-  // void _showServicePicker(
-  //   BuildContext context,
-  //   GarageListController controller,
-  // ) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (context) => Container(
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           const Text(
-  //             'Select Service',
-  //             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //           ),
-  //           const SizedBox(height: 16),
-  //           Expanded(
-  //             child: Obx(
-  //               () => ListView(
-  //                 children: controller.serviceTypes
-  //                     .map(
-  //                       (service) => ListTile(
-  //                         title: Text(service),
-  //                         onTap: () {
-  //                           controller.selectedService.value = service;
-  //                           controller.applyFilters();
-  //                           Navigator.pop(context);
-  //                         },
-  //                       ),
-  //                     )
-  //                     .toList(),
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  void _showServicePicker(
+    BuildContext context,
+    GarageListController controller,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Select Service',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Obx(
+                () => ListView(
+                  children: controller.serviceTypes
+                      .map(
+                        (service) => ListTile(
+                          title: Text(service),
+                          onTap: () {
+                            controller.selectedService.value = service;
+                            controller.applyFilters();
+                            Navigator.pop(context);
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _showStatusPicker(
     BuildContext context,
@@ -315,7 +315,7 @@ class GarageListScreen extends StatelessWidget {
             const SizedBox(height: 16),
             ...controller.statuses.map(
               (status) => ListTile(
-                title: Text(status),
+                title: Text(status.tr),
                 onTap: () {
                   controller.selectedStatus.value = status;
                   controller.applyFilters();

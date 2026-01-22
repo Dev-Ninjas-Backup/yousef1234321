@@ -22,7 +22,7 @@ class ServiceBookingController extends GetxController {
   final isLoading = false.obs;
   final hasError = false.obs;
   String? garageId;
-  
+
   /// Get the current garage ID
   String? get currentGarageId => garageId;
   var images = [
@@ -62,28 +62,45 @@ class ServiceBookingController extends GetxController {
       fetchGarageDetails();
     } else {
       fetchServices();
-    print('🔍 [ServiceBookingController.onInit] Arguments received: $args');
-    print('🔍 [ServiceBookingController.onInit] Arguments type: ${args.runtimeType}');
-    
-    if (args != null && args is Map) {
-      print('🔍 [ServiceBookingController.onInit] Arguments keys: ${args.keys}');
-      print('🔍 [ServiceBookingController.onInit] garageId value: ${args['garageId']}');
-      print('🔍 [ServiceBookingController.onInit] garageId type: ${args['garageId'].runtimeType}');
-      
-      if (args['garageId'] != null) {
-        garageId = args['garageId'].toString();
-        print('✅ [ServiceBookingController.onInit] garageId set to: $garageId');
-        fetchGarageDetails();
-      } else {
-        print('❌ [ServiceBookingController.onInit] garageId is null in arguments');
-      }
-    } else {
-      print('❌ [ServiceBookingController.onInit] Arguments are null or not a Map!');
-      print('❌ [ServiceBookingController.onInit] Args: $args');
-      print('❌ [ServiceBookingController.onInit] Cannot load garage details without garageId');
-    }
+      print('🔍 [ServiceBookingController.onInit] Arguments received: $args');
+      print(
+        '🔍 [ServiceBookingController.onInit] Arguments type: ${args.runtimeType}',
+      );
 
-    super.onInit();
+      if (args != null && args is Map) {
+        print(
+          '🔍 [ServiceBookingController.onInit] Arguments keys: ${args.keys}',
+        );
+        print(
+          '🔍 [ServiceBookingController.onInit] garageId value: ${args['garageId']}',
+        );
+        print(
+          '🔍 [ServiceBookingController.onInit] garageId type: ${args['garageId'].runtimeType}',
+        );
+
+        if (args['garageId'] != null) {
+          garageId = args['garageId'].toString();
+          print(
+            '✅ [ServiceBookingController.onInit] garageId set to: $garageId',
+          );
+          fetchGarageDetails();
+        } else {
+          print(
+            '❌ [ServiceBookingController.onInit] garageId is null in arguments',
+          );
+        }
+      } else {
+        print(
+          '❌ [ServiceBookingController.onInit] Arguments are null or not a Map!',
+        );
+        print('❌ [ServiceBookingController.onInit] Args: $args');
+        print(
+          '❌ [ServiceBookingController.onInit] Cannot load garage details without garageId',
+        );
+      }
+
+      super.onInit();
+    }
   }
 
   @override
@@ -116,8 +133,10 @@ class ServiceBookingController extends GetxController {
   var isConnected = false.obs;
   var recipientId = RxnString();
   var conversationId = RxnString();
-  var otherParticipantName = RxnString(); // Store the name of the other participant
-  var conversationParticipants = <Map<String, dynamic>>[].obs; // Store all participants
+  var otherParticipantName =
+      RxnString(); // Store the name of the other participant
+  var conversationParticipants =
+      <Map<String, dynamic>>[].obs; // Store all participants
   TextEditingController textController = TextEditingController();
   ScrollController chatScrollController = ScrollController();
   IO.Socket? socket;
@@ -378,23 +397,27 @@ class ServiceBookingController extends GetxController {
       if (response.statusCode == 200) {
         // Extract and store participants
         final participants = response.body['participants'] as List? ?? [];
-        conversationParticipants.value = participants.cast<Map<String, dynamic>>();
-        
+        conversationParticipants.value = participants
+            .cast<Map<String, dynamic>>();
+
         // Find the other participant (not the current user)
         final currentUserId = ApiClient.to.userId;
         print('📡 [_fetchSingleConversation] Current user ID: $currentUserId');
-        
+
         final otherParticipant = participants.firstWhereOrNull(
           (p) => p['id'] != currentUserId,
         );
-        
+
         if (otherParticipant != null) {
-          otherParticipantName.value = otherParticipant['fullName'] ?? 'Unknown User';
+          otherParticipantName.value =
+              otherParticipant['fullName'] ?? 'Unknown User';
           print(
             '📡 [_fetchSingleConversation] Other participant: ${otherParticipantName.value}',
           );
         } else {
-          print('⚠️ [_fetchSingleConversation] Could not find other participant');
+          print(
+            '⚠️ [_fetchSingleConversation] Could not find other participant',
+          );
         }
 
         final messageList = response.body['messages'] as List;
@@ -808,7 +831,7 @@ class ServiceBookingController extends GetxController {
 
   Future<void> fetchGarageDetails() async {
     print('🔍 [fetchGarageDetails] Called with garageId: $garageId');
-    
+
     if (garageId == null) {
       print('❌ [fetchGarageDetails] garageId is null, returning');
       return;
@@ -833,10 +856,14 @@ class ServiceBookingController extends GetxController {
         final body = response.body;
         print('📡 [fetchGarageDetails] Response body structure: ${body?.keys}');
         print('📡 [fetchGarageDetails] Success field: ${body?['success']}');
-        print('📡 [fetchGarageDetails] Data field exists: ${body?['data'] != null}');
-        
+        print(
+          '📡 [fetchGarageDetails] Data field exists: ${body?['data'] != null}',
+        );
+
         if (body != null && body['success'] == true && body['data'] != null) {
-          print('📡 [fetchGarageDetails] Attempting to parse GarageDetailModel...');
+          print(
+            '📡 [fetchGarageDetails] Attempting to parse GarageDetailModel...',
+          );
           try {
             garageDetail.value = GarageDetailModel.fromJson(body['data']);
             print(
@@ -870,7 +897,7 @@ class ServiceBookingController extends GetxController {
             services.value = garageDetail.value!.services.map((item) {
               final serviceName = item.toString();
               return {
-                "title": serviceName,
+                "title": mapServiceToKey(serviceName),
                 "icon": _getServiceIcon(serviceName),
               };
             }).toList();
@@ -896,6 +923,7 @@ class ServiceBookingController extends GetxController {
 
   Future<void> fetchServices() async {
     try {
+      isLoading.value = true;
       print('📡 Fetching global services list...');
       // Fetching services from backend API: /services
       final response = await ApiClient.to.get('/services');
@@ -907,7 +935,10 @@ class ServiceBookingController extends GetxController {
           final fetchedServices = data.map((item) {
             final name = (item is Map ? item['name'] ?? '' : item.toString())
                 .toString();
-            return {"title": name, "icon": _getServiceIcon(name)};
+            return {
+              "title": mapServiceToKey(name),
+              "icon": _getServiceIcon(name),
+            };
           }).toList();
 
           if (fetchedServices.isNotEmpty) {
@@ -918,6 +949,8 @@ class ServiceBookingController extends GetxController {
       }
     } catch (e) {
       print('Error fetching services: $e');
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -930,7 +963,16 @@ class ServiceBookingController extends GetxController {
     if (lower.contains('electric')) return 'electrical';
     if (lower.contains('spare')) return 'spares';
     if (lower.contains('brake')) return 'brakes';
+    if (lower.contains('oil') || lower.contains('fluid')) return 'oil_change';
     if (lower.contains('body')) return 'body_work';
+    if (lower.contains('wash') || lower.contains('clean')) return 'car_wash';
+    if (lower.contains('glass') || lower.contains('windshield'))
+      return 'glass_work';
+    if (lower.contains('suspension')) return 'suspension';
+    if (lower.contains('transmission') || lower.contains('gear'))
+      return 'transmission';
+    if (lower.contains('inspection') || lower.contains('check'))
+      return 'inspection';
 
     // Fallback: return the original name if no key matches.
     // The UI should handle this gracefully (e.g. 'Some Name'.tr returns 'Some Name' if key missing)

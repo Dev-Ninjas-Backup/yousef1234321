@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart' show Colors;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/style/global_text_style.dart';
 import '../controller/service_booking_controller.dart';
@@ -10,6 +9,12 @@ class ServiceOffered extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      if (controller.isLoading.value) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(child: CircularProgressIndicator()),
+        );
+      }
       if (controller.services.isEmpty) {
         return const SizedBox.shrink();
       }
@@ -35,6 +40,7 @@ class ServiceOffered extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final item = controller.services[index];
+              final iconPath = item["icon"]?.toString();
               return Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -52,19 +58,31 @@ class ServiceOffered extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      item["icon"]?.toString() ?? '',
-                      height: 32,
-                      width: 32,
-                      fit: BoxFit.contain,
-                    ),
+                    if (iconPath != null && iconPath.isNotEmpty)
+                      Image.asset(
+                        iconPath,
+                        height: 32,
+                        width: 32,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.build,
+                              size: 32,
+                              color: Colors.grey,
+                            ),
+                      )
+                    else
+                      const Icon(Icons.build, size: 32, color: Colors.grey),
                     const SizedBox(height: 4),
-                    Text(
-                      (item["title"]?.toString() ?? '').tr,
-                      textAlign: TextAlign.center,
-                      style: getTextStyle(fontSize: 14),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Text(
+                        (item["title"]?.toString() ?? '').tr,
+                        textAlign: TextAlign.center,
+                        style: getTextStyle(fontSize: 14),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
