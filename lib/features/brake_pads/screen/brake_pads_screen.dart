@@ -275,7 +275,7 @@ class BrakePadsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TranslatedText(
-                            text: "condition",
+                            text: "Vehicle Compatibility",
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w600,
@@ -283,7 +283,10 @@ class BrakePadsScreen extends StatelessWidget {
                           ),
                           SizedBox(height: 4.h),
                           TranslatedText(
-                            text: c.product['condition']?.toString() ?? "na",
+                            text:
+                                c.product['Vehicle Compatibility']
+                                    ?.toString() ??
+                                "Honda Clvic 2016-2022",
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: 14.sp,
