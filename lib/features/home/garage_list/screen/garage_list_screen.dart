@@ -4,6 +4,7 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/home/garage_list/controller/garage_list_controller.dart';
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class GarageListScreen extends StatelessWidget {
   const GarageListScreen({super.key});
@@ -57,8 +58,8 @@ class GarageListScreen extends StatelessWidget {
                 // City Filter
                 Obx(
                   () => FilterChip(
-                    label: Text(
-                      controller.selectedCity.value ?? 'City',
+                    label: TranslatedText(
+                      text: controller.selectedCity.value ?? 'City',
                       style: TextStyle(
                         color: controller.selectedCity.value != null
                             ? Colors.white
@@ -77,8 +78,8 @@ class GarageListScreen extends StatelessWidget {
                 // // Emirate Filter
                 Obx(
                   () => FilterChip(
-                    label: Text(
-                      controller.selectedEmirate.value ?? 'Emirate',
+                    label: TranslatedText(
+                      text: controller.selectedEmirate.value ?? 'Emirate',
                       style: TextStyle(
                         color: controller.selectedEmirate.value != null
                             ? Colors.white
@@ -97,8 +98,8 @@ class GarageListScreen extends StatelessWidget {
                 // // Service Filter
                 Obx(
                   () => FilterChip(
-                    label: Text(
-                      controller.selectedService.value ?? 'Service',
+                    label: TranslatedText(
+                      text: controller.selectedService.value ?? 'Service',
                       style: TextStyle(
                         color: controller.selectedService.value != null
                             ? Colors.white
@@ -117,8 +118,8 @@ class GarageListScreen extends StatelessWidget {
                 // Status Filter
                 Obx(
                   () => FilterChip(
-                    label: Text(
-                      controller.selectedStatus.value.tr,
+                    label: TranslatedText(
+                      text: controller.selectedStatus.value,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                     selected: true,
@@ -140,8 +141,8 @@ class GarageListScreen extends StatelessWidget {
                   if (!hasFilters) return const SizedBox.shrink();
 
                   return ActionChip(
-                    label: Text(
-                      'Clear'.tr,
+                    label: TranslatedText(
+                      text: 'Clear',
                       style: const TextStyle(color: Colors.red, fontSize: 14),
                     ),
 
@@ -164,8 +165,8 @@ class GarageListScreen extends StatelessWidget {
 
               if (controller.garages.isEmpty) {
                 return Center(
-                  child: Text(
-                    'No garages found'.tr,
+                  child: TranslatedText(
+                    text: 'No garages found',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 );
@@ -204,14 +205,22 @@ class GarageListScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Select City',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            TranslatedText(
+              text: 'Select City',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+            ListTile(
+              title: TranslatedText(text: 'All'),
+              onTap: () {
+                controller.selectedCity.value = null;
+                controller.applyFilters();
+                Navigator.pop(context);
+              },
+            ),
             ...controller.cities.map(
               (city) => ListTile(
-                title: Text(city),
+                title: TranslatedText(text: city),
                 onTap: () {
                   controller.selectedCity.value = city;
                   controller.applyFilters();
@@ -236,14 +245,22 @@ class GarageListScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Select Emirate',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            TranslatedText(
+              text: 'Select Emirate',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
+            ListTile(
+              title: TranslatedText(text: 'All'),
+              onTap: () {
+                controller.selectedEmirate.value = null;
+                controller.applyFilters();
+                Navigator.pop(context);
+              },
+            ),
             ...controller.emirates.map(
               (emirate) => ListTile(
-                title: Text(emirate),
+                title: TranslatedText(text: emirate),
                 onTap: () {
                   controller.selectedEmirate.value = emirate;
                   controller.applyFilters();
@@ -268,26 +285,34 @@ class GarageListScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Select Service',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            TranslatedText(
+              text: 'Select Service',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: Obx(
                 () => ListView(
-                  children: controller.serviceTypes
-                      .map(
-                        (service) => ListTile(
-                          title: Text(service),
-                          onTap: () {
-                            controller.selectedService.value = service;
-                            controller.applyFilters();
-                            Navigator.pop(context);
-                          },
-                        ),
-                      )
-                      .toList(),
+                  children: [
+                    ListTile(
+                      title: TranslatedText(text: 'All'),
+                      onTap: () {
+                        controller.selectedService.value = null;
+                        controller.applyFilters();
+                        Navigator.pop(context);
+                      },
+                    ),
+                    ...controller.serviceTypes.map(
+                      (service) => ListTile(
+                        title: TranslatedText(text: service),
+                        onTap: () {
+                          controller.selectedService.value = service;
+                          controller.applyFilters();
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -308,14 +333,14 @@ class GarageListScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Select Status',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            TranslatedText(
+              text: 'Select Status',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ...controller.statuses.map(
               (status) => ListTile(
-                title: Text(status.tr),
+                title: TranslatedText(text: status),
                 onTap: () {
                   controller.selectedStatus.value = status;
                   controller.applyFilters();

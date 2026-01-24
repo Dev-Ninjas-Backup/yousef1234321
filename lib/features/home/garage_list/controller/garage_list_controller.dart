@@ -20,9 +20,10 @@ class GarageListController extends GetxController {
   var selectedService = RxnString();
   var selectedStatus = 'APPROVED'.obs;
 
-  final statuses = ['APPROVED', 'PENDING', 'REJECTED'];
+  final statuses = ['All', 'APPROVED', 'PENDING', 'REJECTED'];
   final cities = [
     'Abu Dhabi',
+    'Al Ain',
     'Dubai',
     'Sharjah',
     'Ajman',

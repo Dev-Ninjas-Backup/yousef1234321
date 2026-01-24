@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/style/global_text_style.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import '../controller/service_booking_controller.dart';
 
 class ServiceOffered extends StatelessWidget {
@@ -22,8 +23,8 @@ class ServiceOffered extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // --- Services Offered ---
-          Text(
-            "services_offered".tr,
+          TranslatedText(
+            text: "services_offered",
             style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 12),
@@ -76,8 +77,8 @@ class ServiceOffered extends StatelessWidget {
                     const SizedBox(height: 4),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                      child: Text(
-                        (item["title"]?.toString() ?? '').tr,
+                      child: TranslatedText(
+                        text: item["title"]?.toString() ?? '',
                         textAlign: TextAlign.center,
                         style: getTextStyle(fontSize: 14),
                         maxLines: 2,

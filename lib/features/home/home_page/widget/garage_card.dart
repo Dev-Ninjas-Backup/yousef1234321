@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 import 'package:yousef1234321/routes/app_route.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class GarageCard extends StatelessWidget {
   final GarageModel garage;
@@ -126,8 +127,8 @@ class GarageCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      garage.name,
+                    TranslatedText(
+                      text: garage.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -145,7 +146,11 @@ class GarageCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 10),
-                        Text("${garage.distance} ${'km'.tr}"),
+                        Text("${garage.distance} "),
+                        TranslatedText(
+                          text: 'km',
+                          style: const TextStyle(fontSize: 14),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -162,8 +167,8 @@ class GarageCard extends StatelessWidget {
                                 : Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            statusLabel.tr,
+                          child: TranslatedText(
+                            text: statusLabel,
                             style: TextStyle(
                               color: isOpen ? Colors.green : Colors.red,
                               fontSize: 10,
@@ -177,8 +182,8 @@ class GarageCard extends StatelessWidget {
                             spacing: 6,
                             children: garage.tags
                                 .map(
-                                  (tag) => Text(
-                                    "$tag ",
+                                  (tag) => TranslatedText(
+                                    text: tag,
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                 )

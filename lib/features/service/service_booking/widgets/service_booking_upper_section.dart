@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/common/constants/iconpath.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import '../controller/service_booking_controller.dart';
 
 class ServiceBookingUpperSection extends StatelessWidget {
@@ -208,8 +209,8 @@ class ServiceBookingUpperSection extends StatelessWidget {
                     ],
                   ),
 
-                  child: Text(
-                    '+${controller.images.length - maxVisible}',
+                  child: TranslatedText(
+                    text: '+${controller.images.length - maxVisible}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

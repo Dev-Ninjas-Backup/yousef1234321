@@ -44,15 +44,6 @@ class HomeController extends GetxController {
 
   var garages = <GarageModel>[].obs;
 
-  var services = [
-    "ac_repair",
-    "battery",
-    "engine",
-    "tires",
-    "electrical", 
-    "spares",
-  ];
-
   var selectedService = RxnString();
   var selectedLocation = RxnString();
 
@@ -150,23 +141,28 @@ class HomeController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
 
-        if (body != null && body['serviceCategories'] != null) {
-          final List<dynamic> categories = body['serviceCategories'];
-          serviceTypes.value = categories.map((e) => e.toString()).toList();
-        } else {}
-      } else {}
+        if (body != null) {
+          // Handle both 'data' and 'serviceCategories' structures
+          List<dynamic>? categories;
+          if (body['data'] is List) {
+            categories = body['data'];
+          } else if (body['serviceCategories'] is List) {
+            categories = body['serviceCategories'];
+          }
+
+          if (categories != null) {
+            serviceTypes.value = categories
+                .map((e) {
+                  if (e is Map) return e['name']?.toString() ?? '';
+                  return e.toString();
+                })
+                .where((s) => s.isNotEmpty)
+                .toList();
+          }
+        }
+      }
     } catch (e) {
-      // Fallback to default services if API fails
-      serviceTypes.value = [
-        "ac_repair",
-        "battery",
-        "engine",
-        "tires",
-        "electrical",
-        "spares",
-        "brakes",
-        "body_work",
-      ];
+      print('Error fetching services: $e');
     } finally {
       isLoadingServices.value = false;
     }

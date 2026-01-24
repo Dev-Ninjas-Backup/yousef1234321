@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+import 'package:yousef1234321/core/service/translation_service.dart';
 
 class BrakePadsScreen extends StatelessWidget {
   const BrakePadsScreen({super.key});
@@ -202,7 +203,25 @@ class BrakePadsScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 25.h),
+                SizedBox(height: 1),
+                Row(
+                  children: [
+                    badge("in_stock", Colors.green),
+                    SizedBox(width: 8.w),
+                    badge("oem_quality", Colors.blue),
+                    const Spacer(),
+                    Icon(Icons.star, color: Colors.amber, size: 18.sp),
+                    SizedBox(width: 4.w),
+                    Text(
+                      c.product['rating']?.toString() ?? '(0.0)',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
                 // product info
                 TranslatedText(
                   text: c.product['partName']?.toString() ?? "brake_pads",
@@ -218,49 +237,6 @@ class BrakePadsScreen extends StatelessWidget {
                     color: const Color.fromARGB(255, 14, 14, 14),
                     fontSize: 14.sp,
                   ),
-                ),
-
-                SizedBox(height: 12.h),
-                Wrap(
-                  spacing: 8.0.w,
-                  runSpacing: 8.0.h,
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    badge("in_stock", Colors.green),
-                    const SizedBox(width: 8),
-                    badge("oem_quality", Colors.blue),
-                    const Spacer(),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        badge("in_stock".tr, Colors.green),
-                        SizedBox(width: 8.w),
-                        badge("oem_quality".tr, Colors.blue),
-                      ],
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ...List.generate(
-                          5,
-                          (index) => Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 18.sp,
-                          ),
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          c.product['rating']?.toString() ?? '(0.0)',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
 
                 SizedBox(height: 20.h),
@@ -323,9 +299,12 @@ class BrakePadsScreen extends StatelessWidget {
                           Colors.blue,
                           onTap: () {
                             final phoneNumber =
-                                c.product['seller']?['phoneNumber']?.toString() ?? '';
+                                c.product['seller']?['phoneNumber']
+                                    ?.toString() ??
+                                '';
                             final sellerName =
-                                c.product['seller']?['name']?.toString() ?? 'Seller';
+                                c.product['seller']?['name']?.toString() ??
+                                'Seller';
                             _showConfirmCallDialog(
                               context,
                               sellerName,
@@ -337,7 +316,7 @@ class BrakePadsScreen extends StatelessWidget {
                         _contactButton(
                           Icons.chat_bubble_outline,
                           Colors.blue,
-                          onTap: () {
+                          onTap: () async {
                             // Use createdById (actual user) instead of sellerId
                             final userId = c.product['createdById'];
                             final sellerName =
@@ -373,7 +352,10 @@ class BrakePadsScreen extends StatelessWidget {
                                 '❌ [BrakePadsScreen] User data missing! userId=$userId',
                               );
                               EasyLoading.showError(
-                                "seller_info_unavailable".tr,
+                                await Get.find<TranslationService>().translate(
+                                  Get.translations['en_US']?['seller_info_unavailable'] ??
+                                      'Seller info unavailable',
+                                ),
                               );
                             }
                           },
@@ -476,10 +458,12 @@ class BrakePadsScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                Text(
-                  "call_confirmation_msg".tr
-                      .replaceAll('@garageName', sellerName)
-                      .replaceAll('@phoneNumber', phoneNumber),
+                TranslatedText(
+                  text:
+                      (Get.translations['en_US']?['call_confirmation_msg'] ??
+                              "You're about to call @garageName")
+                          .replaceAll('@garageName', sellerName)
+                          .replaceAll('@phoneNumber', phoneNumber),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color.fromARGB(137, 18, 17, 17),
@@ -556,18 +540,23 @@ class BrakePadsScreen extends StatelessWidget {
   }
 
   static Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(
-      scheme: 'tel',
-      path: phoneNumber,
-    );
+    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber);
     try {
       if (await canLaunchUrl(launchUri)) {
         await launchUrl(launchUri);
       } else {
-        EasyLoading.showError('unable_to_call'.tr);
+        EasyLoading.showError(
+          await Get.find<TranslationService>().translate(
+            Get.translations['en_US']?['unable_to_call'] ?? 'Unable to call',
+          ),
+        );
       }
     } catch (e) {
-      EasyLoading.showError('error_calling'.tr);
+      EasyLoading.showError(
+        await Get.find<TranslationService>().translate(
+          Get.translations['en_US']?['error_calling'] ?? 'Error calling',
+        ),
+      );
     }
   }
 }
