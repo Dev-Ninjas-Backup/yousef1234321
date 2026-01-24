@@ -5,6 +5,8 @@ import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+import 'package:yousef1234321/core/service/translation_service.dart';
 
 import '../controller/spare_parts_controller.dart';
 
@@ -12,6 +14,15 @@ class PartsSearchSection extends StatelessWidget {
   PartsSearchSection({super.key});
 
   final SparePartsController controller = Get.find<SparePartsController>();
+
+  // Helper to get English text for a key to send to TranslationService
+  String _getEnglishText(String key) {
+    final englishMap = Get.translations['en_US'];
+    if (englishMap != null && englishMap.containsKey(key)) {
+      return englishMap[key]!;
+    }
+    return key;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +35,8 @@ class PartsSearchSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "find_car_services_near_you".tr,
+          TranslatedText(
+            text: "find_car_services_near_you",
             style: const TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -33,8 +44,8 @@ class PartsSearchSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            "emergency_repairs_subtitle".tr,
+          TranslatedText(
+            text: "emergency_repairs_subtitle",
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 16),
@@ -51,28 +62,37 @@ class PartsSearchSection extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        onChanged: (v) => controller.selectedModel.value = v,
-                        decoration: InputDecoration(
-                          hintText: "search".tr,
-                          hintStyle: getTextStyle(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: Colors.grey,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
-                            ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
-                          ),
+                      child: FutureBuilder<String>(
+                        future: Get.find<TranslationService>().translate(
+                          _getEnglishText("search"),
                         ),
+                        initialData: "Search",
+                        builder: (context, snapshot) {
+                          return TextField(
+                            onChanged: (v) =>
+                                controller.selectedModel.value = v,
+                            decoration: InputDecoration(
+                              hintText: snapshot.data,
+                              hintStyle: getTextStyle(),
+                              filled: true,
+                              fillColor: Colors.white,
+                              prefixIcon: const Icon(
+                                Icons.search,
+                                color: Colors.grey,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFFE5E7EB),
+                                ),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
 
@@ -86,7 +106,7 @@ class PartsSearchSection extends StatelessWidget {
                             .where((s) => s.isNotEmpty)
                             .toList();
 
-                        final items = ["select_category".tr, ...categoryNames];
+                        final items = ["select_category", ...categoryNames];
 
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
@@ -97,27 +117,27 @@ class PartsSearchSection extends StatelessWidget {
                                     controller.selectedCategory.value,
                                   ))
                               ? controller.selectedCategory.value
-                              : "select_category".tr,
+                              : "select_category",
                           items: items
                               .map(
                                 (service) => DropdownMenuItem(
                                   value: service,
-                                  child: Text(
-                                    service,
+                                  child: TranslatedText(
+                                    text: service,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               )
                               .toList(),
                           onChanged: (value) {
-                            if (value == "select_category".tr) {
+                            if (value == "select_category") {
                               controller.selectedCategory.value = null;
                             } else {
                               controller.selectedCategory.value = value;
                             }
                           },
+                          hint: TranslatedText(text: "category_type"),
                           decoration: InputDecoration(
-                            hintText: "category_type".tr,
                             hintStyle: getTextStyle(),
                             filled: true,
                             fillColor: Colors.white,
@@ -155,9 +175,17 @@ class PartsSearchSection extends StatelessWidget {
 
                     if (searchText.trim().isEmpty &&
                         (category == null || category.isEmpty)) {
+                      final ts = Get.find<TranslationService>();
+                      final title = await ts.translate(
+                        _getEnglishText("selection_required"),
+                      );
+                      final msg = await ts.translate(
+                        _getEnglishText("enter_search_term_or_category"),
+                      );
+
                       Get.snackbar(
-                        "selection_required".tr,
-                        "enter_search_term_or_category".tr,
+                        title,
+                        msg,
                         backgroundColor: Colors.redAccent,
                         colorText: Colors.white,
                       );
@@ -192,7 +220,9 @@ class PartsSearchSection extends StatelessWidget {
 
                     Get.to(
                       () => Scaffold(
-                        appBar: AppBar(title: Text('search_results'.tr)),
+                        appBar: AppBar(
+                          title: TranslatedText(text: 'search_results'),
+                        ),
                         body: Obx(() {
                           if (productsCtrl.isLoading.value) {
                             return const Center(
@@ -200,7 +230,9 @@ class PartsSearchSection extends StatelessWidget {
                             );
                           }
                           if (productsCtrl.products.isEmpty) {
-                            return Center(child: Text('no_products'.tr));
+                            return Center(
+                              child: TranslatedText(text: 'no_products'),
+                            );
                           }
                           return ListView.builder(
                             padding: const EdgeInsets.all(12),
@@ -209,7 +241,7 @@ class PartsSearchSection extends StatelessWidget {
                               final p = productsCtrl.products[idx];
                               final name = (p is Map && p['partName'] != null)
                                   ? p['partName'].toString()
-                                  : '${'product'.tr} ${idx + 1}';
+                                  : 'Product ${idx + 1}';
                               final price = (p is Map && p['price'] != null)
                                   ? p['price'].toString()
                                   : '-';
@@ -241,9 +273,17 @@ class PartsSearchSection extends StatelessWidget {
                                         width: 56,
                                         height: 56,
                                       ),
-                                title: Text(name),
-                                subtitle: Text(
-                                  'price'.tr.replaceAll('@price', price),
+                                title: TranslatedText(text: name),
+                                subtitle: FutureBuilder<String>(
+                                  future: Get.find<TranslationService>()
+                                      .translate(_getEnglishText('price')),
+                                  builder: (context, snapshot) {
+                                    final template =
+                                        snapshot.data ?? 'Price: @price';
+                                    return Text(
+                                      template.replaceAll('@price', price),
+                                    );
+                                  },
                                 ),
                                 onTap: () {
                                   String? id;
@@ -269,7 +309,7 @@ class PartsSearchSection extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Text("search_parts".tr),
+                  child: TranslatedText(text: "search_parts"),
                 ),
               ],
             ),

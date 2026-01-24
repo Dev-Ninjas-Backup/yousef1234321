@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/edit_profile/controller/edit_profile_controller.dart';
 import 'package:yousef1234321/features/profile/edit_profile/widgets/build_field.dart';

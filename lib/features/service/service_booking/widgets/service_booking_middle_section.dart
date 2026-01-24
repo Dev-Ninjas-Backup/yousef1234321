@@ -30,7 +30,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TranslatedText(
-                    text: garage?.name ?? "loading",
+                    text: garage?.name ?? "Loading...",
                     style: getTextStyle(fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 4),
@@ -38,16 +38,24 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                     children: [
                       Icon(Icons.star, size: 14, color: Colors.amber),
                       SizedBox(width: 4),
-                      Text(
-                        "${garage?.averageRating.toStringAsFixed(1) ?? '0.0'} (${garage?.totalReviews ?? 0})",
+                      TranslatedText(
+                        text:
+                            "${garage?.averageRating.toStringAsFixed(1) ?? '0.0'} (${garage?.totalReviews ?? 0})",
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.subTextColor,
                         ),
                       ),
                       SizedBox(width: 8),
+                      Text(
+                        "• ",
+                        style: getTextStyle(
+                          fontSize: 12,
+                          color: AppColors.subTextColor,
+                        ),
+                      ),
                       TranslatedText(
-                        text: "• ${garage?.city ?? ''}",
+                        text: garage?.city ?? '',
                         style: getTextStyle(
                           fontSize: 12,
                           color: AppColors.subTextColor,
@@ -80,15 +88,34 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                               ),
                             ),
                           ),
-                        Text(
-                          garage.services
-                              .take(3)
-                              .map((s) => controller.mapServiceToKey(s).tr)
-                              .join(" • "),
-                          style: getTextStyle(
-                            fontSize: 16,
-                            color: AppColors.subTextColor,
-                          ),
+                        ...garage.services.take(3).toList().asMap().entries.map(
+                          (entry) {
+                            final index = entry.key;
+                            final service = entry.value;
+                            final displayCount = garage.services.length < 3
+                                ? garage.services.length
+                                : 3;
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                TranslatedText(
+                                  text: service.toString(),
+                                  style: getTextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.subTextColor,
+                                  ),
+                                ),
+                                if (index < displayCount - 1)
+                                  Text(
+                                    " • ",
+                                    style: getTextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.subTextColor,
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -100,9 +127,10 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     // Use garagePhone first, then fallback to user phone
-                    final phoneNumber = garage?.garagePhone ?? garage?.user?.phone;
+                    final phoneNumber =
+                        garage?.garagePhone ?? garage?.user?.phone;
                     print('📞 [Call Button] Phone number: $phoneNumber');
-                    
+
                     if (phoneNumber != null && phoneNumber.isNotEmpty) {
                       showCallDialog(
                         garageName: garage?.name,
@@ -122,20 +150,30 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     // Debug the garage detail structure
-                    print('🔍 [Debug] Full garage detail: ${controller.garageDetail.value}');
-                    print('🔍 [Debug] Garage user: ${controller.garageDetail.value?.user}');
-                    print('🔍 [Debug] Garage userId field: ${controller.garageDetail.value?.userId}');
-                    
+                    print(
+                      '🔍 [Debug] Full garage detail: ${controller.garageDetail.value}',
+                    );
+                    print(
+                      '🔍 [Debug] Garage user: ${controller.garageDetail.value?.user}',
+                    );
+                    print(
+                      '🔍 [Debug] Garage userId field: ${controller.garageDetail.value?.userId}',
+                    );
+
                     // Try multiple ways to get the owner ID
-                    String? garageOwnerId = controller.garageDetail.value?.user?.id;
-                    
+                    String? garageOwnerId =
+                        controller.garageDetail.value?.user?.id;
+
                     // Fallback to userId field if user.id is not available
                     if (garageOwnerId == null || garageOwnerId.isEmpty) {
                       garageOwnerId = controller.garageDetail.value?.userId;
-                      print('🔄 [Message Button] Using userId fallback: $garageOwnerId');
+                      print(
+                        '🔄 [Message Button] Using userId fallback: $garageOwnerId',
+                      );
                     }
-                    
-                    final garageName = controller.garageDetail.value?.user!.fullName;
+
+                    final garageName =
+                        controller.garageDetail.value?.user!.fullName;
                     print(
                       '📨 [Message Button] Navigating to ServiceMessage with garageOwnerId: $garageOwnerId',
                     );
@@ -149,7 +187,9 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                       );
                     } else {
                       print('❌ [Message Button] Garage owner ID not available');
-                      print('❌ [Message Button] Available data: user=${controller.garageDetail.value?.user}, userId=${controller.garageDetail.value?.userId}');
+                      print(
+                        '❌ [Message Button] Available data: user=${controller.garageDetail.value?.user}, userId=${controller.garageDetail.value?.userId}',
+                      );
                       Get.snackbar(
                         'Error',
                         'Unable to open chat - garage owner information not loaded',
@@ -205,7 +245,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
             color: Colors.white,
           ),
           label: TranslatedText(
-            text: "see_location",
+            text: "See Location",
             style: getTextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 12,
@@ -218,7 +258,7 @@ class ServiceBookingMiddleSection extends StatelessWidget {
 
         // Garage Overview
         TranslatedText(
-          text: "garage_overview",
+          text: "Garage Overview",
           style: getTextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         const SizedBox(height: 14),
@@ -246,8 +286,8 @@ class ServiceBookingMiddleSection extends StatelessWidget {
                   children: [
                     Icon(Icons.verified, size: 14, color: Colors.green),
                     SizedBox(width: 4),
-                    Text(
-                      cert,
+                    TranslatedText(
+                      text: cert,
                       style: getTextStyle(
                         fontSize: 12,
                         color: Colors.green,

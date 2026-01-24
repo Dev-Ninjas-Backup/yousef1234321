@@ -23,7 +23,7 @@ class SocialAuthController extends GetxController {
         return;
       }
 
-      EasyLoading.show(status: 'Signing in...');
+      EasyLoading.show(status: 'Signing in...'.tr);
 
       // 2. Obtain the auth details (idToken)
       final GoogleSignInAuthentication googleAuth =
@@ -36,12 +36,12 @@ class SocialAuthController extends GetxController {
         // 3. Send the idToken to your backend
         await _backendGoogleLogin(idToken);
       } else {
-        EasyLoading.showError('Failed to retrieve Google ID Token');
+        EasyLoading.showError('Failed to retrieve Google ID Token'.tr);
         print("🔴 [SocialAuth] ID Token is null");
       }
     } catch (error) {
       EasyLoading.dismiss();
-      EasyLoading.showError('Google Sign In Failed');
+      EasyLoading.showError('Google Sign In Failed'.tr);
       print("🔴 [SocialAuth] Error: $error");
     }
   }
@@ -78,10 +78,10 @@ class SocialAuthController extends GetxController {
               await ApiClient.to.setUserId(userData['id'].toString());
             }
 
-            EasyLoading.showSuccess('Login Successful');
+            EasyLoading.showSuccess('Login Successful'.tr);
             Get.offAll(() => BottomNavbarScreen());
           } else {
-            EasyLoading.showError('Token not found in response');
+            EasyLoading.showError('Token not found in response'.tr);
             print("🔴 [SocialAuth] Token parsing failed. Body: $body");
           }
         }
@@ -92,7 +92,7 @@ class SocialAuthController extends GetxController {
       }
     } catch (e) {
       EasyLoading.dismiss();
-      EasyLoading.showError('Connection failed');
+      EasyLoading.showError('Connection failed'.tr);
       print("🔴 [SocialAuth] Exception: $e");
     }
   }

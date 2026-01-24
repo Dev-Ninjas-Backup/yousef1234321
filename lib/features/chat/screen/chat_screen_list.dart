@@ -6,6 +6,7 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
+import 'package:yousef1234321/core/service/translation_service.dart';
 import '../controller/chat_page_controller.dart';
 import '../widget/build_user_list_item.dart';
 
@@ -94,14 +95,28 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 color: const Color(0xFFF2F2F2),
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "search".tr,
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
-                ),
-                onChanged: (value) => controller.filterChats(value),
+              child: FutureBuilder<String>(
+                future: () async {
+                  // Resolve 'search' key to English text 'Search' then translate
+                  String text = "search";
+                  final englishMap = Get.translations['en_US'];
+                  if (englishMap != null && englishMap.containsKey(text)) {
+                    text = englishMap[text]!;
+                  }
+                  return Get.find<TranslationService>().translate(text);
+                }(),
+                initialData: "Search",
+                builder: (context, snapshot) {
+                  return TextField(
+                    decoration: InputDecoration(
+                      hintText: snapshot.data,
+                      prefixIcon: Icon(Icons.search, color: Colors.grey),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    onChanged: (value) => controller.filterChats(value),
+                  );
+                },
               ),
             ),
 

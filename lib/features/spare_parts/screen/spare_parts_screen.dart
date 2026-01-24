@@ -23,6 +23,15 @@ class SparePartsScreen extends StatelessWidget {
 
   final SparePartsController controller = Get.put(SparePartsController());
 
+  // Helper to get English text for a key to send to TranslationService
+  String _getEnglishText(String key) {
+    final englishMap = Get.translations['en_US'];
+    if (englishMap != null && englishMap.containsKey(key)) {
+      return englishMap[key]!;
+    }
+    return key;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Run initial fetch once (guarded) to avoid registering multiple postFrame callbacks
@@ -340,7 +349,7 @@ class SparePartsScreen extends StatelessWidget {
         // open the same 'See All' full list
         final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
         await productsCtrl.fetchProducts(page: 1, limit: 10);
-        _openProductListScreen(titleKey.tr, productsCtrl);
+        _openProductListScreen(titleKey, productsCtrl);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 0),
@@ -369,7 +378,9 @@ class SparePartsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TranslatedText(
-                    text: 'explore'.tr.replaceAll('@title', titleKey.tr),
+                    text: _getEnglishText(
+                      'explore',
+                    ).replaceAll('@title', _getEnglishText(titleKey)),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -390,7 +401,7 @@ class SparePartsScreen extends StatelessWidget {
                   tag: 'productsList',
                 );
                 await productsCtrl.fetchProducts(page: 1, limit: 10);
-                _openProductListScreen(titleKey.tr, productsCtrl);
+                _openProductListScreen(titleKey, productsCtrl);
               },
               child: TranslatedText(text: 'see_all'),
             ),
@@ -417,9 +428,9 @@ class SparePartsScreen extends StatelessWidget {
             itemCount: productsCtrl.products.length,
             itemBuilder: (_, idx) {
               final p = productsCtrl.products[idx];
-              final name = (p is Map && p['partName'] != null)
-                  ? p['partName'].toString()
-                  : 'product ${idx + 1}';
+              // final name = (p is Map && p['partName'] != null)
+              //     ? p['partName'].toString()
+              //     : 'product ${idx + 1}';
               final price = (p is Map && p['price'] != null)
                   ? p['price'].toString()
                   : '-';
@@ -443,9 +454,9 @@ class SparePartsScreen extends StatelessWidget {
                         ),
                       )
                     : Image.asset(Iconpath.carHomeIcon, width: 56, height: 56),
-                title: TranslatedText(text: name),
+                //title: TranslatedText(text: name),
                 subtitle: TranslatedText(
-                  text: 'price'.tr.replaceAll('@price', price),
+                  text: _getEnglishText('price').replaceAll('@price', price),
                 ),
                 onTap: () {
                   String? id;

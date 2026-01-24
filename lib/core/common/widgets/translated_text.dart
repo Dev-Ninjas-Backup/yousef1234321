@@ -28,8 +28,17 @@ class TranslatedText extends StatelessWidget {
 
     final TranslationService translationService = Get.find();
 
+    // Check if 'text' is a key in the English dictionary.
+    // If it is, use the English value as the source for translation.
+    // This allows us to pass keys (e.g. 'hello') and translate the actual word ('Hello').
+    String sourceText = text;
+    final englishMap = Get.translations['en_US'];
+    if (englishMap != null && englishMap.containsKey(text)) {
+      sourceText = englishMap[text]!;
+    }
+
     return FutureBuilder<String>(
-      future: translationService.translate(text),
+      future: translationService.translate(sourceText),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text('...', style: style);
@@ -66,7 +75,7 @@ class TranslatedText extends StatelessWidget {
             textAlign: textAlign,
           );
         }
-        
+
         // Default fallback
         return Text(
           text,

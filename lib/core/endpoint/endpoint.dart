@@ -41,5 +41,4 @@ class Endpoint {
       '/notification-setting/all-notifications';
   static const String postReview = '/review';
   static const String deleteUUser = '/user/hard-delete-user-account';
-
 }

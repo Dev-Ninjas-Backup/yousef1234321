@@ -18,8 +18,8 @@ class ServiceChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 60,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        height: 72,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -33,17 +33,18 @@ class ServiceChip extends StatelessWidget {
           ],
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 6,
           children: [
-            Image.asset(icon, scale: 3),
-            Flexible(
+            Image.asset(icon, height: 32, width: 32, fit: BoxFit.contain),
+            const SizedBox(width: 6),
+            Expanded(
               child: TranslatedText(
                 text: label,
+                maxLines: 2,
                 style: const TextStyle(
                   overflow: TextOverflow.ellipsis,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 10,
+                  height: 1.2,
                 ),
               ),
             ),

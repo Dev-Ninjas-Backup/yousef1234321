@@ -3,7 +3,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
-import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/service/service_booking/model/garage_detail_model.dart';
@@ -25,25 +24,9 @@ class ServiceBookingController extends GetxController {
 
   /// Get the current garage ID
   String? get currentGarageId => garageId;
-  var images = [
-    Imagepath.onboarding1,
-    Imagepath.onboarding1,
-    Imagepath.onboarding1,
-    Imagepath.onboarding2,
-    Imagepath.onboarding1,
-    Imagepath.onboarding2,
-    Imagepath.onboarding1,
-    Imagepath.onboarding1,
-  ].obs;
+  var images = <String>[].obs;
 
-  var services = <Map<String, dynamic>>[
-    {"title": "ac_service", "icon": Iconpath.acIcon},
-    {"title": "battery_replacement", "icon": Iconpath.batterryIcon},
-    {"title": "tires", "icon": Iconpath.tire},
-    {"title": "engine_diagnostics", "icon": Iconpath.engineIcon},
-    {"title": "electrical", "icon": Iconpath.electricIcon},
-    {"title": "spares", "icon": Iconpath.spareIcon},
-  ].obs;
+  var services = <Map<String, dynamic>>[].obs;
   var isOpen = true.obs;
 
   var currentIndex = 0.obs;
@@ -895,11 +878,14 @@ class ServiceBookingController extends GetxController {
               '✅ Garage specific services found: ${garageDetail.value!.services.length}',
             );
             services.value = garageDetail.value!.services.map((item) {
-              final serviceName = item.toString();
-              return {
-                "title": mapServiceToKey(serviceName),
-                "icon": _getServiceIcon(serviceName),
-              };
+              final dynamicItem = item as dynamic;
+              String name;
+              if (dynamicItem is Map) {
+                name = dynamicItem['name']?.toString() ?? '';
+              } else {
+                name = item.toString();
+              }
+              return {"title": name, "icon": _getServiceIcon(name)};
             }).toList();
           }
         } else {
@@ -926,19 +912,21 @@ class ServiceBookingController extends GetxController {
       isLoading.value = true;
       print('📡 Fetching global services list...');
       // Fetching services from backend API: /services
-      final response = await ApiClient.to.get('/services');
+      final response = await ApiClient.to.get(Endpoint.getService);
       print('📡 Services API Status: ${response.statusCode}');
 
       if (response.statusCode == 200 && response.body['success'] == true) {
         final data = response.body['data'];
         if (data is List) {
           final fetchedServices = data.map((item) {
-            final name = (item is Map ? item['name'] ?? '' : item.toString())
-                .toString();
-            return {
-              "title": mapServiceToKey(name),
-              "icon": _getServiceIcon(name),
-            };
+            final dynamicItem = item as dynamic;
+            String name;
+            if (dynamicItem is Map) {
+              name = dynamicItem['name']?.toString() ?? '';
+            } else {
+              name = item.toString();
+            }
+            return {"title": name, "icon": _getServiceIcon(name)};
           }).toList();
 
           if (fetchedServices.isNotEmpty) {
@@ -955,7 +943,7 @@ class ServiceBookingController extends GetxController {
   }
 
   String mapServiceToKey(String serviceName) {
-    final lower = serviceName.toLowerCase();
+    final lower = serviceName.toLowerCase().trim();
     if (lower.contains('ac') || lower.contains('air')) return 'ac_service';
     if (lower.contains('battery')) return 'battery_replacement';
     if (lower.contains('tire') || lower.contains('wheel')) return 'tires';
@@ -973,12 +961,6 @@ class ServiceBookingController extends GetxController {
       return 'transmission';
     if (lower.contains('inspection') || lower.contains('check'))
       return 'inspection';
-
-    // Fallback: return the original name if no key matches.
-    // The UI should handle this gracefully (e.g. 'Some Name'.tr returns 'Some Name' if key missing)
-    // Or we can return a generic key.
-    // For now, returning the name allows it to be displayed as-is if not translated.
-    // However, to force localization, we should try to match as many as possible.
 
     return serviceName;
   }

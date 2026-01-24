@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class CategoryItem extends StatefulWidget {
   final IconData icon;
@@ -18,7 +19,8 @@ class CategoryItem extends StatefulWidget {
   State<CategoryItem> createState() => _CategoryItemState();
 }
 
-class _CategoryItemState extends State<CategoryItem> with SingleTickerProviderStateMixin {
+class _CategoryItemState extends State<CategoryItem>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
 
   @override
@@ -55,63 +57,62 @@ class _CategoryItemState extends State<CategoryItem> with SingleTickerProviderSt
         onTap: widget.onTap,
         child: ScaleTransition(
           scale: Tween<double>(begin: 1.0, end: 0.95).animate(
-            CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+            CurvedAnimation(
+              parent: _animationController,
+              curve: Curves.easeInOut,
+            ),
           ),
           child: SizedBox(
             width: 110,
             child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  widget.color.withValues(alpha: 0.1),
-                  widget.color.withValues(alpha: 0.05),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    widget.color.withValues(alpha: 0.1),
+                    widget.color.withValues(alpha: 0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: widget.color.withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.color.withValues(alpha: 0.15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: widget.color.withValues(alpha: 0.2),
-                width: 1.5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: widget.color.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(widget.icon, size: 32, color: widget.color),
+                  ),
+                  const SizedBox(height: 12),
+                  TranslatedText(
+                    text: widget.title,
+                    maxLines: 2,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF333333),
+                      height: 1.3,
+                    ),
+                  ),
+                ],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.color.withValues(alpha: 0.15),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: widget.color.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    widget.icon,
-                    size: 32,
-                    color: widget.color,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  widget.title,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF333333),
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
             ),
           ),
         ),

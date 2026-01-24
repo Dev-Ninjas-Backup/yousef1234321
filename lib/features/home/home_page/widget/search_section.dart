@@ -189,7 +189,7 @@ class SearchSection extends StatelessWidget {
                                       LocationPermission.deniedForever) {
                                 EasyLoading.dismiss();
                                 EasyLoading.showInfo(
-                                  'Location permission denied',
+                                  'Location permission denied'.tr,
                                 );
                               } else {
                                 final pos = await Geolocator.getCurrentPosition(

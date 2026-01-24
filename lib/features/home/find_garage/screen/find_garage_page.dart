@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/features/home/find_garage/controller/find_charger_controller.dart';
+import 'package:yousef1234321/features/home/find_garage/controller/find_garage_controller.dart';
 import '../../../../core/common/widgets/custom_appbar.dart';
 import 'dart:async';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+import 'package:yousef1234321/core/service/translation_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/foundation.dart';
@@ -17,13 +19,15 @@ class FindGaragePage extends StatefulWidget {
 }
 
 class _FindGaragePageState extends State<FindGaragePage> {
-  final FindChargerController controller = Get.put(FindChargerController());
+  final FindGarageController controller = Get.put(FindGarageController());
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
+  String _youText = 'You';
 
   @override
   void initState() {
     super.initState();
+    _fetchYouTranslation();
 
     // Always refresh user's location when this screen initializes.
     controller.loadCurrentLocation();
@@ -50,6 +54,17 @@ class _FindGaragePageState extends State<FindGaragePage> {
     });
   }
 
+  Future<void> _fetchYouTranslation() async {
+    try {
+      final translationService = Get.find<TranslationService>();
+      // Resolve 'you' key to English 'You' if possible, then translate
+      final englishMap = Get.translations['en_US'];
+      final sourceText = englishMap?['you'] ?? 'You';
+      final translated = await translationService.translate(sourceText);
+      if (mounted) setState(() => _youText = translated);
+    } catch (_) {}
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -64,7 +79,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              CustomAppBar(title: "search_nearby_garage".tr),
+              CustomAppBar(title: "search_nearby_garage"),
               const SizedBox(height: 24),
 
               // Search bar + filter
@@ -146,8 +161,8 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
-                            item.tr,
+                          child: TranslatedText(
+                            text: item,
                             style: TextStyle(
                               color: isSelected ? Colors.black : Colors.black,
                             ),
@@ -185,103 +200,98 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     controller.currentLat.value != null &&
                     controller.currentLng.value != null;
 
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    height: 400,
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
-                        if (hasUserLoc) ...[
-                          GoogleMap(
-                            initialCameraPosition: CameraPosition(
-                              target: LatLng(
+                return Container(
+                  height: 400,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey.shade100,
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: Stack(
+                    children: [
+                      GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: hasUserLoc
+                              ? LatLng(
+                                  controller.currentLat.value!,
+                                  controller.currentLng.value!,
+                                )
+                              : const LatLng(
+                                  25.2048,
+                                  55.2708,
+                                ), // Default to Dubai
+                          zoom: 14,
+                        ),
+                        markers: {
+                          ...markers,
+                          if (hasUserLoc)
+                            Marker(
+                              markerId: const MarkerId('user'),
+                              position: LatLng(
                                 controller.currentLat.value!,
                                 controller.currentLng.value!,
                               ),
-                              zoom: 14,
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueAzure,
+                              ),
+                              infoWindow: InfoWindow(title: _youText),
                             ),
-                            markers: {
-                              ...markers,
-                              Marker(
-                                markerId: const MarkerId('user'),
-                                position: LatLng(
-                                  controller.currentLat.value!,
-                                  controller.currentLng.value!,
-                                ),
-                                icon: BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueAzure,
-                                ),
-                                infoWindow: InfoWindow(title: 'you'.tr),
+                        },
+                        gestureRecognizers:
+                            <Factory<OneSequenceGestureRecognizer>>{
+                              Factory<OneSequenceGestureRecognizer>(
+                                () => EagerGestureRecognizer(),
                               ),
                             },
-                            gestureRecognizers:
-                                <Factory<OneSequenceGestureRecognizer>>{
-                                  Factory<OneSequenceGestureRecognizer>(
-                                    () => EagerGestureRecognizer(),
-                                  ),
-                                },
-                            myLocationEnabled: false,
-                            myLocationButtonEnabled: false,
-                            zoomControlsEnabled: false,
-                            onMapCreated: (GoogleMapController ctrl) async {
-                              if (!_mapController.isCompleted) {
-                                _mapController.complete(ctrl);
-                              }
-                            },
-                          ),
-                        ] else ...[
-                          // If no user location yet, show a loading placeholder
-                          Container(
-                            color: Colors.grey.shade100,
-                            child: const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          ),
-                        ],
-
-                        Positioned(
-                          bottom: 12,
-                          right: 12,
-                          child: Obx(() {
-                            final hasLoc =
-                                controller.currentLat.value != null &&
-                                controller.currentLng.value != null;
-                            return FloatingActionButton(
-                              mini: true,
-                              backgroundColor: hasLoc
-                                  ? Colors.white
-                                  : Colors.grey.shade300,
-                              onPressed: hasLoc
-                                  ? () async {
-                                      try {
-                                        final mapCtrl =
-                                            await _mapController.future;
-                                        final lat =
-                                            controller.currentLat.value!;
-                                        final lng =
-                                            controller.currentLng.value!;
-                                        await mapCtrl.animateCamera(
-                                          CameraUpdate.newLatLngZoom(
-                                            LatLng(lat, lng),
-                                            14,
-                                          ),
-                                        );
-                                      } catch (e) {
-                                        // ignore errors
-                                      }
+                        myLocationEnabled: false,
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: false,
+                        onMapCreated: (GoogleMapController ctrl) async {
+                          if (!_mapController.isCompleted) {
+                            _mapController.complete(ctrl);
+                          }
+                        },
+                      ),
+                      Positioned(
+                        bottom: 12,
+                        right: 12,
+                        child: Obx(() {
+                          final hasLoc =
+                              controller.currentLat.value != null &&
+                              controller.currentLng.value != null;
+                          return FloatingActionButton(
+                            mini: true,
+                            backgroundColor: hasLoc
+                                ? Colors.white
+                                : Colors.grey.shade300,
+                            onPressed: hasLoc
+                                ? () async {
+                                    try {
+                                      final mapCtrl =
+                                          await _mapController.future;
+                                      final lat = controller.currentLat.value!;
+                                      final lng = controller.currentLng.value!;
+                                      await mapCtrl.animateCamera(
+                                        CameraUpdate.newLatLngZoom(
+                                          LatLng(lat, lng),
+                                          14,
+                                        ),
+                                      );
+                                    } catch (e) {
+                                      // ignore errors
                                     }
-                                  : null,
-                              child: const Icon(
-                                Icons.my_location,
-                                color: Colors.black54,
-                                size: 18,
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
+                                  }
+                                : null,
+                            child: const Icon(
+                              Icons.my_location,
+                              color: Colors.black54,
+                              size: 18,
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
                   ),
                 );
               }),
@@ -349,8 +359,8 @@ class _FindGaragePageState extends State<FindGaragePage> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  g.name.tr,
+                                child: TranslatedText(
+                                  text: g.name,
                                   style: getTextStyle(
                                     fontWeight: FontWeight.w600,
                                   ),

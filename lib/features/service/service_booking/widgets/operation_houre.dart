@@ -119,13 +119,7 @@ class OperationHour extends StatelessWidget {
         ),
         if (garage != null && garage.weekendsHours.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "${'weekend'.tr}: ${garage.weekendsHours}",
-                style: getTextStyle(fontSize: 12),
-              ),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             ],
           ),
         ],

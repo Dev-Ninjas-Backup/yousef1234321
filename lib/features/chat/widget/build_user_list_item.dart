@@ -1,6 +1,7 @@
 // chat/widget/chat_widget.dart
 import 'package:flutter/material.dart';
 import '../model/chat_user_model.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class ChatTile extends StatelessWidget {
   final ChatUserModel chat;
@@ -16,7 +17,9 @@ class ChatTile extends StatelessWidget {
           CircleAvatar(
             radius: 25,
             backgroundColor: Colors.blue,
-            backgroundImage: chat.isInitial ? null : NetworkImage(chat.imageUrl),
+            backgroundImage: chat.isInitial
+                ? null
+                : NetworkImage(chat.imageUrl),
             child: chat.isInitial
                 ? Text(
                     chat.initial ?? '?',
@@ -55,7 +58,7 @@ class ChatTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Text(chat.time),
+      trailing: TranslatedText(text: chat.time),
       onTap: onTap,
     );
   }

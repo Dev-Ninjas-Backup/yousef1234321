@@ -229,23 +229,23 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   // First row: up to 3 services
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       ...services.take(3).map((service) {
                         return Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              // Navigate to garage list with this service filter
-                              Get.toNamed(
-                                Approute.getGarageListPage(),
-                                arguments: {'selectedService': service},
-                              );
-                            },
-                            child: Center(
-                              child: ServiceChip(
-                                label: _getServiceKey(service).tr,
-                                icon: _getIconForService(service),
-                              ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: ServiceChip(
+                              onTap: () {
+                                // Navigate to garage list with this service filter
+                                Get.toNamed(
+                                  Approute.getGarageListPage(),
+                                  arguments: {'selectedService': service},
+                                );
+                              },
+                              label: _getServiceKey(service).tr,
+                              icon: _getIconForService(service),
                             ),
                           ),
                         );
@@ -259,23 +259,29 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         ...services.skip(3).take(3).map((service) {
                           return Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                // Navigate to garage list with this service filter
-                                Get.toNamed(
-                                  Approute.getGarageListPage(),
-                                  arguments: {'selectedService': service},
-                                );
-                              },
-                              child: Center(
-                                child: ServiceChip(
-                                  label: _getServiceKey(service).tr,
-                                  icon: _getIconForService(service),
-                                ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                              ),
+                              child: ServiceChip(
+                                onTap: () {
+                                  // Navigate to garage list with this service filter
+                                  Get.toNamed(
+                                    Approute.getGarageListPage(),
+                                    arguments: {'selectedService': service},
+                                  );
+                                },
+                                label: _getServiceKey(service).tr,
+                                icon: _getIconForService(service),
                               ),
                             ),
                           );
                         }),
+                        // Fill remaining space to maintain alignment if row has < 3 items
+                        ...List.generate(
+                          3 - services.skip(3).take(3).length,
+                          (index) => const Expanded(child: SizedBox()),
+                        ),
                       ],
                     ),
                 ],
