@@ -37,7 +37,7 @@ class SearchAndFilter extends StatelessWidget {
                 decimal: true,
               ),
               decoration: InputDecoration(
-                hintText: "radius_km".tr,
+                hintText: "radius_hint".tr,
                 prefixIcon: GestureDetector(
                   onTap: () => controller.loadCurrentLocation(),
                   child: Obx(() {
