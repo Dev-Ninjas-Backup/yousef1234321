@@ -27,6 +27,7 @@ class AppTranslations extends Translations {
       'battery_replacement': 'Battery Replacement',
       'engine_diagnostics': 'Engine Diagnostics',
       'abu_dhabi': 'Abu Dhabi',
+      'al_ain': 'Al Ain',
       'dubai': 'Dubai',
       'sharjah': 'Sharjah',
       'ajman': 'Ajman',
@@ -298,6 +299,11 @@ class AppTranslations extends Translations {
       'use_promotion_credit': 'Use Promotion Credit',
       'pay_for_promotion': 'Pay @amount AED for Promotion',
       'All': 'All',
+      'all': 'All',
+      'approved': 'Approved',
+      'pending': 'Pending',
+      'rejected': 'Rejected',
+      'radius_hint': '10 km radius',
     },
     // Dynamic Translation:
     // We only keep English keys. Other languages will be translated on the fly
@@ -307,12 +313,16 @@ class AppTranslations extends Translations {
       'english': 'अंग्रेजी',
       'hindi': 'हिन्दी',
       'arabic': 'अरबी',
+      'ras_al_khaimah': 'रास अल खैमाह',
+      'radius_hint': '10 किमी दायरा',
     },
     'ar_SA': {
       'select_language': 'اختر اللغة',
       'english': 'إنجليزي',
       'hindi': 'هندي',
       'arabic': 'عربي',
+      'ras_al_khaimah': 'رأس الخيمة',
+      'radius_hint': 'نطاق 10 كم',
     },
   };
 }

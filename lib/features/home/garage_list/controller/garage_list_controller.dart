@@ -18,29 +18,45 @@ class GarageListController extends GetxController {
   var selectedCity = RxnString();
   var selectedEmirate = RxnString();
   var selectedService = RxnString();
-  var selectedStatus = 'APPROVED'.obs;
+  var selectedStatus = 'approved'.obs;
 
-  final statuses = ['All', 'APPROVED', 'PENDING', 'REJECTED'];
+  final statuses = ['all', 'approved', 'pending', 'rejected'];
   final cities = [
-    'Abu Dhabi',
-    'Al Ain',
-    'Dubai',
-    'Sharjah',
-    'Ajman',
-    'Umm Al Quwain',
-    'Ras Al Khaimah',
-    'Fujairah',
+    'abu_dhabi',
+    'al_ain',
+    'dubai',
+    'sharjah',
+    'ajman',
+    'umm_al_quwain',
+    'ras_al_khaimah',
+    'fujairah',
   ];
   final emirates = [
-    'Abu Dhabi',
-    'Dubai',
-    'Sharjah',
-    'Ajman',
-    'Umm Al Quwain',
-    'Ras Al Khaimah',
-    'Fujairah',
+    'abu_dhabi',
+    'dubai',
+    'sharjah',
+    'ajman',
+    'umm_al_quwain',
+    'ras_al_khaimah',
+    'fujairah',
   ];
   final serviceTypes = <String>[].obs;
+
+  // Map keys back to API values
+  final Map<String, String> _apiValues = {
+    'all': 'All',
+    'approved': 'APPROVED',
+    'pending': 'PENDING',
+    'rejected': 'REJECTED',
+    'abu_dhabi': 'Abu Dhabi',
+    'al_ain': 'Al Ain',
+    'dubai': 'Dubai',
+    'sharjah': 'Sharjah',
+    'ajman': 'Ajman',
+    'umm_al_quwain': 'Umm Al Quwain',
+    'ras_al_khaimah': 'Ras Al Khaimah',
+    'fujairah': 'Fujairah',
+  };
 
   int page = 1;
   final int limit = 10;
@@ -94,14 +110,17 @@ class GarageListController extends GetxController {
         url += '&searchTerm=${Uri.encodeQueryComponent(searchController.text)}';
       }
 
-      if (selectedStatus.value.isNotEmpty && selectedStatus.value != 'All') {
-        url += '&status=${selectedStatus.value}';
+      if (selectedStatus.value.isNotEmpty && selectedStatus.value != 'all') {
+        url +=
+            '&status=${_apiValues[selectedStatus.value] ?? selectedStatus.value}';
       }
 
       if (selectedCity.value != null)
-        url += '&city=${Uri.encodeQueryComponent(selectedCity.value!)}';
+        url +=
+            '&city=${Uri.encodeQueryComponent(_apiValues[selectedCity.value!] ?? selectedCity.value!)}';
       if (selectedEmirate.value != null)
-        url += '&emirate=${Uri.encodeQueryComponent(selectedEmirate.value!)}';
+        url +=
+            '&emirate=${Uri.encodeQueryComponent(_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)}';
       if (selectedService.value != null)
         url += '&service=${Uri.encodeQueryComponent(selectedService.value!)}';
 
@@ -164,7 +183,7 @@ class GarageListController extends GetxController {
     selectedCity.value = null;
     selectedEmirate.value = null;
     selectedService.value = null;
-    selectedStatus.value = 'APPROVED';
+    selectedStatus.value = 'approved';
     fetchGarages(refresh: true);
   }
 

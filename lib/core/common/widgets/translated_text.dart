@@ -33,8 +33,35 @@ class TranslatedText extends StatelessWidget {
     // This allows us to pass keys (e.g. 'hello') and translate the actual word ('Hello').
     String sourceText = text;
     final englishMap = Get.translations['en_US'];
-    if (englishMap != null && englishMap.containsKey(text)) {
+    final bool isKey = englishMap != null && englishMap.containsKey(text);
+
+    if (isKey) {
       sourceText = englishMap[text]!;
+
+      // Optimization: Check if we have a static translation available locally to avoid API calls.
+
+      // 1. If current language is English, use the English value directly.
+      if (Get.locale?.languageCode == 'en') {
+        return Text(
+          sourceText,
+          style: style,
+          overflow: overflow,
+          maxLines: maxLines,
+          textAlign: textAlign,
+        );
+      }
+
+      // 2. If not English, check if GetX has a translation that is different from the English fallback.
+      // text.tr will return the translated value if found, or the fallback (English value) if not.
+      if (text.tr != sourceText) {
+        return Text(
+          text.tr,
+          style: style,
+          overflow: overflow,
+          maxLines: maxLines,
+          textAlign: textAlign,
+        );
+      }
     }
 
     return FutureBuilder<String>(
