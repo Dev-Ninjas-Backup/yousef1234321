@@ -242,18 +242,6 @@ class SignUpScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 15),
-
-                    SocialButton(
-                      imagePath: Iconpath.google,
-                      text: 'Continue with Google',
-                      onTap: () {},
-                    ),
-                    SizedBox(height: 24),
-                    SocialButton(
-                      imagePath: Iconpath.apple,
-                      text: 'Continue with Apple',
-                      onTap: () {},
-                    ),
                   ],
                 ),
               ),

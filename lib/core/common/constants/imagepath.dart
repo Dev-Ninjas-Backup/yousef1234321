@@ -35,7 +35,6 @@ class Imagepath {
   static String slide23 = 'assets/images/slide23.png';
   static String slide24 = 'assets/images/slide24.png';
   static String slide26 = 'assets/images/slide26.png';
-  static String slide27 = 'assets/images/slide27.png';
   static String slide28 = 'assets/images/slide28.png';
   static String slide29 = 'assets/images/slide29.png';
   static String slide30 = 'assets/images/slide30.png';

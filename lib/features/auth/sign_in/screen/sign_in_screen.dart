@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
-import 'package:yousef1234321/core/common/widgets/social_button.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
@@ -198,22 +197,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Or",
-                      style: TextStyle(
-                        color: AppColors.subTextColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    SocialButton(
-                      imagePath: Iconpath.google,
-                      text: 'Continue with Google',
-                      onTap: () =>
-                          Get.find<SignInController>().signInWithGoogle(),
                     ),
                     const SizedBox(height: 40),
                   ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/routes/app_route.dart';
@@ -59,14 +58,10 @@ class SignInController extends GetxController {
             // Navigate to Home/Dashboard
             Get.offAllNamed(Approute.bottomNavBarScreen);
           } else {
-            EasyLoading.showError(
-              "Invalid token received",
-            );
+            EasyLoading.showError("Invalid token received");
           }
         } else {
-          EasyLoading.showError(
-            "Invalid response format",
-          );
+          EasyLoading.showError("Invalid response format");
         }
       } else {
         EasyLoading.showError(
@@ -74,74 +69,7 @@ class SignInController extends GetxController {
         );
       }
     } catch (e) {
-      EasyLoading.showError(
-        "Something went wrong: $e",
-      );
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  // Sign in with Google. Requires google_sign_in package and backend endpoint
-  Future<void> signInWithGoogle() async {
-    if (isLoading.value) return;
-    isLoading.value = true;
-    try {
-      final googleSignIn = GoogleSignIn(scopes: ['email']);
-      final account = await googleSignIn.signIn();
-      if (account == null) {
-        // user canceled
-        isLoading.value = false;
-        return;
-      }
-
-      final auth = await account.authentication;
-      final idToken = auth.idToken;
-      final accessToken = auth.accessToken;
-
-      if (idToken == null) {
-        EasyLoading.showError('Failed to get id');
-        return;
-      }
-
-      // Send token to backend for verification / login
-      final body = {
-        'provider': 'google',
-        'idToken': idToken,
-        if (accessToken != null) 'accessToken': accessToken,
-      };
-
-      final response = await ApiClient.to.post('/auth/social-login', body);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final respBody = response.body;
-        // Attempt to read token from common shapes
-        String? token;
-        String? userId;
-        if (respBody is Map) {
-          token =
-              respBody['token']?.toString() ??
-              respBody['data']?['token']?.toString();
-          userId =
-              respBody['data']?['user']?['id']?.toString() ??
-              respBody['user']?['id']?.toString();
-        }
-
-        if (token != null && token.isNotEmpty) {
-          await ApiClient.to.setToken(token);
-          if (userId != null && userId.isNotEmpty) {
-            await ApiClient.to.setUserId(userId);
-          }
-          Get.snackbar('Success', 'Signed in with Google');
-          Get.offAllNamed(Approute.bottomNavBarScreen);
-        } else {
-          Get.snackbar('Error', 'Social login failed: invalid token');
-        }
-      } else {
-        Get.snackbar('Error', 'Social login failed: ${response.statusCode}');
-      }
-    } catch (e) {
-      Get.snackbar('Error', 'Google sign-in failed: $e');
+      EasyLoading.showError("Something went wrong: $e");
     } finally {
       isLoading.value = false;
     }
