@@ -1,6 +1,5 @@
 class Iconpath {
   static String splashLogo = 'assets/icons/splashLogo.png';
-  static String google = 'assets/icons/google.png';
   static String apple = 'assets/icons/apple.png';
   static String smart = 'assets/icons/smart.png';
   static String service = 'assets/icons/service.png';
@@ -25,5 +24,5 @@ class Iconpath {
   static String filtericon = 'assets/icons/filter.png';
   static String callIcon = "assets/icons/call.png";
   static String messageIcon = "assets/icons/message.png";
-  static String tire="assets/icons/tire.png";
+  static String tire = "assets/icons/tire.png";
 }

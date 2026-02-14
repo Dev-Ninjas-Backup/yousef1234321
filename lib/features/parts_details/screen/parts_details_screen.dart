@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/parts_details/controller/parts_details_controller.dart';
 import 'package:yousef1234321/features/parts_details/widgets/promotion_listing.dart';
+import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 class PartsDetailsScreen extends StatelessWidget {
   const PartsDetailsScreen({super.key});
@@ -18,12 +19,22 @@ class PartsDetailsScreen extends StatelessWidget {
       String label, {
       required TextEditingController controller,
       String? hint,
+      bool isMandatory = false,
     }) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        Row(
+          children: [
+            TranslatedText(
+              text: label,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            if (isMandatory)
+              const Text(
+                " *",
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         TextField(
@@ -57,8 +68,8 @@ class PartsDetailsScreen extends StatelessWidget {
             CustomAppBar(title: "create_listing".tr),
 
             const SizedBox(height: 27),
-            Text(
-              "part_information".tr,
+            TranslatedText(
+              text: "part_information",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 24),
@@ -66,8 +77,9 @@ class PartsDetailsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: textField(
-                    "${'part_name'.tr} *",
+                    "part_name",
                     controller: c.partNameCtrl,
+                    isMandatory: true,
                   ),
                 ),
                 const SizedBox(width: 22.5),
@@ -86,8 +98,8 @@ class PartsDetailsScreen extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'listing_plan'.tr,
+                TranslatedText(
+                  text: 'listing_plan',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -98,8 +110,8 @@ class PartsDetailsScreen extends StatelessWidget {
                 /// Monthly Subscription (Recommended)
                 Obx(
                   () => _planTile(
-                    title: 'monthly_subscription_title'.tr,
-                    subtitle: 'monthly_subscription_desc'.tr,
+                    title: 'monthly_subscription_title',
+                    subtitle: 'monthly_subscription_desc',
                     value: 0,
                     isRecommended: true,
                     selectedValue: c.selectedPlan.value,
@@ -112,8 +124,8 @@ class PartsDetailsScreen extends StatelessWidget {
                 /// Pay Per Listing
                 Obx(
                   () => _planTile(
-                    title: 'pay_per_listing'.tr,
-                    subtitle: 'pay_per_listing_desc'.tr,
+                    title: 'pay_per_listing',
+                    subtitle: 'pay_per_listing_desc',
                     value: 1,
                     isRecommended: false,
                     selectedValue: c.selectedPlan.value,
@@ -134,8 +146,8 @@ class PartsDetailsScreen extends StatelessWidget {
                           backgroundColor: Colors.green,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: Text(
-                          "monthly_active_until".trParams({
+                        child: TranslatedText(
+                          text: "monthly_active_until".trParams({
                             'date':
                                 c.productMonthlyEndsAt.value
                                     ?.toLocal()
@@ -162,7 +174,7 @@ class PartsDetailsScreen extends StatelessWidget {
                           backgroundColor: Colors.blue,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        child: Text("pay_now_monthly".tr),
+                        child: TranslatedText(text: "pay_now_monthly"),
                       ),
                     );
                   }
@@ -182,7 +194,7 @@ class PartsDetailsScreen extends StatelessWidget {
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: Text("pay_now_per_listing".tr),
+                      child: TranslatedText(text: "pay_now_per_listing"),
                     ),
                   );
                 }),
@@ -195,14 +207,15 @@ class PartsDetailsScreen extends StatelessWidget {
             const SizedBox(height: 22.5),
 
             textField(
-              "${'brand'.tr} *",
+              "brand",
               hint: "type_here".tr,
               controller: c.brand,
+              isMandatory: true,
             ),
 
             const SizedBox(height: 24),
-            Text(
-              "pricing_availability".tr,
+            TranslatedText(
+              text: "pricing_availability",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
 
@@ -211,8 +224,9 @@ class PartsDetailsScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: textField(
-                    "${'price_aed'.tr} *",
+                    "price_aed",
                     controller: c.priceCtrl,
+                    isMandatory: true,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -228,22 +242,32 @@ class PartsDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 24),
             textField(
-              "${'quantity'.tr} *",
+              "quantity",
               hint: "type_here".tr,
               controller: c.quantity,
+              isMandatory: true,
             ),
             const SizedBox(height: 20),
 
             textField(
-              "${'description'.tr} *",
+              "description",
               hint: "type_here".tr,
               controller: c.descriptionCtrl,
+              isMandatory: true,
             ),
 
             const SizedBox(height: 20),
-            Text(
-              "${'upload_photo'.tr} *",
-              style: const TextStyle(fontWeight: FontWeight.w600),
+            Row(
+              children: [
+                TranslatedText(
+                  text: "upload_photo",
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                const Text(
+                  " *",
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ],
             ),
             const SizedBox(height: 6),
             Obx(
@@ -268,9 +292,7 @@ class PartsDetailsScreen extends StatelessWidget {
                                 size: 36,
                               ),
                               SizedBox(height: 4),
-                              Text(
-                                "add_photos".tr,
-                              ), // This needs to be const removed if using .tr, but Text("...".tr) is not const
+                              TranslatedText(text: "add_photos"),
                             ],
                           ),
                         )
@@ -350,26 +372,32 @@ class PartsDetailsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            Text(
-              "seller_information".tr,
+            TranslatedText(
+              text: "seller_information",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            textField("${'seller_name'.tr} *", controller: c.sellerNameCtrl),
+            textField(
+              "seller_name",
+              controller: c.sellerNameCtrl,
+              isMandatory: true,
+            ),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: textField(
-                    "${'emailAddress'.tr} *",
+                    "emailAddress",
                     controller: c.emailCtrl,
+                    isMandatory: true,
                   ),
                 ),
                 const SizedBox(width: 24),
                 Expanded(
                   child: textField(
-                    "${'contact_number'.tr} *",
+                    "contact_number",
                     controller: c.phoneCtrl,
+                    isMandatory: true,
                   ),
                 ),
               ],
@@ -385,8 +413,8 @@ class PartsDetailsScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 28),
                 Expanded(
-                  child: Text(
-                    "confirm_info_accurate".tr,
+                  child: TranslatedText(
+                    text: "confirm_info_accurate",
                     style: const TextStyle(fontSize: 14),
                   ),
                 ),
@@ -432,8 +460,8 @@ class PartsDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text(
-                  "list_part_now".tr,
+                child: TranslatedText(
+                  text: "list_part_now",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -499,8 +527,8 @@ Widget _planTile({
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
-                          'recommended'.tr,
+                        child: TranslatedText(
+                          text: 'recommended',
                           style: const TextStyle(
                             fontSize: 11,
                             color: Colors.white,
@@ -509,8 +537,9 @@ Widget _planTile({
                       ),
                     Flexible(
                       child: Text(
-                        title,
+                        title, // Assuming title is passed as key or text to be translated
                         style: const TextStyle(
+                          // If title is dynamic, we should use TranslatedText(text: title)
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -519,8 +548,8 @@ Widget _planTile({
                   ],
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  subtitle,
+                TranslatedText(
+                  text: subtitle,
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                 ),
               ],
@@ -548,9 +577,17 @@ Widget categoryDropdown(PartsDetailsController c) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "${'category'.tr} *",
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        Row(
+          children: [
+            TranslatedText(
+              text: "category",
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+            const Text(
+              " *",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            ),
+          ],
         ),
         const SizedBox(height: 6),
         Container(
@@ -562,12 +599,12 @@ Widget categoryDropdown(PartsDetailsController c) {
           child: DropdownButton<String>(
             value: c.selectedCategoryId.value,
             isExpanded: true,
-            hint: Text("select".tr),
+            hint: TranslatedText(text: "select"),
             underline: const SizedBox(),
             items: c.categories.map((cat) {
               return DropdownMenuItem<String>(
                 value: cat.id, // store id
-                child: Text(cat.name.tr), // show name
+                child: TranslatedText(text: cat.name), // show name
               );
             }).toList(),
             onChanged: (value) {

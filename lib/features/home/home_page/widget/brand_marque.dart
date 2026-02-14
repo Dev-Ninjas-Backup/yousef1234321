@@ -34,7 +34,6 @@ class BrandMarqueeView extends StatelessWidget {
     Imagepath.slide23,
     Imagepath.slide24,
     Imagepath.slide26,
-    Imagepath.slide27,
     Imagepath.slide28,
     Imagepath.slide29,
     Imagepath.slide30,
