@@ -77,7 +77,7 @@ class ProfilePage extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () => controller.fetchProfile(),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 52.h),
+          padding: EdgeInsets.only(left: 16.w, right: 16.w, top: 52.h),
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Column(
@@ -286,6 +286,7 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: 15.h),
               ],
             ),
           ),

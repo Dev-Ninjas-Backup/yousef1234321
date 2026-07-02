@@ -166,6 +166,7 @@ class BottomNavbarScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         body: pages[controller.currentIndex.value],
         bottomNavigationBar: Container(
+          clipBehavior: Clip.none,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
               topLeft: Radius.elliptical(430, 65),
@@ -174,7 +175,7 @@ class BottomNavbarScreen extends StatelessWidget {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-                //color: Colors.red,
+               // color: Colors.red,
                 color: Color(0xFFAFB8C6).withValues(alpha: .18),
                 spreadRadius: 0,
                 blurRadius: 16,
