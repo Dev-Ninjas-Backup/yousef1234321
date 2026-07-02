@@ -232,15 +232,15 @@ class SignUpScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Or",
-                      style: TextStyle(
-                        color: AppColors.subTextColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
+                    // SizedBox(height: 20),
+                    // Text(
+                    //   "Or",
+                    //   style: TextStyle(
+                    //     color: AppColors.subTextColor,
+                    //     fontSize: 14,
+                    //     fontWeight: FontWeight.w400,
+                    //   ),
+                    // ),
                     SizedBox(height: 15),
                   ],
                 ),
