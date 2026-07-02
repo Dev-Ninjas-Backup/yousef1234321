@@ -11,7 +11,9 @@ import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
+import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 
 import '../../../core/common/style/global_text_style.dart';
 
@@ -196,7 +198,7 @@ class SparePartsScreen extends StatelessWidget {
             sectionHeader("all_parts"),
 
             const SizedBox(height: 8),
-            _sectionCard("all_parts"),
+            //_sectionCard("all_parts"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'allParts')),
@@ -206,7 +208,7 @@ class SparePartsScreen extends StatelessWidget {
             // Today's Deals
             sectionHeader("todays_deals"),
             const SizedBox(height: 8),
-            _sectionCard("todays_deals"),
+            //_sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
@@ -343,94 +345,122 @@ class SparePartsScreen extends StatelessWidget {
   }
 
   // Small card shown above parts lists with quick CTA
-  Widget _sectionCard(String titleKey) {
-    return GestureDetector(
-      onTap: () async {
-        // open the same 'See All' full list
-        final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
-        await productsCtrl.fetchProducts(page: 1, limit: 10);
-        _openProductListScreen(titleKey, productsCtrl);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 0),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(Imagepath.image2),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TranslatedText(
-                    text: _getEnglishText(
-                      'explore',
-                    ).replaceAll('@title', _getEnglishText(titleKey)),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TranslatedText(
-                    text: 'find_best_spare_parts',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final productsCtrl = Get.put(
-                  ProductsController(),
-                  tag: 'productsList',
-                );
-                await productsCtrl.fetchProducts(page: 1, limit: 10);
-                _openProductListScreen(titleKey, productsCtrl);
-              },
-              child: TranslatedText(text: 'see_all'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _sectionCard(String titleKey) {
+  //   return GestureDetector(
+  //     onTap: () async {
+  //       // open the same 'See All' full list
+  //       final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
+  //       await productsCtrl.fetchProducts(page: 1, limit: 10);
+  //       _openProductListScreen(titleKey, productsCtrl);
+  //     },
+  //     child: Container(
+  //       margin: const EdgeInsets.symmetric(horizontal: 0),
+  //       padding: const EdgeInsets.all(12),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(12),
+  //         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+  //       ),
+  //       child: Row(
+  //         children: [
+  //           Container(
+  //             width: 64,
+  //             height: 64,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
+  //               image: DecorationImage(
+  //                 image: AssetImage(Imagepath.image2),
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Expanded(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 TranslatedText(
+  //                   text: _getEnglishText(
+  //                     'explore',
+  //                   ).replaceAll('@title', _getEnglishText(titleKey)),
+  //                   style: const TextStyle(
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 6),
+  //                 TranslatedText(
+  //                   text: 'find_best_spare_parts',
+  //                   style: TextStyle(color: Colors.grey, fontSize: 12),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () async {
+  //               final productsCtrl = Get.put(
+  //                 ProductsController(),
+  //                 tag: 'productsList',
+  //               );
+  //               await productsCtrl.fetchProducts(page: 1, limit: 10);
+  //               _openProductListScreen(titleKey, productsCtrl);
+  //             },
+  //             child: TranslatedText(text: 'see_all'),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  // Reusable method to open product list screen
   void _openProductListScreen(String title, ProductsController productsCtrl) {
     Get.to(
       () => Scaffold(
-        appBar: AppBar(title: TranslatedText(text: title)),
+        backgroundColor: AppColors.containerFillColor,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          centerTitle: false,
+          titleSpacing: 16,
+          title: CustomAppBar(title: title),
+        ),
         body: Obx(() {
           if (productsCtrl.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
           }
           if (productsCtrl.products.isEmpty) {
-            return Center(child: TranslatedText(text: 'no_products'));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.inventory_2_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  TranslatedText(
+                    text: 'no_products',
+                    style: getTextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
-          return ListView.builder(
-            padding: const EdgeInsets.all(12),
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             itemCount: productsCtrl.products.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (_, idx) {
               final p = productsCtrl.products[idx];
-              // final name = (p is Map && p['partName'] != null)
-              //     ? p['partName'].toString()
-              //     : 'product ${idx + 1}';
+              final name = (p is Map && p['partName'] != null)
+                  ? p['partName'].toString()
+                  : 'product ${idx + 1}';
               final price = (p is Map && p['price'] != null)
                   ? p['price'].toString()
                   : '-';
@@ -439,25 +469,14 @@ class SparePartsScreen extends StatelessWidget {
                   : (p is Map && p['photos'] is List && p['photos'].isNotEmpty
                         ? p['photos'][0].toString()
                         : null);
+              final desc = (p is Map && p['description'] != null)
+                  ? p['description'].toString()
+                  : '';
+              final rating = (p is Map && p['rating'] != null)
+                  ? double.tryParse(p['rating'].toString()) ?? 0.0
+                  : 0.0;
 
-              return ListTile(
-                leading: photo != null
-                    ? Image.network(
-                        photo,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Image.asset(
-                          Iconpath.carHomeIcon,
-                          width: 56,
-                          height: 56,
-                        ),
-                      )
-                    : Image.asset(Iconpath.carHomeIcon, width: 56, height: 56),
-                //title: TranslatedText(text: name),
-                subtitle: TranslatedText(
-                  text: _getEnglishText('price').replaceAll('@price', price),
-                ),
+              return GestureDetector(
                 onTap: () {
                   String? id;
                   if (p is Map) {
@@ -466,9 +485,159 @@ class SparePartsScreen extends StatelessWidget {
                     else if (p['data'] is Map && p['data']['id'] != null)
                       id = p['data']['id'].toString();
                   }
-                  if (id != null)
+                  if (id != null) {
                     Get.toNamed(Approute.getBrakePadsScreen(), arguments: id);
+                  }
                 },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Left - Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 90,
+                            height: 90,
+                            color: AppColors.containerFillColor,
+                            child: photo != null
+                                ? Image.network(
+                                    photo,
+                                    width: 90,
+                                    height: 90,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder:
+                                        (context, child, loadingProgress) {
+                                          if (loadingProgress == null)
+                                            return child;
+                                          return const Center(
+                                            child: SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(AppColors.primaryColor),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                    errorBuilder: (_, __, ___) => Center(
+                                      child: Image.asset(
+                                        Iconpath.carHomeIcon,
+                                        width: 48,
+                                        height: 48,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  )
+                                : Center(
+                                    child: Image.asset(
+                                      Iconpath.carHomeIcon,
+                                      width: 48,
+                                      height: 48,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Right - Content Info
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Title & Optional Rating Row
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: TranslatedText(
+                                      text: name,
+                                      style: getTextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                  if (rating > 0)
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          color: Colors.amber,
+                                          size: 18,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          rating.toString(),
+                                          style: getTextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              // Description
+                              if (desc.isNotEmpty && desc != 'N/A')
+                                TranslatedText(
+                                  text: desc,
+                                  style: getTextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppColors.subTextColor,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
+                              const SizedBox(height: 12),
+                              // Price and Action Button
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  TranslatedText(
+                                    text: _getEnglishText(
+                                      'price',
+                                    ).replaceAll('@price', price),
+                                    style: getTextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               );
             },
           );
