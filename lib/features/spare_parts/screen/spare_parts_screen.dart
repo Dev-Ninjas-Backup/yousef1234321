@@ -198,7 +198,7 @@ class SparePartsScreen extends StatelessWidget {
             sectionHeader("all_parts"),
 
             const SizedBox(height: 8),
-            _sectionCard("all_parts"),
+            //_sectionCard("all_parts"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'allParts')),
@@ -208,7 +208,7 @@ class SparePartsScreen extends StatelessWidget {
             // Today's Deals
             sectionHeader("todays_deals"),
             const SizedBox(height: 8),
-            _sectionCard("todays_deals"),
+            //_sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
             partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
@@ -345,73 +345,73 @@ class SparePartsScreen extends StatelessWidget {
   }
 
   // Small card shown above parts lists with quick CTA
-  Widget _sectionCard(String titleKey) {
-    return GestureDetector(
-      onTap: () async {
-        // open the same 'See All' full list
-        final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
-        await productsCtrl.fetchProducts(page: 1, limit: 10);
-        _openProductListScreen(titleKey, productsCtrl);
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 0),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(Imagepath.image2),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TranslatedText(
-                    text: _getEnglishText(
-                      'explore',
-                    ).replaceAll('@title', _getEnglishText(titleKey)),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TranslatedText(
-                    text: 'find_best_spare_parts',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final productsCtrl = Get.put(
-                  ProductsController(),
-                  tag: 'productsList',
-                );
-                await productsCtrl.fetchProducts(page: 1, limit: 10);
-                _openProductListScreen(titleKey, productsCtrl);
-              },
-              child: TranslatedText(text: 'see_all'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _sectionCard(String titleKey) {
+  //   return GestureDetector(
+  //     onTap: () async {
+  //       // open the same 'See All' full list
+  //       final productsCtrl = Get.put(ProductsController(), tag: 'productsList');
+  //       await productsCtrl.fetchProducts(page: 1, limit: 10);
+  //       _openProductListScreen(titleKey, productsCtrl);
+  //     },
+  //     child: Container(
+  //       margin: const EdgeInsets.symmetric(horizontal: 0),
+  //       padding: const EdgeInsets.all(12),
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.circular(12),
+  //         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+  //       ),
+  //       child: Row(
+  //         children: [
+  //           Container(
+  //             width: 64,
+  //             height: 64,
+  //             decoration: BoxDecoration(
+  //               borderRadius: BorderRadius.circular(10),
+  //               image: DecorationImage(
+  //                 image: AssetImage(Imagepath.image2),
+  //                 fit: BoxFit.cover,
+  //               ),
+  //             ),
+  //           ),
+  //           const SizedBox(width: 12),
+  //           Expanded(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 TranslatedText(
+  //                   text: _getEnglishText(
+  //                     'explore',
+  //                   ).replaceAll('@title', _getEnglishText(titleKey)),
+  //                   style: const TextStyle(
+  //                     fontSize: 16,
+  //                     fontWeight: FontWeight.w600,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 6),
+  //                 TranslatedText(
+  //                   text: 'find_best_spare_parts',
+  //                   style: TextStyle(color: Colors.grey, fontSize: 12),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () async {
+  //               final productsCtrl = Get.put(
+  //                 ProductsController(),
+  //                 tag: 'productsList',
+  //               );
+  //               await productsCtrl.fetchProducts(page: 1, limit: 10);
+  //               _openProductListScreen(titleKey, productsCtrl);
+  //             },
+  //             child: TranslatedText(text: 'see_all'),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   void _openProductListScreen(String title, ProductsController productsCtrl) {
     Get.to(
