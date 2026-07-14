@@ -104,23 +104,7 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: TranslatedText(
-                          text: "sayara_hub",
-                          style: getTextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                Image.asset("assets/icons/logo.png", height: 37),
                 Row(
                   children: [
                     Tooltip(
