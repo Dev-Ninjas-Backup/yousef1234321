@@ -138,7 +138,7 @@ class BottomNavbarScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-      FindService(),
+      FindService(), // Automatically loads user's location on tab entry/re-entry
       SparePartsScreen(),
       HomeScreen(),
       ChatScreen(),

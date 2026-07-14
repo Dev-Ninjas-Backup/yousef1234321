@@ -38,30 +38,15 @@ class SearchAndFilter extends StatelessWidget {
               ),
               decoration: InputDecoration(
                 hintText: "radius_hint".tr,
-                prefixIcon: GestureDetector(
-                  onTap: () => controller.loadCurrentLocation(),
-                  child: Obx(() {
-                    // show small spinner while fetching current location
-                    if (controller.isLoadingLocation.value) {
-                      return SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: AppColors.primaryColor,
-                        ),
-                      );
-                    }
-
-                    // Show filled location icon if location is loaded
-                    return Icon(
-                      controller.hasCurrentLocation.value
-                          ? Icons.location_on
-                          : Icons.location_on_outlined,
-                      color: AppColors.primaryColor,
-                    );
-                  }),
-                ),
+                prefixIcon: Obx(() {
+                  // Show filled location icon if location is loaded
+                  return Icon(
+                    controller.hasCurrentLocation.value
+                        ? Icons.location_on
+                        : Icons.location_on_outlined,
+                    color: AppColors.primaryColor,
+                  );
+                }),
 
                 contentPadding: const EdgeInsets.symmetric(horizontal: 6),
                 filled: true,

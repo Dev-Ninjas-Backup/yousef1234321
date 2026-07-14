@@ -11,10 +11,23 @@ import '../controller/service_controller.dart';
 import '../model/garage_model.dart';
 import '../widgets/search_and_filter.dart';
 
-class FindService extends StatelessWidget {
+class FindService extends StatefulWidget {
+  const FindService({super.key});
+
+  @override
+  State<FindService> createState() => _FindServiceState();
+}
+
+class _FindServiceState extends State<FindService> {
   final ServiceController controller = Get.put(ServiceController());
 
-  FindService({super.key});
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadCurrentLocation();
+    });
+  }
 
   Map<String, String>? _parseHoursJson(String? hoursStr) {
     if (hoursStr == null || hoursStr.isEmpty) return null;
