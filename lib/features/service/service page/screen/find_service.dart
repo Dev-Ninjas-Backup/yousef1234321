@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
@@ -15,17 +16,63 @@ class FindService extends StatelessWidget {
 
   FindService({super.key});
 
-  /// Check if garage is currently open based on operating hours
-  Map<String, dynamic> _getOpenStatus(GarageModel garage) {
+  Map<String, String>? _parseHoursJson(String? hoursStr) {
+    if (hoursStr == null || hoursStr.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(hoursStr);
+      if (decoded is Map) {
+        return decoded.map((k, v) => MapEntry(k.toString(), v.toString()));
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  String? _getHoursForToday(GarageModel garage) {
     final now = DateTime.now();
     final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-    final isWeekend = currentDay == 6 || currentDay == 7; // Saturday or Sunday
+    
+    // Map weekday number to string name
+    const weekdayNames = {
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+      7: 'Sunday',
+    };
+    final todayName = weekdayNames[currentDay]!;
+    
+    // Try to get from weekdaysHours first if it is JSON
+    final weekdaysParsed = _parseHoursJson(garage.weekdaysHours);
+    if (weekdaysParsed != null) {
+      final key = weekdaysParsed.keys.firstWhere(
+        (k) => k.toLowerCase() == todayName.toLowerCase(),
+        orElse: () => '',
+      );
+      if (key.isNotEmpty) return weekdaysParsed[key];
+    }
+    
+    // Try weekendsHours if it is JSON
+    final weekendsParsed = _parseHoursJson(garage.weekendsHours);
+    if (weekendsParsed != null) {
+      final key = weekendsParsed.keys.firstWhere(
+        (k) => k.toLowerCase() == todayName.toLowerCase(),
+        orElse: () => '',
+      );
+      if (key.isNotEmpty) return weekendsParsed[key];
+    }
+    
+    // If not JSON, fallback to traditional check
+    final isWeekend = currentDay == 6 || currentDay == 7;
+    final hoursString = isWeekend ? garage.weekendsHours : garage.weekdaysHours;
+    return hoursString != null && hoursString.isNotEmpty ? hoursString : null;
+  }
 
-    String? hoursString = isWeekend
-        ? garage.weekendsHours
-        : garage.weekdaysHours;
-
-    if (hoursString == null || hoursString.isEmpty) {
+  /// Check if garage is currently open based on operating hours
+  Map<String, dynamic> _getOpenStatus(GarageModel garage) {
+    final hoursString = _getHoursForToday(garage);
+    if (hoursString == null || hoursString.isEmpty || hoursString.toLowerCase() == 'closed') {
       return {'isOpen': false, 'label': 'closed'};
     }
 

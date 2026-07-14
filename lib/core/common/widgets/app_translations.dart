@@ -336,6 +336,10 @@ class AppTranslations extends Translations {
 
       // search_and_filter.dart:
       'find_garage': 'Find Garage',
+
+      // operation_houre.dart & service_booking.dart:
+      'operating_hours': 'Operating Hours',
+      'location_map': 'Location & Map',
     },
     // Dynamic Translation:
     // We only keep English keys. Other languages will be translated on the fly
