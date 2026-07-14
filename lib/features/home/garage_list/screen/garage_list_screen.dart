@@ -210,22 +210,28 @@ class GarageListScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ListTile(
-              title: TranslatedText(text: 'All'),
-              onTap: () {
-                controller.selectedCity.value = null;
-                controller.applyFilters();
-                Navigator.pop(context);
-              },
-            ),
-            ...controller.cities.map(
-              (city) => ListTile(
-                title: TranslatedText(text: city),
-                onTap: () {
-                  controller.selectedCity.value = city;
-                  controller.applyFilters();
-                  Navigator.pop(context);
-                },
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: TranslatedText(text: 'All'),
+                    onTap: () {
+                      controller.selectedCity.value = null;
+                      controller.applyFilters();
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ...controller.cities.map(
+                    (city) => ListTile(
+                      title: TranslatedText(text: city),
+                      onTap: () {
+                        controller.selectedCity.value = city;
+                        controller.applyFilters();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -250,22 +256,28 @@ class GarageListScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ListTile(
-              title: TranslatedText(text: 'All'),
-              onTap: () {
-                controller.selectedEmirate.value = null;
-                controller.applyFilters();
-                Navigator.pop(context);
-              },
-            ),
-            ...controller.emirates.map(
-              (emirate) => ListTile(
-                title: TranslatedText(text: emirate),
-                onTap: () {
-                  controller.selectedEmirate.value = emirate;
-                  controller.applyFilters();
-                  Navigator.pop(context);
-                },
+            Expanded(
+              child: ListView(
+                children: [
+                  ListTile(
+                    title: TranslatedText(text: 'All'),
+                    onTap: () {
+                      controller.selectedEmirate.value = null;
+                      controller.applyFilters();
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ...controller.emirates.map(
+                    (emirate) => ListTile(
+                      title: TranslatedText(text: emirate),
+                      onTap: () {
+                        controller.selectedEmirate.value = emirate;
+                        controller.applyFilters();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -338,14 +350,20 @@ class GarageListScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ...controller.statuses.map(
-              (status) => ListTile(
-                title: TranslatedText(text: status),
-                onTap: () {
-                  controller.selectedStatus.value = status;
-                  controller.applyFilters();
-                  Navigator.pop(context);
-                },
+            Expanded(
+              child: ListView(
+                children: [
+                  ...controller.statuses.map(
+                    (status) => ListTile(
+                      title: TranslatedText(text: status),
+                      onTap: () {
+                        controller.selectedStatus.value = status;
+                        controller.applyFilters();
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
