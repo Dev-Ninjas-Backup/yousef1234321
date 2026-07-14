@@ -304,6 +304,38 @@ class AppTranslations extends Translations {
       'pending': 'Pending',
       'rejected': 'Rejected',
       'radius_hint': '10 km radius',
+
+      // --- Aliases: keys used in code that differ from the stored key name ---
+      // service_message.dart uses these names:
+      'file_downloaded_to': 'File downloaded to',
+      'files_selected': 'Files Selected',
+      'files_selected_msg': 'file(s) selected. Tap send to upload.',
+      'failed_pick_files': 'Failed to pick files',
+      // service_message.dart hint text:
+      'type_your_message': 'Type your message',
+
+      // --- Completely missing keys ---
+      'submit_review_failed': 'Failed to submit review',
+      'locating': 'Locating...',
+      'All Garages': 'All Garages',
+
+      // call_dialog.dart raw-string .tr calls:
+      'Confirm Call?': 'Confirm Call?',
+      "You're about to call": "You're about to call",
+      'this garage': 'this garage',
+      'Cancel': 'Cancel',
+      'Call Now': 'Call Now',
+      'Error': 'Error',
+      'Cannot make phone calls on this device':
+          'Cannot make phone calls on this device',
+      'Failed to make call': 'Failed to make call',
+      'Phone number not available': 'Phone number not available',
+
+      // search_section.dart & controllers:
+      'Location permission denied': 'Location permission denied',
+
+      // search_and_filter.dart:
+      'find_garage': 'Find Garage',
     },
     // Dynamic Translation:
     // We only keep English keys. Other languages will be translated on the fly

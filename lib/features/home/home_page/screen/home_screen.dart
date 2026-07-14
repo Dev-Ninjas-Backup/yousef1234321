@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
-import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/features/home/home_page/controller/home_controller.dart';
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
