@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import '../controller/language_controller.dart';
 
 class LanguageScreen extends StatelessWidget {
@@ -104,7 +105,7 @@ class LanguageScreen extends StatelessWidget {
     final connect = GetConnect();
     connect.timeout = const Duration(seconds: 10);
     // Note: Ideally, use the base URL from endpoint.dart if available
-    const baseUrl = 'https://yousef-softvence.saikat.com.bd';
+    final baseUrl = Endpoint.baseUrl;
 
     try {
       debugPrint('🌐 Updating backend language to: $langCode');
