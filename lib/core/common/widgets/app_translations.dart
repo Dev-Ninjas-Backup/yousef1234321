@@ -304,6 +304,8 @@ class AppTranslations extends Translations {
       'pending': 'Pending',
       'rejected': 'Rejected',
       'radius_hint': '10 km radius',
+      'all_approved_garages': 'All Approved Garages',
+      'show_all': 'Show All',
 
       // --- Aliases: keys used in code that differ from the stored key name ---
       // service_message.dart uses these names:

@@ -41,7 +41,15 @@ class GarageModel {
     double? parseDouble(dynamic v) {
       if (v == null) return null;
       if (v is num) return v.toDouble();
-      return double.tryParse(v.toString());
+      final direct = double.tryParse(v.toString());
+      if (direct != null) return direct;
+      try {
+        final match = RegExp(r'^([0-9.]+)').firstMatch(v.toString().trim());
+        if (match != null) {
+          return double.tryParse(match.group(1)!);
+        }
+      } catch (_) {}
+      return null;
     }
 
     int? parseInt(dynamic v) {

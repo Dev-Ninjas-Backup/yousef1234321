@@ -1,6 +1,6 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
@@ -10,6 +10,8 @@ import '../model/garage_model.dart';
 
 class ServiceController extends GetxController {
   final radiusController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  
   var serviceItemList = [].obs;
 
   var selectedOption = RxString('');
@@ -24,6 +26,15 @@ class ServiceController extends GetxController {
   final currentLng = Rxn<double>();
   var hasCurrentLocation = false.obs;
 
+  // Pagination & Mode fields
+  var isNearbyMode = false.obs;
+  var page = 1.obs;
+  var totalPages = 1.obs;
+  var limit = 10.obs;
+  var total = 0.obs;
+  var isLoadingMore = false.obs;
+  var hasMore = true.obs;
+
   final List<String> options = ["Garage Services ", "Towing Service "];
 
   void changeOption(String value) {
@@ -32,20 +43,125 @@ class ServiceController extends GetxController {
 
   @override
   void onInit() {
-    serviceItem();
     super.onInit();
+    serviceItem();
+    scrollController.addListener(_onScroll);
+    fetchApprovedGarages(refresh: true);
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    radiusController.dispose();
+    super.onClose();
+  }
+
+  void _onScroll() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      if (!isLoadingMore.value && hasMore.value && !isNearbyMode.value && !isLoadingNearby.value) {
+        loadMoreApprovedGarages();
+      }
+    }
   }
 
   void serviceItem() {
     serviceItemList.addAll([]);
   }
 
-  /// Find garages using the current location and user-specified radius.
-  /// Called after loadCurrentLocation() has populated currentLat/currentLng.
+  /// Fetch approved garages from /garages?status=APPROVED with pagination.
+  Future<void> fetchApprovedGarages({bool refresh = true}) async {
+    if (refresh) {
+      page.value = 1;
+      hasMore.value = true;
+      isLoadingNearby.value = true;
+    }
+
+    try {
+      final url = '${Endpoint.allApprovedGarage}&page=${page.value}&limit=${limit.value}';
+      final res = await ApiClient.to.get(url);
+
+      if (res.statusCode == 200 && res.body != null) {
+        final body = res.body;
+        List<dynamic> list = [];
+        Map? pagination;
+
+        if (body is Map) {
+          if (body['data'] is Map) {
+            final dataMap = body['data'];
+            if (dataMap['data'] is List) {
+              list = List<dynamic>.from(dataMap['data']);
+            }
+            if (dataMap['pagination'] is Map) {
+              pagination = Map<String, dynamic>.from(dataMap['pagination']);
+            }
+          } else if (body['data'] is List) {
+            list = List<dynamic>.from(body['data']);
+          }
+
+          if (body['pagination'] is Map) {
+            pagination = Map<String, dynamic>.from(body['pagination']);
+          }
+        }
+
+        final models = list
+            .where((e) => e != null && e is Map<String, dynamic>)
+            .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+
+        if (refresh) {
+          garages.assignAll(models);
+        } else {
+          garages.addAll(models);
+        }
+
+        if (pagination != null) {
+          page.value = (pagination['page'] is int) ? pagination['page'] : page.value;
+          limit.value = (pagination['limit'] is int) ? pagination['limit'] : limit.value;
+          total.value = (pagination['total'] is int) ? pagination['total'] : total.value;
+          final totalPagesVal = (pagination['totalPages'] is int) ? pagination['totalPages'] : 1;
+          totalPages.value = totalPagesVal;
+          if (page.value >= totalPagesVal) {
+            hasMore.value = false;
+          }
+        } else {
+          if (models.length < limit.value) {
+            hasMore.value = false;
+          }
+        }
+      } else {
+        if (refresh) {
+          garages.clear();
+        }
+        EasyLoading.showError('Failed to load approved garages');
+      }
+    } catch (e, st) {
+      print('Error fetching approved garages: $e');
+      print(st);
+      if (refresh) {
+        garages.clear();
+      }
+      EasyLoading.showError('Failed to fetch approved garages');
+    } finally {
+      isLoadingNearby.value = false;
+      isLoadingMore.value = false;
+    }
+  }
+
+  Future<void> loadMoreApprovedGarages() async {
+    if (isLoadingMore.value || !hasMore.value) return;
+    isLoadingMore.value = true;
+    page.value++;
+    await fetchApprovedGarages(refresh: false);
+  }
+
+  void resetToApprovedGarages() {
+    isNearbyMode.value = false;
+    fetchApprovedGarages(refresh: true);
+  }
+
   Future<void> findGaragesNearby() async {
     try {
-      isLoadingNearby.value = true;
-
       // Precondition: must have current location loaded
       if (!hasCurrentLocation.value ||
           currentLat.value == null ||
@@ -53,6 +169,9 @@ class ServiceController extends GetxController {
         EasyLoading.showError('Please load your location first');
         return;
       }
+
+      isLoadingNearby.value = true;
+      isNearbyMode.value = true;
 
       // Get radius from input (default to 10 if empty)
       final radiusText = radiusController.text.trim();
