@@ -228,7 +228,7 @@ class ProfilePage extends StatelessWidget {
                                         text: "logout",
                                         textAlign: TextAlign.center,
                                         style: getTextStyle(
-                                          fontSize: 16.sp,
+                                          fontSize: 12.sp,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.white,
                                         ),
@@ -236,7 +236,7 @@ class ProfilePage extends StatelessWidget {
                                       SizedBox(width: 4.w),
                                       Icon(
                                         Icons.logout_sharp,
-                                        size: 24.sp,
+                                        size: 16.sp,
                                         color: Colors.white,
                                       ),
                                     ],
@@ -267,7 +267,7 @@ class ProfilePage extends StatelessWidget {
                                 child: TranslatedText(
                                   text: "delete_account",
                                   style: getTextStyle(
-                                    fontSize: 16.sp,
+                                    fontSize: 12.sp,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.red,
                                   ),
@@ -276,7 +276,7 @@ class ProfilePage extends StatelessWidget {
                               SizedBox(width: 4.w),
                               Icon(
                                 Icons.warning_amber,
-                                size: 24.sp,
+                                size: 16.sp,
                                 color: Colors.red,
                               ),
                             ],
