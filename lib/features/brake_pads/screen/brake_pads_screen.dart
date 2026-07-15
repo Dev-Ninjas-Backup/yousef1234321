@@ -95,10 +95,14 @@ class BrakePadsScreen extends StatelessWidget {
                                 img,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
-                                errorBuilder: (_, __, ___) => Image.asset(
-                                  'assets/images/image2.png',
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: Colors.grey[200],
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 48.sp,
+                                    color: Colors.grey[500],
+                                  ),
                                 ),
                               );
                             }
@@ -107,12 +111,25 @@ class BrakePadsScreen extends StatelessWidget {
                                 img,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: Colors.grey[200],
+                                  alignment: Alignment.center,
+                                  child: Icon(
+                                    Icons.image_not_supported_outlined,
+                                    size: 48.sp,
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
                               );
                             }
-                            return Image.asset(
-                              'assets/images/image2.png',
-                              fit: BoxFit.cover,
-                              width: double.infinity,
+                            return Container(
+                              color: Colors.grey[200],
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.image_outlined,
+                                size: 48.sp,
+                                color: Colors.grey[500],
+                              ),
                             );
                           },
                         ),
