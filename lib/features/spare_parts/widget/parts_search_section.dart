@@ -281,7 +281,7 @@ class PartsSearchSection extends StatelessWidget {
                                     final template =
                                         snapshot.data ?? 'Price: @price';
                                     return Text(
-                                      template.replaceAll('@price', price),
+                                      "${template.replaceAll('@price', price)} AED",
                                     );
                                   },
                                 ),

@@ -620,9 +620,8 @@ class SparePartsScreen extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   TranslatedText(
-                                    text: _getEnglishText(
-                                      'price',
-                                    ).replaceAll('@price', price),
+                                    text:
+                                        "${_getEnglishText('price').replaceAll('@price', price)} AED",
                                     style: getTextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
