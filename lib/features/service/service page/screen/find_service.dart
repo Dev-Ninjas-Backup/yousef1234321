@@ -283,7 +283,7 @@ class _FindServiceState extends State<FindService> {
                                           color: AppColors.subTextColor,
                                         ),
                                       ),
-                                      if (distance.isNotEmpty) ...[
+                                      if (controller.isNearbyMode.value && distance.isNotEmpty) ...[
                                         const SizedBox(width: 8),
                                         const Icon(
                                           Icons.circle,

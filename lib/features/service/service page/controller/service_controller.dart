@@ -212,9 +212,9 @@ class ServiceController extends GetxController {
         final models = list
             .where((e) => e != null && e is Map<String, dynamic>)
             .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList(growable: false);
+            .toList();
 
-        garages.value = models;
+        garages.assignAll(models);
       } else {
         EasyLoading.showError('Failed to load nearby garages');
         garages.clear();
