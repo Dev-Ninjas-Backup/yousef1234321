@@ -247,7 +247,7 @@ class BrakePadsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '\$${c.product['price']?.toString() ?? '0'}',
+                      '${c.product['price']?.toString() ?? '0'} AED',
                       style: TextStyle(
                         fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
@@ -256,7 +256,7 @@ class BrakePadsScreen extends StatelessWidget {
                     SizedBox(width: 7.w),
                     if (c.product['promoCost'] != null)
                       Text(
-                        '\$${c.product['promoCost'].toString()}',
+                        '${c.product['promoCost'].toString()} AED',
                         style: TextStyle(
                           decoration: TextDecoration.lineThrough,
                           color: Colors.grey,

@@ -247,7 +247,7 @@ class SparePartsScreen extends StatelessWidget {
 
   Widget partsList(ProductsController productsCtrl) {
     return SizedBox(
-      height: 200,
+      height: 215,
       child: Obx(() {
         // loading state
         if (productsCtrl.isLoading.value && productsCtrl.products.isEmpty) {
