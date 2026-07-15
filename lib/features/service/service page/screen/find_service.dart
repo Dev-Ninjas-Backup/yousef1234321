@@ -43,7 +43,7 @@ class _FindServiceState extends State<FindService> {
   String? _getHoursForToday(GarageModel garage) {
     final now = DateTime.now();
     final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-    
+
     // Map weekday number to string name
     const weekdayNames = {
       1: 'Monday',
@@ -55,7 +55,7 @@ class _FindServiceState extends State<FindService> {
       7: 'Sunday',
     };
     final todayName = weekdayNames[currentDay]!;
-    
+
     // Try to get from weekdaysHours first if it is JSON
     final weekdaysParsed = _parseHoursJson(garage.weekdaysHours);
     if (weekdaysParsed != null) {
@@ -65,7 +65,7 @@ class _FindServiceState extends State<FindService> {
       );
       if (key.isNotEmpty) return weekdaysParsed[key];
     }
-    
+
     // Try weekendsHours if it is JSON
     final weekendsParsed = _parseHoursJson(garage.weekendsHours);
     if (weekendsParsed != null) {
@@ -75,7 +75,7 @@ class _FindServiceState extends State<FindService> {
       );
       if (key.isNotEmpty) return weekendsParsed[key];
     }
-    
+
     // If not JSON, fallback to traditional check
     final isWeekend = currentDay == 6 || currentDay == 7;
     final hoursString = isWeekend ? garage.weekendsHours : garage.weekdaysHours;
@@ -85,7 +85,9 @@ class _FindServiceState extends State<FindService> {
   /// Check if garage is currently open based on operating hours
   Map<String, dynamic> _getOpenStatus(GarageModel garage) {
     final hoursString = _getHoursForToday(garage);
-    if (hoursString == null || hoursString.isEmpty || hoursString.toLowerCase() == 'closed') {
+    if (hoursString == null ||
+        hoursString.isEmpty ||
+        hoursString.toLowerCase() == 'closed') {
       return {'isOpen': false, 'label': 'closed'};
     }
 
@@ -162,44 +164,14 @@ class _FindServiceState extends State<FindService> {
             SearchAndFilter(controller: controller),
             const SizedBox(height: 20),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TranslatedText(
-                  text: 'nearby_garages',
-                  style: getTextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                // GestureDetector(
-                //   onTap: () {
-                //     // Optional: Navigate to full garage list
-                //   },
-                //   child: Text(
-                //     "View All",
-                //     style: getTextStyle(
-                //       color: AppColors.splashButtonColor,
-                //       fontSize: 14,
-                //       fontWeight: FontWeight.w400,
-                //     ),
-                //   ),
-                // ),
-                GestureDetector(
-                  onTap: () {
-                    // Optional: Navigate to full garage list
-                  },
-                  child: TranslatedText(
-                    text: 'view_all',
-                    style: getTextStyle(
-                      color: AppColors.splashButtonColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            Obx(() {
+              return TranslatedText(
+                text: controller.isNearbyMode.value
+                    ? 'nearby_garages'
+                    : 'all_approved_garages',
+                style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              );
+            }),
             const SizedBox(height: 15),
 
             // Expanded list for garages only
@@ -222,10 +194,18 @@ class _FindServiceState extends State<FindService> {
                 );
 
                 return ListView.builder(
-                  itemCount: list.length,
+                  controller: controller.scrollController,
+                  itemCount:
+                      list.length + (controller.isLoadingMore.value ? 1 : 0),
                   padding: EdgeInsets.zero,
-                  shrinkWrap: true,
+                  shrinkWrap: false,
                   itemBuilder: (_, index) {
+                    if (index == list.length) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
                     final g = list[index];
                     final String name = g.name;
                     final String? profileImage = g.profileImage;
@@ -303,23 +283,25 @@ class _FindServiceState extends State<FindService> {
                                           color: AppColors.subTextColor,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
-                                      const Icon(
-                                        Icons.circle,
-                                        size: 8,
-                                        color: AppColors.subTextColor,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      TranslatedText(
-                                        text: 'distance_km'.tr.replaceAll(
-                                          '@distance',
-                                          distance,
-                                        ),
-                                        style: getTextStyle(
-                                          fontSize: 12,
+                                      if (distance.isNotEmpty) ...[
+                                        const SizedBox(width: 8),
+                                        const Icon(
+                                          Icons.circle,
+                                          size: 8,
                                           color: AppColors.subTextColor,
                                         ),
-                                      ),
+                                        const SizedBox(width: 8),
+                                        TranslatedText(
+                                          text: 'distance_km'.tr.replaceAll(
+                                            '@distance',
+                                            distance,
+                                          ),
+                                          style: getTextStyle(
+                                            fontSize: 12,
+                                            color: AppColors.subTextColor,
+                                          ),
+                                        ),
+                                      ],
                                       const SizedBox(width: 8),
                                       Builder(
                                         builder: (context) {
