@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:pinput/pinput.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/sign_up/signup_otp/controller/signup_otp_controller.dart';
@@ -11,6 +11,26 @@ class SignupOtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SignupOtpController());
+
+    final defaultPinTheme = PinTheme(
+      width: 45,
+      height: 60,
+      textStyle: const TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F7F9),
+        borderRadius: BorderRadius.circular(12),
+      ),
+    );
+
+    final focusedPinTheme = defaultPinTheme.copyWith(
+      decoration: defaultPinTheme.decoration!.copyWith(
+        border: Border.all(color: AppColors.splashButtonColor, width: 2),
+      ),
+    );
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -23,14 +43,14 @@ class SignupOtpScreen extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => Get.back(),
                   child: Container(
-                    margin: EdgeInsets.only(left: 24, top: 24),
+                    margin: const EdgeInsets.only(left: 24, top: 24),
                     height: 44,
                     width: 44,
                     decoration: BoxDecoration(
-                      color: Color(0xFFE8F1FD),
+                      color: const Color(0xFFE8F1FD),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Icon(
                         Icons.arrow_back_ios,
                         color: AppColors.splashButtonColor,
@@ -39,14 +59,13 @@ class SignupOtpScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 47),
+                padding: const EdgeInsets.symmetric(horizontal: 47),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 40),
-                    Center(
+                    const SizedBox(height: 40),
+                    const Center(
                       child: Text(
                         'OTP Verification',
                         style: TextStyle(
@@ -56,8 +75,8 @@ class SignupOtpScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Center(
+                    const SizedBox(height: 16),
+                    const Center(
                       child: Text(
                         'Enter the 6-digit code sent to your email',
                         style: TextStyle(
@@ -68,9 +87,8 @@ class SignupOtpScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(height: 32),
-
-                    Text(
+                    const SizedBox(height: 32),
+                    const Text(
                       "OTP Code",
                       style: TextStyle(
                         fontSize: 16,
@@ -78,84 +96,23 @@ class SignupOtpScreen extends StatelessWidget {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 12),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(
-                        6,
-                        (index) => SizedBox(
-                          width: 45,
-                          height: 70,
-                          child: KeyboardListener(
-                            focusNode: FocusNode()..canRequestFocus = false,
-                            onKeyEvent: (event) {
-                              if (event is KeyDownEvent &&
-                                  event.logicalKey == LogicalKeyboardKey.backspace) {
-                                if (controller.otpControllers[index].text.isEmpty &&
-                                    index > 0) {
-                                  FocusScope.of(context).requestFocus(
-                                    controller.focusNodes[index - 1],
-                                  );
-                                }
-                              }
-                            },
-                            child: TextField(
-                              controller: controller.otpControllers[index],
-                              focusNode: controller.focusNodes[index],
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              maxLength: 1,
-                              decoration: InputDecoration(
-                                counterText: "",
-                                filled: true,
-                                fillColor: Color(0xFFF7F7F9),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                              onChanged: (value) {
-                                if (value.length > 1) {
-                                  final cleanDigits =
-                                      value.replaceAll(RegExp(r'\D'), '');
-                                  for (int i = 0;
-                                      i < 6 && i < cleanDigits.length;
-                                      i++) {
-                                    controller.otpControllers[i].text =
-                                        cleanDigits[i];
-                                  }
-                                  controller.onOtpChanged(
-                                    5,
-                                    controller.otpControllers[5].text,
-                                  );
-                                  FocusScope.of(context).requestFocus(
-                                    controller.focusNodes[5],
-                                  );
-                                  return;
-                                }
-
-                                controller.onOtpChanged(index, value);
-
-                                if (value.isNotEmpty && index < 5) {
-                                  FocusScope.of(context).requestFocus(
-                                    controller.focusNodes[index + 1],
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Pinput(
+                        length: 6,
+                        controller: controller.pinController,
+                        defaultPinTheme: defaultPinTheme,
+                        focusedPinTheme: focusedPinTheme,
+                        showCursor: true,
+                        onChanged: (value) {
+                          controller.onOtpChanged(value);
+                        },
+                        onCompleted: (pin) {
+                          controller.onOtpChanged(pin);
+                        },
                       ),
                     ),
-
-                    SizedBox(height: 40),
-
+                    const SizedBox(height: 40),
                     Obx(
                       () => CustomButton(
                         title: controller.isLoading.value
@@ -168,8 +125,7 @@ class SignupOtpScreen extends StatelessWidget {
                             : null,
                       ),
                     ),
-                    SizedBox(height: 20),
-
+                    const SizedBox(height: 20),
                     Obx(() {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -178,7 +134,7 @@ class SignupOtpScreen extends StatelessWidget {
                             onPressed: controller.remainingSeconds.value == 0
                                 ? controller.resendOtp
                                 : null,
-                            child: Text(
+                            child: const Text(
                               "Resend Code",
                               style: TextStyle(
                                 color: AppColors.splashButtonColor,
@@ -189,7 +145,7 @@ class SignupOtpScreen extends StatelessWidget {
                           if (controller.remainingSeconds.value > 0)
                             Text(
                               "00:${controller.remainingSeconds.value.toString().padLeft(2, '0')}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: AppColors.splashButtonColor,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,

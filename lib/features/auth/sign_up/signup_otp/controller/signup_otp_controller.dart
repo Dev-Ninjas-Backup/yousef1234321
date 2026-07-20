@@ -7,14 +7,7 @@ import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 
 class SignupOtpController extends GetxController {
-  final List<TextEditingController> otpControllers = List.generate(
-    6,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> focusNodes = List.generate(
-    6,
-    (index) => FocusNode(),
-  );
+  final pinController = TextEditingController();
   final isOtpComplete = false.obs;
   final remainingSeconds = 60.obs;
   final isLoading = false.obs;
@@ -46,15 +39,14 @@ class SignupOtpController extends GetxController {
     });
   }
 
-  void onOtpChanged(int index, String value) {
-    String otp = otpControllers.map((e) => e.text).join();
-    isOtpComplete.value = otp.length == 6;
+  void onOtpChanged(String pin) {
+    isOtpComplete.value = pin.length == 6;
   }
 
   Future<void> verifyOtp() async {
     if (isLoading.value) return;
 
-    String otp = otpControllers.map((e) => e.text).join();
+    String otp = pinController.text.trim();
 
     isLoading.value = true;
     try {
@@ -126,12 +118,7 @@ class SignupOtpController extends GetxController {
   @override
   void onClose() {
     _timer?.cancel();
-    for (var controller in otpControllers) {
-      controller.dispose();
-    }
-    for (var node in focusNodes) {
-      node.dispose();
-    }
+    pinController.dispose();
     super.onClose();
   }
 }
