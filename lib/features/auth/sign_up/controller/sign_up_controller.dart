@@ -30,12 +30,46 @@ class SignUpController extends GetxController {
   Future<void> signUp() async {
     if (isLoading.value) return;
 
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        passwordController.text.isEmpty) {
+    if (nameController.text.trim().isEmpty ||
+        emailController.text.trim().isEmpty ||
+        phoneController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty) {
       Get.snackbar(
         "Error",
         "Please fill all required fields",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegExp.hasMatch(emailController.text.trim())) {
+      Get.snackbar(
+        "Error",
+        "Please enter a valid email address",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    final cleanPhone = phoneController.text.trim().replaceAll(RegExp(r'[\s\-]'), '');
+    final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
+    if (!phoneRegExp.hasMatch(cleanPhone)) {
+      Get.snackbar(
+        "Error",
+        "Please enter a valid phone number",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (passwordController.text.length < 8) {
+      Get.snackbar(
+        "Error",
+        "Password must be at least 8 characters",
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -82,10 +116,6 @@ class SignUpController extends GetxController {
           String verifyToken = response.body['verifyToken'] ?? "";
 
           if (verifyToken.isNotEmpty) {
-            // Use verifyToken for both auth header and reset token
-            await ApiClient.to.setToken(verifyToken);
-            await ApiClient.to.setResetToken(verifyToken);
-
             Get.snackbar(
               "Success",
               "Account created successfully!",
@@ -98,7 +128,8 @@ class SignUpController extends GetxController {
               '/signupOtpScreen',
               arguments: {
                 'email': emailController.text,
-                'role': role, // Pass role to next screen
+                'role': role,
+                'verifyToken': verifyToken,
               },
             );
           } else {
@@ -118,20 +149,35 @@ class SignUpController extends GetxController {
           );
         }
       } else {
+        String errorMessage = "Registration failed";
+        if (response.body != null && response.body is Map) {
+          final rawMessage = response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
         Get.snackbar(
-          "Error",
-          "Registration failed: ${response.body['message']}",
+          "Registration Failed",
+          errorMessage,
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
+          duration: const Duration(seconds: 4),
         );
       }
     } catch (e) {
-      // Get.snackbar(
-      //   "Error",
-      //   "Something went wrong: $e",
-      //   backgroundColor: Colors.redAccent,
-      //   colorText: Colors.white,
-      // );
+      Get.snackbar(
+        "Error",
+        "Something went wrong: $e",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

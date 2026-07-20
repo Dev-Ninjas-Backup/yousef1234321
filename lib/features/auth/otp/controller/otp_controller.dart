@@ -10,6 +10,10 @@ class OtpController extends GetxController {
     6,
     (index) => TextEditingController(),
   );
+  final List<FocusNode> focusNodes = List.generate(
+    6,
+    (index) => FocusNode(),
+  );
   final isOtpComplete = false.obs;
   final remainingSeconds = 60.obs;
   final isLoading = false.obs;
@@ -54,13 +58,41 @@ class OtpController extends GetxController {
       });
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        Get.snackbar(
+          "Success",
+          "OTP Verified Successfully",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
         Get.toNamed(Approute.resetPasswordScreen);
+      } else {
+        String errorMessage = "Invalid or incorrect OTP code";
+        if (response.body != null && response.body is Map) {
+          final rawMessage = response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
+        Get.snackbar(
+          "Verification Failed",
+          errorMessage,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Something went wrong: $e",
-        backgroundColor: Colors.red,
+        "Verification Error",
+        "Failed to verify OTP: $e",
+        backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
     } finally {
@@ -98,6 +130,9 @@ class OtpController extends GetxController {
     _timer?.cancel();
     for (var controller in otpControllers) {
       controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
     }
     super.onClose();
   }

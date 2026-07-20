@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
@@ -10,7 +11,6 @@ class SignupOtpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(SignupOtpController());
-    final focusNodes = List.generate(6, (_) => FocusNode());
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -87,39 +87,68 @@ class SignupOtpScreen extends StatelessWidget {
                         (index) => SizedBox(
                           width: 45,
                           height: 70,
-                          child: TextField(
-                            controller: controller.otpControllers[index],
-                            focusNode: focusNodes[index],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            maxLength: 1,
-                            decoration: InputDecoration(
-                              counterText: "",
-                              filled: true,
-                              fillColor: Color(0xFFF7F7F9),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            onChanged: (value) {
-                              controller.onOtpChanged(index, value);
-
-                              if (value.isNotEmpty && index < 5) {
-                                FocusScope.of(
-                                  context,
-                                ).requestFocus(focusNodes[index + 1]);
-                              } else if (value.isEmpty && index > 0) {
-                                FocusScope.of(
-                                  context,
-                                ).requestFocus(focusNodes[index - 1]);
+                          child: KeyboardListener(
+                            focusNode: FocusNode()..canRequestFocus = false,
+                            onKeyEvent: (event) {
+                              if (event is KeyDownEvent &&
+                                  event.logicalKey == LogicalKeyboardKey.backspace) {
+                                if (controller.otpControllers[index].text.isEmpty &&
+                                    index > 0) {
+                                  FocusScope.of(context).requestFocus(
+                                    controller.focusNodes[index - 1],
+                                  );
+                                }
                               }
                             },
+                            child: TextField(
+                              controller: controller.otpControllers[index],
+                              focusNode: controller.focusNodes[index],
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              maxLength: 1,
+                              decoration: InputDecoration(
+                                counterText: "",
+                                filled: true,
+                                fillColor: Color(0xFFF7F7F9),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              onChanged: (value) {
+                                if (value.length > 1) {
+                                  final cleanDigits =
+                                      value.replaceAll(RegExp(r'\D'), '');
+                                  for (int i = 0;
+                                      i < 6 && i < cleanDigits.length;
+                                      i++) {
+                                    controller.otpControllers[i].text =
+                                        cleanDigits[i];
+                                  }
+                                  controller.onOtpChanged(
+                                    5,
+                                    controller.otpControllers[5].text,
+                                  );
+                                  FocusScope.of(context).requestFocus(
+                                    controller.focusNodes[5],
+                                  );
+                                  return;
+                                }
+
+                                controller.onOtpChanged(index, value);
+
+                                if (value.isNotEmpty && index < 5) {
+                                  FocusScope.of(context).requestFocus(
+                                    controller.focusNodes[index + 1],
+                                  );
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),

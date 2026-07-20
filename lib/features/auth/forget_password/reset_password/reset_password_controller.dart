@@ -28,10 +28,10 @@ class ResetPasswordController extends GetxController {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       Get.snackbar(
         "Error",
-        "Password must be at least 6 characters",
+        "Password must be at least 8 characters",
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -54,6 +54,30 @@ class ResetPasswordController extends GetxController {
           colorText: Colors.white,
         );
         Get.offAllNamed(Approute.signInScreen);
+      } else {
+        String errorMessage = "Failed to reset password";
+        if (response.body != null && response.body is Map) {
+          final rawMessage =
+              response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null &&
+            response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
+        Get.snackbar(
+          "Error",
+          errorMessage,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       Get.snackbar(
