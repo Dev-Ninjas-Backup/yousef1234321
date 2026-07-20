@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/features/brake_pads/controller/brake_pads_controller.dart';
 import 'package:yousef1234321/features/service/service_booking/widgets/service_message.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
+import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/service/translation_service.dart';
 
 class BrakePadsScreen extends StatelessWidget {
@@ -48,18 +49,7 @@ class BrakePadsScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: Container(
-                        padding: EdgeInsets.all(8.w),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: 22.sp,
-                        ),
-                      ),
+                      child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
                     ),
                     Expanded(
                       child: TranslatedText(

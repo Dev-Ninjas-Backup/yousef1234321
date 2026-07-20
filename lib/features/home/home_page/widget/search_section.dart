@@ -160,7 +160,6 @@ class SearchSection extends StatelessWidget {
                   final hasService =
                       controller.selectedService.value != null &&
                       controller.selectedService.value!.isNotEmpty;
-                  final enabled = hasLocation && hasService;
 
                   return ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -168,55 +167,59 @@ class SearchSection extends StatelessWidget {
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 45),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(8),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: enabled
-                        ? () async {
-                            // Attempt to get current location. If permission denied, navigate without it.
-                            double? lat;
-                            double? lng;
-                            try {
-                              EasyLoading.show(status: 'locating'.tr);
-                              LocationPermission permission =
-                                  await Geolocator.checkPermission();
-                              if (permission == LocationPermission.denied) {
-                                permission =
-                                    await Geolocator.requestPermission();
-                              }
-                              if (permission == LocationPermission.denied ||
-                                  permission ==
-                                      LocationPermission.deniedForever) {
-                                EasyLoading.dismiss();
-                                EasyLoading.showInfo(
-                                  'Location permission denied'.tr,
-                                );
-                              } else {
-                                final pos = await Geolocator.getCurrentPosition(
-                                  desiredAccuracy: LocationAccuracy.high,
-                                );
-                                lat = pos.latitude;
-                                lng = pos.longitude;
-                                EasyLoading.dismiss();
-                              }
-                            } catch (e) {
-                              EasyLoading.dismiss();
-                              print('Failed to get location: $e');
-                            }
+                    onPressed: () async {
+                      if (!hasLocation && !hasService) {
+                        Get.snackbar(
+                          'selection_required'.tr,
+                          'enter_search_term_or_category'.tr,
+                          backgroundColor: Colors.amber.shade700,
+                          colorText: Colors.white,
+                        );
+                        return;
+                      }
 
-                            final args = {
-                              'emirate': controller.selectedLocation.value,
-                              'serviceName': controller.selectedService.value,
-                              if (lat != null && lng != null) 'currentLat': lat,
-                              if (lat != null && lng != null) 'currentLng': lng,
-                            };
+                      double? lat;
+                      double? lng;
+                      try {
+                        EasyLoading.show(status: 'locating'.tr);
+                        LocationPermission permission =
+                            await Geolocator.checkPermission();
+                        if (permission == LocationPermission.denied) {
+                          permission =
+                              await Geolocator.requestPermission();
+                        }
+                        if (permission == LocationPermission.denied ||
+                            permission ==
+                                LocationPermission.deniedForever) {
+                          EasyLoading.dismiss();
+                        } else {
+                          final pos = await Geolocator.getCurrentPosition(
+                            desiredAccuracy: LocationAccuracy.high,
+                          );
+                          lat = pos.latitude;
+                          lng = pos.longitude;
+                          EasyLoading.dismiss();
+                        }
+                      } catch (e) {
+                        EasyLoading.dismiss();
+                        print('Failed to get location: $e');
+                      }
 
-                            Get.toNamed(
-                              Approute.getfindGaragePage(),
-                              arguments: args,
-                            );
-                          }
-                        : null,
+                      final args = {
+                        'emirate': controller.selectedLocation.value,
+                        'serviceName': controller.selectedService.value,
+                        if (lat != null && lng != null) 'currentLat': lat,
+                        if (lat != null && lng != null) 'currentLng': lng,
+                      };
+
+                      Get.toNamed(
+                        Approute.getfindGaragePage(),
+                        arguments: args,
+                      );
+                    },
                     child: const TranslatedText(text: "search_garage"),
                   );
                 }),

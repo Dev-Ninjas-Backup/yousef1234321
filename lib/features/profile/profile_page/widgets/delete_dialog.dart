@@ -75,7 +75,7 @@ void showDeletelDialog() {
                       onPressed: () async {
                         // Show loading and call delete endpoint
                         try {
-                          EasyLoading.show(status: 'Deleting...');
+                          EasyLoading.show(status: 'deleting'.tr);
                           final success = await ApiClient.to
                               .deleteUserAccount();
                           EasyLoading.dismiss();
