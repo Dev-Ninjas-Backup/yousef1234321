@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
+import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
@@ -56,20 +57,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       Get.offAllNamed(Approute.onboardingScreen);
                     }
                   },
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 24, top: 24),
-                    height: 44,
-                    width: 44,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F1FD),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppColors.splashButtonColor,
-                      ),
-                    ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 24, top: 24),
+                    child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
                   ),
                 ),
               ),

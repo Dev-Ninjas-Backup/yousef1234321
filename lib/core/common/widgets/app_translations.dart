@@ -73,6 +73,7 @@ class AppTranslations extends Translations {
       'nearby_garages': 'Nearby garages',
       'view_all': 'View All',
       'no_garages_available': 'No garages available',
+      'no_garage_available': 'No Garage Available',
       'open': 'Open',
       'closed': 'Closed',
       'distance_km': '@distance km',
@@ -224,6 +225,12 @@ class AppTranslations extends Translations {
       'feedback_submitted_successfully':
           'Your feedback has been submitted successfully.',
       'loading': 'Loading...',
+      'locating': 'Locating...',
+      'deleting': 'Deleting...',
+      'searching_location': 'Searching location...',
+      'loading_location': 'Loading location...',
+      'location_permission_denied': 'Location permission denied',
+      'failed_to_get_location': 'Failed to get location',
       'garage_overview': 'Garage Overview',
       'chat_open_error':
           'Unable to open chat - garage owner information not loaded',
@@ -321,7 +328,6 @@ class AppTranslations extends Translations {
 
       // --- Completely missing keys ---
       'submit_review_failed': 'Failed to submit review',
-      'locating': 'Locating...',
       'All Garages': 'All Garages',
 
       // call_dialog.dart raw-string .tr calls:

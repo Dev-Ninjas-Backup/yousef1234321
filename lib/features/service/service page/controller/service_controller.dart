@@ -233,7 +233,7 @@ class ServiceController extends GetxController {
   Future<void> loadCurrentLocation() async {
     try {
       isLoadingLocation.value = true;
-      EasyLoading.show(status: 'Loading location...');
+      EasyLoading.show(status: 'loading_location'.tr);
 
       // Import geolocator if not already done
       final permission = await Geolocator.checkPermission();

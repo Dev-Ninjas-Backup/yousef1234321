@@ -174,7 +174,7 @@ class LocationPageController extends GetxController {
     final query = searchController.text.trim();
     if (query.isEmpty) return;
     try {
-      EasyLoading.show(status: 'Searching location...');
+      EasyLoading.show(status: 'searching_location'.tr);
       final apiKey = _getGeocodingApiKey();
       print('Using Geocoding API Key: $apiKey');
       final url = Uri.parse(

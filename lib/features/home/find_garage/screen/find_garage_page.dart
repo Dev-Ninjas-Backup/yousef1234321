@@ -32,26 +32,77 @@ class _FindGaragePageState extends State<FindGaragePage> {
     // Always refresh user's location when this screen initializes.
     controller.loadCurrentLocation();
 
-    // When location becomes available, animate the map to the user's position.
-    ever(controller.currentLat, (_) async {
-      if (controller.currentLat.value != null &&
-          controller.currentLng.value != null) {
-        try {
-          final mapCtrl = await _mapController.future;
-          await mapCtrl.animateCamera(
-            CameraUpdate.newLatLngZoom(
-              LatLng(
-                controller.currentLat.value!,
-                controller.currentLng.value!,
-              ),
-              14,
-            ),
-          );
-        } catch (e) {
-          // ignore
-        }
-      }
+    // When garages or location updates, adjust map bounds so all garages are visible.
+    ever(controller.garages, (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fitMapToGarages();
+      });
     });
+  }
+
+  Future<void> _fitMapToGarages() async {
+    final garages = controller.garages;
+    final markers = <Marker>{};
+
+    for (var g in garages) {
+      if (g.garageLat != null &&
+          g.garageLng != null &&
+          g.garageLat != 0 &&
+          g.garageLng != 0) {
+        markers.add(
+          Marker(
+            markerId: MarkerId(g.id),
+            position: LatLng(g.garageLat!, g.garageLng!),
+            infoWindow: InfoWindow(
+              title: g.name,
+              snippet: g.address ?? '',
+            ),
+          ),
+        );
+      }
+    }
+
+    if (controller.currentLat.value != null &&
+        controller.currentLng.value != null) {
+      markers.add(
+        Marker(
+          markerId: const MarkerId('user'),
+          position: LatLng(
+            controller.currentLat.value!,
+            controller.currentLng.value!,
+          ),
+        ),
+      );
+    }
+
+    if (markers.isEmpty) return;
+
+    try {
+      final mapCtrl = await _mapController.future;
+      double minLat = markers.first.position.latitude;
+      double maxLat = markers.first.position.latitude;
+      double minLng = markers.first.position.longitude;
+      double maxLng = markers.first.position.longitude;
+
+      for (var m in markers) {
+        if (m.position.latitude < minLat) minLat = m.position.latitude;
+        if (m.position.latitude > maxLat) maxLat = m.position.latitude;
+        if (m.position.longitude < minLng) minLng = m.position.longitude;
+        if (m.position.longitude > maxLng) maxLng = m.position.longitude;
+      }
+
+      if (minLat == maxLat && minLng == maxLng) {
+        await mapCtrl.animateCamera(
+          CameraUpdate.newLatLngZoom(LatLng(minLat, minLng), 14),
+        );
+      } else {
+        final bounds = LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        );
+        await mapCtrl.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+      }
+    } catch (_) {}
   }
 
   Future<void> _fetchYouTranslation() async {
@@ -148,7 +199,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     children: controller.items.map((item) {
                       bool isSelected = controller.selectedItem.value == item;
                       return GestureDetector(
-                        onTap: () => controller.selectedItem.value = item,
+                        onTap: () => controller.selectCategory(item),
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -184,11 +235,14 @@ class _FindGaragePageState extends State<FindGaragePage> {
 
                 // Garage markers
                 for (var g in garages) {
-                  if (g.garageLat != 0 && g.garageLng != 0) {
+                  if (g.garageLat != null &&
+                      g.garageLng != null &&
+                      g.garageLat != 0 &&
+                      g.garageLng != 0) {
                     markers.add(
                       Marker(
                         markerId: MarkerId(g.id),
-                        position: LatLng(g.garageLat, g.garageLng),
+                        position: LatLng(g.garageLat!, g.garageLng!),
                         infoWindow: InfoWindow(title: g.name),
                       ),
                     );
@@ -200,7 +254,10 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     controller.currentLat.value != null &&
                     controller.currentLng.value != null;
 
-                return Container(
+                return
+                
+                
+                 Container(
                   height: 400,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -217,10 +274,9 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                   controller.currentLat.value!,
                                   controller.currentLng.value!,
                                 )
-                              : const LatLng(
-                                  25.2048,
-                                  55.2708,
-                                ), // Default to Dubai
+                              : (markers.isNotEmpty
+                                    ? markers.first.position
+                                    : const LatLng(0, 0)),
                           zoom: 14,
                         ),
                         markers: {
@@ -251,46 +307,42 @@ class _FindGaragePageState extends State<FindGaragePage> {
                           if (!_mapController.isCompleted) {
                             _mapController.complete(ctrl);
                           }
+                          _fitMapToGarages();
                         },
                       ),
                       Positioned(
                         bottom: 12,
                         right: 12,
-                        child: Obx(() {
-                          final hasLoc =
-                              controller.currentLat.value != null &&
-                              controller.currentLng.value != null;
-                          return FloatingActionButton(
+                        child: FloatingActionButton(
                             mini: true,
-                            backgroundColor: hasLoc
-                                ? Colors.white
-                                : Colors.grey.shade300,
-                            onPressed: hasLoc
-                                ? () async {
-                                    try {
-                                      final mapCtrl =
-                                          await _mapController.future;
-                                      final lat = controller.currentLat.value!;
-                                      final lng = controller.currentLng.value!;
-                                      await mapCtrl.animateCamera(
-                                        CameraUpdate.newLatLngZoom(
-                                          LatLng(lat, lng),
-                                          14,
-                                        ),
-                                      );
-                                    } catch (e) {
-                                      // ignore errors
-                                    }
-                                  }
-                                : null,
+                            backgroundColor: Colors.white,
+                            onPressed: () async {
+                              await controller.loadCurrentLocation();
+                              if (controller.currentLat.value != null &&
+                                  controller.currentLng.value != null) {
+                                try {
+                                  final mapCtrl =
+                                      await _mapController.future;
+                                  final lat = controller.currentLat.value!;
+                                  final lng = controller.currentLng.value!;
+                                  await mapCtrl.animateCamera(
+                                    CameraUpdate.newLatLngZoom(
+                                      LatLng(lat, lng),
+                                      14,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  // ignore errors
+                                }
+                              }
+                            },
                             child: const Icon(
                               Icons.my_location,
                               color: Colors.black54,
                               size: 18,
                             ),
-                          );
-                        }),
-                      ),
+                          ),
+                        ),
                     ],
                   ),
                 );
@@ -302,7 +354,19 @@ class _FindGaragePageState extends State<FindGaragePage> {
               Obx(() {
                 final list = controller.garages.toList(growable: false);
                 if (list.isEmpty) {
-                  return const SizedBox();
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24.0),
+                    child: Center(
+                      child: TranslatedText(
+                        text: "no_garage_available",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  );
                 }
 
                 return SizedBox(
@@ -314,12 +378,6 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     separatorBuilder: (_, __) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
                       final g = list[index];
-                      final image = g.coverPhoto.isNotEmpty
-                          ? g.coverPhoto
-                          : (g.profileImage.isNotEmpty
-                                ? g.profileImage
-                                : 'assets/images/onboarding1.png');
-
                       return GestureDetector(
                         onTap: () {
                           // navigate to booking for this garage
@@ -343,19 +401,36 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                   topLeft: Radius.circular(8),
                                   topRight: Radius.circular(8),
                                 ),
-                                child: image.startsWith('http')
-                                    ? Image.network(
-                                        image,
-                                        height: 84,
-                                        width: 220,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        image,
-                                        height: 84,
-                                        width: 220,
-                                        fit: BoxFit.cover,
-                                      ),
+                                child:
+                                    (g.profileImage != null &&
+                                            g.profileImage!.isNotEmpty)
+                                        ? Image.network(
+                                          g.profileImage!,
+                                          height: 84,
+                                          width: 220,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (_, __, ___) => Container(
+                                                height: 84,
+                                                width: 220,
+                                                color: Colors.grey.shade100,
+                                                child: const Icon(
+                                                  Icons.storefront_outlined,
+                                                  size: 36,
+                                                  color: Colors.grey,
+                                                ),
+                                              ),
+                                        )
+                                        : Container(
+                                          height: 84,
+                                          width: 220,
+                                          color: Colors.grey.shade100,
+                                          child: const Icon(
+                                            Icons.storefront_outlined,
+                                            size: 36,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),

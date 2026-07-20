@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
@@ -30,9 +31,22 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _requestLocationPermissionOnAppStart();
     startScroll();
     fetchServices();
     fetchTopRatedGarages();
+  }
+
+  Future<void> _requestLocationPermissionOnAppStart() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        await Geolocator.requestPermission();
+      }
+    } catch (_) {}
   }
 
   @override
