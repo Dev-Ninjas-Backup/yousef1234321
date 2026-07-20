@@ -156,34 +156,35 @@ class ProfilePage extends StatelessWidget {
                     itemBuilder: (_, index) {
                       return Column(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    controller.profileItem[index].icon,
-                                    size: 24.sp,
-                                  ),
-                                  SizedBox(width: 4.w),
-                                  TranslatedText(
-                                    text: controller.profileItem[index].title,
-                                    style: getTextStyle(fontSize: 16.sp),
-                                  ),
-                                ],
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  controller.profileItem[index].ontap?.call();
-                                  controller.selectedIndex.value =
-                                      index; // Update selected index
-                                },
-                                child: Icon(
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              controller.profileItem[index].ontap?.call();
+                              controller.selectedIndex.value =
+                                  index; // Update selected index
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      controller.profileItem[index].icon,
+                                      size: 24.sp,
+                                    ),
+                                    SizedBox(width: 4.w),
+                                    TranslatedText(
+                                      text: controller.profileItem[index].title,
+                                      style: getTextStyle(fontSize: 16.sp),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
                                   Icons.arrow_forward_ios_outlined,
                                   size: 24.sp,
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           SizedBox(height: 8.h),
                           Divider(thickness: .8.h),
