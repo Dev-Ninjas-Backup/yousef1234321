@@ -9,6 +9,8 @@ import 'package:yousef1234321/features/home/home_page/widget/search_section.dart
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
 import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
+import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
+import 'package:yousef1234321/features/profile/profile_page/scrreen/profile_page.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -121,28 +123,40 @@ class HomeScreen extends StatelessWidget {
                     SizedBox(width: 12),
                     Tooltip(
                       message: "profile".tr,
-                      child: Obx(() {
-                        final profileController = Get.find<ProfileController>();
-                        final profilePhoto =
-                            profileController.profilePhoto.value;
+                      child: GestureDetector(
+                        onTap: () {
+                          if (Get.isRegistered<BottomNavbarController>()) {
+                            Get.find<BottomNavbarController>().changeIndex(4);
+                          } else {
+                            Get.to(() => ProfilePage());
+                          }
+                        },
+                        child: Obx(() {
+                          final profileController =
+                              Get.isRegistered<ProfileController>()
+                              ? Get.find<ProfileController>()
+                              : Get.put(ProfileController());
+                          final profilePhoto =
+                              profileController.profilePhoto.value;
 
-                        ImageProvider? backgroundImage;
-                        if (profilePhoto != null && profilePhoto.isNotEmpty) {
-                          backgroundImage = NetworkImage(profilePhoto);
-                        }
+                          ImageProvider? backgroundImage;
+                          if (profilePhoto != null && profilePhoto.isNotEmpty) {
+                            backgroundImage = NetworkImage(profilePhoto);
+                          }
 
-                        return CircleAvatar(
-                          backgroundImage: backgroundImage,
-                          onBackgroundImageError: backgroundImage != null
-                              ? (exception, stackTrace) {
-                                  // Log error
-                                }
-                              : null,
-                          child: backgroundImage == null
-                              ? const Icon(Icons.person)
-                              : null,
-                        );
-                      }),
+                          return CircleAvatar(
+                            backgroundImage: backgroundImage,
+                            onBackgroundImageError: backgroundImage != null
+                                ? (exception, stackTrace) {
+                                    // Log error
+                                  }
+                                : null,
+                            child: backgroundImage == null
+                                ? const Icon(Icons.person)
+                                : null,
+                          );
+                        }),
+                      ),
                     ),
                   ],
                 ),

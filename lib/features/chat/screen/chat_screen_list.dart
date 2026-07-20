@@ -87,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             /// Header Title
-            CustomAppBar(title: "chat"),
+            CustomAppBar(title: "chat", showBackButton: false),
             const SizedBox(height: 12), // Reduced gap
             /// 🔍 Search Bar
             Container(
