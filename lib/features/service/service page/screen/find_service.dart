@@ -159,7 +159,7 @@ class _FindServiceState extends State<FindService> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CustomAppBar(title: "service", showBackButton: false),
+            const CustomAppBar(title: "Service", showBackButton: false),
             const SizedBox(height: 32),
             SearchAndFilter(controller: controller),
             const SizedBox(height: 20),

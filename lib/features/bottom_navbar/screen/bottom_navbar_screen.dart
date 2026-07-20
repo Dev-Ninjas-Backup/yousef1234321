@@ -154,11 +154,11 @@ class BottomNavbarScreen extends StatelessWidget {
     ];
 
     final List<String> labels = [
-      "Service",
-      "Spare_parts",
-      "Home",
-      "Chat",
-      "Profile",
+      "nav_service",
+      "nav_spare_parts",
+      "home",
+      "chat",
+      "profile",
     ];
 
     return Obx(

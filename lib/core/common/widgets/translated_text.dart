@@ -41,7 +41,7 @@ class TranslatedText extends StatelessWidget {
       // Optimization: Check if we have a static translation available locally to avoid API calls.
 
       // 1. If current language is English, use the English value directly.
-      if (Get.locale?.languageCode == 'en') {
+      if (Get.locale?.languageCode == 'en' || Get.locale == null) {
         return Text(
           sourceText,
           style: style,
@@ -62,6 +62,17 @@ class TranslatedText extends StatelessWidget {
           textAlign: textAlign,
         );
       }
+    }
+
+    // If current language is English (or default), no need to call translation API for raw English text.
+    if (Get.locale?.languageCode == 'en' || Get.locale == null) {
+      return Text(
+        sourceText,
+        style: style,
+        overflow: overflow,
+        maxLines: maxLines,
+        textAlign: textAlign,
+      );
     }
 
     return FutureBuilder<String>(

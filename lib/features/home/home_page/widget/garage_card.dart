@@ -249,7 +249,7 @@ class GarageCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Column(children: [const Icon(Icons.more_vert, size: 20)]),
+            //  Column(children: [const Icon(Icons.more_vert, size: 20)]),
             ],
           ),
         ),
