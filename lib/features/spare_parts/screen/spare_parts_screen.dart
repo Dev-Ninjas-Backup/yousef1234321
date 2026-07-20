@@ -69,19 +69,7 @@ class SparePartsScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Image.asset(Iconpath.carHomeIcon, height: 37, width: 37),
-                    SizedBox(width: 8),
-                    TranslatedText(
-                      text: 'sayara_hub',
-                      style: getTextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+                Image.asset("assets/icons/logo.png", height: 37),
                 Row(
                   children: [
                     CircleAvatar(
