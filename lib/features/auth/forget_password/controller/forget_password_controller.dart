@@ -151,6 +151,30 @@ class ForgetPasswordController extends GetxController {
           // ignore: deprecated_member_use
           barrierColor: Colors.black.withValues(alpha: 0.5),
         );
+      } else {
+        String errorMessage = "Failed to process request";
+        if (response.body != null && response.body is Map) {
+          final rawMessage = response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
+        Get.snackbar(
+          "Error",
+          errorMessage,
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       Get.snackbar(

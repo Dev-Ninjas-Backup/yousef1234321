@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
@@ -51,7 +50,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () {
-                    Get.back();
+                    if (Navigator.canPop(context)) {
+                      Get.back();
+                    } else {
+                      Get.offAllNamed(Approute.onboardingScreen);
+                    }
                   },
                   child: Container(
                     margin: const EdgeInsets.only(left: 24, top: 24),
@@ -192,7 +195,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.offAllNamed('/signUpScreen');
+                                Get.toNamed(Approute.signUpScreen);
                               },
                           ),
                         ],

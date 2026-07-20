@@ -11,17 +11,23 @@ class SignupOtpController extends GetxController {
     6,
     (index) => TextEditingController(),
   );
+  final List<FocusNode> focusNodes = List.generate(
+    6,
+    (index) => FocusNode(),
+  );
   final isOtpComplete = false.obs;
   final remainingSeconds = 60.obs;
   final isLoading = false.obs;
   Timer? _timer;
   String email = "";
+  String verifyToken = "";
 
   @override
   void onInit() {
     super.onInit();
     if (Get.arguments is Map) {
       email = Get.arguments['email'] ?? "";
+      verifyToken = Get.arguments['verifyToken'] ?? "";
     } else {
       email = Get.arguments ?? "";
     }
@@ -55,11 +61,21 @@ class SignupOtpController extends GetxController {
       final response = await ApiClient.to.post(Endpoint.otpVerification, {
         'email': email,
         'emailOtp': otp,
-        'resetToken': ApiClient.to.resetToken ?? '',
+        'resetToken': verifyToken.isNotEmpty ? verifyToken : (ApiClient.to.resetToken ?? ''),
       });
 
 
       if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.body != null && response.body is Map) {
+          String token = response.body['token'] ??
+              response.body['accessToken'] ??
+              (response.body['data'] is Map ? response.body['data']['token'] : null) ??
+              "";
+          if (token.isNotEmpty) {
+            await ApiClient.to.setToken(token);
+          }
+        }
+
         Get.snackbar(
           "Success",
           "OTP Verified Successfully",
@@ -67,11 +83,33 @@ class SignupOtpController extends GetxController {
           colorText: Colors.white,
         );
         Get.offAllNamed('/signInScreen');
+      } else {
+        String errorMessage = "Invalid or incorrect OTP code";
+        if (response.body != null && response.body is Map) {
+          final rawMessage = response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
+        Get.snackbar(
+          "Verification Failed",
+          errorMessage,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Something went wrong: $e",
+        "Verification Error",
+        "Failed to verify OTP: $e",
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -90,6 +128,9 @@ class SignupOtpController extends GetxController {
     _timer?.cancel();
     for (var controller in otpControllers) {
       controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
     }
     super.onClose();
   }

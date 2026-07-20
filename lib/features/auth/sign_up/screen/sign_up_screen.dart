@@ -1,13 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
-import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
-import 'package:yousef1234321/core/common/widgets/social_button.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -26,9 +24,10 @@ class SignUpScreen extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: GestureDetector(
                   onTap: () {
-                    Get.back();
-                    if (kDebugMode) {
-                      print('Tapped');
+                    if (Navigator.canPop(context)) {
+                      Get.back();
+                    } else {
+                      Get.offAllNamed(Approute.onboardingScreen);
                     }
                   },
                   child: Container(
@@ -226,7 +225,11 @@ class SignUpScreen extends StatelessWidget {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.offAllNamed('/signInScreen');
+                                if (Navigator.canPop(context)) {
+                                  Get.back();
+                                } else {
+                                  Get.toNamed(Approute.signInScreen);
+                                }
                               },
                           ),
                         ],

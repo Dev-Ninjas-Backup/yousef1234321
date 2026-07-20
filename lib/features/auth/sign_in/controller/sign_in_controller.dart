@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
@@ -23,7 +22,12 @@ class SignInController extends GetxController {
     final passwordValue = (password ?? passwordController.text).trim();
 
     if (emailValue.isEmpty || passwordValue.isEmpty) {
-      EasyLoading.showError("Please enter email and password");
+      Get.snackbar(
+        "Error",
+        "Please enter email and password",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -48,28 +52,54 @@ class SignInController extends GetxController {
             await ApiClient.to.setToken(accessToken);
             await ApiClient.to.setUserId(userId);
 
-            // Get.snackbar(
-            //   "Success",
-            //   "Login Successful",
-            //   backgroundColor: Colors.green,
-            //   colorText: Colors.white,
-            // );
-
             // Navigate to Home/Dashboard
             Get.offAllNamed(Approute.bottomNavBarScreen);
           } else {
-            EasyLoading.showError("Invalid token received");
+            Get.snackbar(
+              "Error",
+              "Invalid token received",
+              backgroundColor: Colors.redAccent,
+              colorText: Colors.white,
+            );
           }
         } else {
-          EasyLoading.showError("Invalid response format");
+          Get.snackbar(
+            "Error",
+            "Invalid response format",
+            backgroundColor: Colors.redAccent,
+            colorText: Colors.white,
+          );
         }
       } else {
-        EasyLoading.showError(
-          "Login failed: ${response.body['message'] ?? response.statusCode}",
+        String errorMessage = "Login failed";
+        if (response.body != null && response.body is Map) {
+          final rawMessage = response.body['message'] ??
+              response.body['error'] ??
+              response.body['errorMessage'];
+          if (rawMessage is List && rawMessage.isNotEmpty) {
+            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
+          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
+            errorMessage = rawMessage.toString();
+          }
+        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
+          errorMessage = response.statusText!;
+        }
+
+        Get.snackbar(
+          "Login Failed",
+          errorMessage,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
         );
       }
     } catch (e) {
-      EasyLoading.showError("Something went wrong: $e");
+      Get.snackbar(
+        "Error",
+        "Something went wrong: $e",
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
