@@ -136,6 +136,9 @@ class EditProfileController extends GetxController {
           profilePhotoUrl.value = data != null
               ? data['profilePhoto']
               : profilePhotoUrl.value;
+          if (Get.isRegistered<ProfileController>()) {
+            await Get.find<ProfileController>().fetchProfile();
+          }
           Get.back();
           Get.snackbar(
             'success'.tr,
@@ -173,7 +176,9 @@ class EditProfileController extends GetxController {
           profilePhotoUrl.value = data != null
               ? data['profilePhoto']
               : profilePhotoUrl.value;
-          await profileController.fetchProfile();
+          if (Get.isRegistered<ProfileController>()) {
+            await Get.find<ProfileController>().fetchProfile();
+          }
           Get.back();
           Get.snackbar(
             'success'.tr,
