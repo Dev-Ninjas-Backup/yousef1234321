@@ -9,6 +9,9 @@ import 'package:yousef1234321/features/spare_parts/controller/spare_parts_contro
 import 'package:yousef1234321/features/spare_parts/widget/category_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/part_item.dart';
 import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.dart';
+import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
+import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
+import 'package:yousef1234321/features/profile/profile_page/scrreen/profile_page.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
@@ -86,10 +89,39 @@ class SparePartsScreen extends StatelessWidget {
                       child: Image.asset(Iconpath.notification, scale: 2),
                     ),
                     SizedBox(width: 12),
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                        "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?cs=srgb&dl=pexels-italo-melo-881954-2379004.jpg&fm=jpg",
-                      ),
+                    GestureDetector(
+                      onTap: () {
+                        if (Get.isRegistered<BottomNavbarController>()) {
+                          Get.find<BottomNavbarController>().changeIndex(4);
+                        } else {
+                          Get.to(() => ProfilePage());
+                        }
+                      },
+                      child: Obx(() {
+                        final profileController =
+                            Get.isRegistered<ProfileController>()
+                            ? Get.find<ProfileController>()
+                            : Get.put(ProfileController());
+                        final profilePhoto =
+                            profileController.profilePhoto.value;
+
+                        ImageProvider? backgroundImage;
+                        if (profilePhoto != null && profilePhoto.isNotEmpty) {
+                          backgroundImage = NetworkImage(profilePhoto);
+                        }
+
+                        return CircleAvatar(
+                          backgroundImage: backgroundImage,
+                          onBackgroundImageError: backgroundImage != null
+                              ? (exception, stackTrace) {
+                                  // Handled gracefully
+                                }
+                              : null,
+                          child: backgroundImage == null
+                              ? const Icon(Icons.person)
+                              : null,
+                        );
+                      }),
                     ),
                   ],
                 ),
