@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -577,24 +577,69 @@ class BrakePadsScreen extends StatelessWidget {
 
 class _FeatureItem extends StatelessWidget {
   final String text;
-  const _FeatureItem(this.text);
+  final RxBool isExpanded = false.obs;
+
+  _FeatureItem(this.text, {super.key});
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: EdgeInsets.symmetric(vertical: 4.h),
-    child: Row(
-      // mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
-        SizedBox(width: 8.w),
-        Expanded(
-          child: TranslatedText(
-            text: text,
-            style: TextStyle(fontSize: 14.sp, color: Colors.black87),
-          ),
+        padding: EdgeInsets.symmetric(vertical: 4.h),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
+            SizedBox(width: 8.w),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final textStyle =
+                      TextStyle(fontSize: 14.sp, color: Colors.black87);
+                  final textPainter = TextPainter(
+                    text: TextSpan(text: text, style: textStyle),
+                    maxLines: 5,
+                    textDirection: TextDirection.ltr,
+                  )..layout(maxWidth: constraints.maxWidth);
+
+                  final bool isOverflown = textPainter.didExceedMaxLines;
+
+                  return Obx(
+                    () => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TranslatedText(
+                          text: text,
+                          maxLines: isExpanded.value ? null : 5,
+                          overflow: isExpanded.value
+                              ? TextOverflow.visible
+                              : TextOverflow.ellipsis,
+                          style: textStyle,
+                        ),
+                        if (isOverflown || isExpanded.value) ...[
+                          SizedBox(height: 4.h),
+                          InkWell(
+                            onTap: () {
+                              isExpanded.value = !isExpanded.value;
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 2.h),
+                              child: TranslatedText(
+                                text: isExpanded.value ? "see_less" : "see_more",
+                                style: TextStyle(
+                                  fontSize: 13.sp,
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
-      ],
-    ),
-  );
+      );
 }
