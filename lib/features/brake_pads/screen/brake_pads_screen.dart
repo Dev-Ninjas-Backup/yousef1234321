@@ -49,7 +49,11 @@ class BrakePadsScreen extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Get.back(),
-                      child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+                      child: Image.asset(
+                        Iconpath.arrowback,
+                        height: 44,
+                        width: 44,
+                      ),
                     ),
                     Expanded(
                       child: TranslatedText(
@@ -579,6 +583,8 @@ class _FeatureItem extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(vertical: 4.h),
     child: Row(
+      // mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
         SizedBox(width: 8.w),

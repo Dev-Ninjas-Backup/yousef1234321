@@ -59,10 +59,13 @@ class PartsDetailsController extends GetxController {
         }
       } else {
         print("monthly response:${response.body}");
-        EasyLoading.showError("Payment failed");
+        final msg = (data is Map && data['message'] != null)
+            ? data['message'].toString()
+            : "Payment failed";
+        EasyLoading.showError(msg);
       }
     } catch (e) {
-      EasyLoading.showError("Something went wrong");
+      EasyLoading.showError("Something went wrong: $e");
     } finally {
       EasyLoading.dismiss();
     }
@@ -91,10 +94,13 @@ class PartsDetailsController extends GetxController {
           EasyLoading.showError("Payment failed: invalid payment url");
         }
       } else {
-        EasyLoading.showError("Payment failed");
+        final msg = (data is Map && data['message'] != null)
+            ? data['message'].toString()
+            : "Payment failed";
+        EasyLoading.showError(msg);
       }
     } catch (e) {
-      EasyLoading.showError("Something went wrong");
+      EasyLoading.showError("Something went wrong: $e");
     } finally {
       EasyLoading.dismiss();
     }
@@ -122,10 +128,13 @@ class PartsDetailsController extends GetxController {
           EasyLoading.showError("Payment failed: invalid payment url");
         }
       } else {
-        EasyLoading.showError("Payment failed");
+        final msg = (data is Map && data['message'] != null)
+            ? data['message'].toString()
+            : "Payment failed";
+        EasyLoading.showError(msg);
       }
     } catch (e) {
-      EasyLoading.showError("Something went wrong");
+      EasyLoading.showError("Something went wrong: $e");
     } finally {
       EasyLoading.dismiss();
     }
@@ -448,11 +457,22 @@ class PartsDetailsController extends GetxController {
         Get.back();
       } else {
         debugPrint("Create product error: ${response.body}");
-        EasyLoading.showError("Failed to create product");
+        String serverMsg = "Failed to create product";
+        try {
+          final data = json.decode(response.body);
+          if (data is Map) {
+            serverMsg =
+                data['message']?.toString() ??
+                data['error']?.toString() ??
+                data['errorMessage']?.toString() ??
+                serverMsg;
+          }
+        } catch (_) {}
+        EasyLoading.showError(serverMsg);
       }
     } catch (e) {
       debugPrint("Create product exception: $e");
-      EasyLoading.showError("Something went wrong");
+      EasyLoading.showError("Something went wrong: $e");
     } finally {
       EasyLoading.dismiss();
     }
