@@ -63,6 +63,8 @@ class AppTranslations extends Translations {
       'todays_deals': 'Today\'s Deals',
       'all_spare_parts': 'All Spare Parts',
       'see_all': 'See All',
+      'see_more': 'See more',
+      'see_less': 'See less',
       'retry': 'Retry',
       'no_products_available': 'No products available',
       'explore': 'Explore @title',
@@ -362,6 +364,8 @@ class AppTranslations extends Translations {
       'arabic': 'अरबी',
       'ras_al_khaimah': 'रास अल खैमाह',
       'radius_hint': '10 किमी दायरा',
+      'see_more': 'और देखें',
+      'see_less': 'कम देखें',
     },
     'ar_SA': {
       'select_language': 'اختر اللغة',
@@ -370,6 +374,8 @@ class AppTranslations extends Translations {
       'arabic': 'عربي',
       'ras_al_khaimah': 'رأس الخيمة',
       'radius_hint': 'نطاق 10 كم',
+      'see_more': 'عرض المزيد',
+      'see_less': 'عرض أقل',
     },
   };
 }
