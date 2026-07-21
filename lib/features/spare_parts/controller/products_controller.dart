@@ -8,6 +8,7 @@ import 'package:yousef1234321/core/network/api_client.dart';
 class ProductsController extends GetxController {
   final products = <dynamic>[].obs;
   final isLoading = false.obs;
+  final isLoadingMore = false.obs;
 
   // Pagination fields based on the API reference
   final page = 1.obs;
@@ -16,31 +17,40 @@ class ProductsController extends GetxController {
   final totalPages = 1.obs;
   final RxnString currentCategoryId = RxnString();
   final RxnString currentSearch = RxnString();
+  final RxnString currentStatus = RxnString('APPROVED');
 
   // New: error message to show on UI when network/server fails
   final RxnString error = RxnString();
 
+  /// Whether there are more pages available to load
+  bool get hasMore => page.value < totalPages.value;
+
   /// Fetch products from /products endpoint with pagination.
-  /// Only page & limit are sent as query params.
+  /// Resets to page 1 and clears existing products list.
   Future<void> fetchProducts({
     int page = 1,
     int limit = 10,
     String? categoryId,
     String? category,
     String? search,
+    String? status = 'APPROVED',
   }) async {
     try {
       isLoading.value = true;
-
-      // clear previous error
       error.value = null;
 
-      // remember current category for loadMore
+      this.page.value = page;
+      this.limit.value = limit;
+
+      // remember current category, search & status for loadMore
       currentCategoryId.value = categoryId ?? category;
-      // remember current search term
       currentSearch.value = search;
+      currentStatus.value = status;
 
       var url = '${Endpoint.products}?page=$page&limit=$limit';
+      if (status != null && status.isNotEmpty) {
+        url = '$url&status=${Uri.encodeQueryComponent(status)}';
+      }
       if (categoryId != null && categoryId.isNotEmpty) {
         url = '$url&categoryId=$categoryId';
       }
@@ -51,32 +61,25 @@ class ProductsController extends GetxController {
         url = '$url&search=${Uri.encodeQueryComponent(search)}';
       }
 
-      // Debug log to help diagnose API issues
       try {
         print('[ProductsController] GET $url');
       } catch (_) {}
 
       Response response = await ApiClient.to.get(url);
 
-      // If server responds with non-200 or empty body, retry with absolute URL (some places expect full URL)
       if (!(response.statusCode == 200 || response.statusCode == 201) ||
           response.body == null) {
         final altUrl =
             '${Endpoint.baseUrl}${Endpoint.products}?page=$page&limit=$limit'
+            '${status != null && status.isNotEmpty ? '&status=${Uri.encodeQueryComponent(status)}' : ''}'
             '${categoryId != null && categoryId.isNotEmpty ? '&categoryId=$categoryId' : ''}'
             '${category != null && category.isNotEmpty ? '&category=${Uri.encodeQueryComponent(category)}' : ''}'
             '${search != null && search.isNotEmpty ? '&search=${Uri.encodeQueryComponent(search)}' : ''}';
         try {
           print('[ProductsController] retry GET $altUrl');
           final retryResp = await ApiClient.to.get(altUrl);
-          // replace response with retry if it looks better
           if (retryResp.statusCode == 200 || retryResp.statusCode == 201) {
             response = retryResp;
-          } else {
-            // keep original response for error handling
-            print(
-              '[ProductsController] retry non-200 ${retryResp.statusCode} ${retryResp.bodyString}',
-            );
           }
         } catch (e) {
           print('[ProductsController] retry error: $e');
@@ -87,30 +90,22 @@ class ProductsController extends GetxController {
         final body = response.body;
         List<dynamic> items = [];
 
-        // Primary expected shape (based on your sample): { data: [ ... ], pagination: { ... } }
         if (body is Map) {
-          // Extract list from body['data'] when it's a list
           if (body['data'] is List) {
             items = List<dynamic>.from(body['data']);
-          }
-          // Or nested: body['data']['data']
-          else if (body['data'] is Map && body['data']['data'] is List) {
+          } else if (body['data'] is Map && body['data']['data'] is List) {
             items = List<dynamic>.from(body['data']['data']);
-          }
-          // Also accept body['products'] or body['items']
-          else if (body['products'] is List) {
+          } else if (body['products'] is List) {
             items = List<dynamic>.from(body['products']);
           } else if (body['items'] is List) {
             items = List<dynamic>.from(body['items']);
           } else if (body.values.any((v) => v is List)) {
-            // Fallback: pick the first list value
             final lists = body.values.whereType<List>().toList();
             if (lists.isNotEmpty) {
               items = List<dynamic>.from(lists.first);
             }
           }
 
-          // Parse pagination if present (either top-level or under data)
           Map? pagination;
           if (body['pagination'] is Map) {
             pagination = Map<String, dynamic>.from(body['pagination']);
@@ -132,48 +127,17 @@ class ProductsController extends GetxController {
                 ? pagination['totalPages']
                 : totalPages.value;
           }
-        }
-        // If the body is directly a list
-        else if (body is List) {
+        } else if (body is List) {
           items = List<dynamic>.from(body);
         }
 
-        // clear any previous error on success
         error.value = null;
         products.assignAll(items);
       } else {
-        // log and show user-facing message for debugging
-        final bodyStr = response.bodyString ?? '<empty body>';
-        print('[ProductsController] non-200 ${response.statusCode} $bodyStr');
-        Get.snackbar(
-          'products_load_failed'.tr,
-          'Status: ${response.statusCode}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-        );
-
-        // Set error message so UI can display it
         error.value = '${'server_error'.tr}: ${response.statusCode}';
-
-        // If server returned JSON with 'success' and data but non-200, try to parse items anyway
-        if (response.body is Map) {
-          final tentative = <dynamic>[];
-          final b = response.body as Map;
-          if (b['data'] is List) {
-            tentative.addAll(List<dynamic>.from(b['data']));
-          } else if (b['data'] is Map && b['data']['data'] is List) {
-            tentative.addAll(List<dynamic>.from(b['data']['data']));
-          }
-          if (tentative.isNotEmpty) {
-            products.assignAll(tentative);
-            return;
-          }
-        }
         products.clear();
       }
     } catch (e) {
-      // network or parsing error
       print('[ProductsController] fetch error: $e');
       products.clear();
       error.value = 'no_internet'.tr;
@@ -182,21 +146,27 @@ class ProductsController extends GetxController {
     }
   }
 
-  /// Helper to load next page when using pagination
+  /// Helper to load next page using pagination without resetting existing products list
   Future<void> loadMore() async {
-    if (isLoading.value) return;
-    if (page.value >= totalPages.value) return;
+    if (isLoading.value || isLoadingMore.value) return;
+    if (!hasMore) return;
 
     final nextPage = page.value + 1;
     try {
-      isLoading.value = true;
+      isLoadingMore.value = true;
       var url = '${Endpoint.products}?page=$nextPage&limit=${limit.value}';
+      final st = currentStatus.value;
       final cid = currentCategoryId.value;
       final cs = currentSearch.value;
+      if (st != null && st.isNotEmpty) {
+        url = '$url&status=${Uri.encodeQueryComponent(st)}';
+      }
       if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid';
       if (cs != null && cs.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(cs)}';
       }
+
+      print('[ProductsController] loadMore GET $url');
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -210,14 +180,17 @@ class ProductsController extends GetxController {
             items = List<dynamic>.from(body['data']['data']);
           } else if (body['products'] is List) {
             items = List<dynamic>.from(body['products']);
+          } else if (body['items'] is List) {
+            items = List<dynamic>.from(body['items']);
           }
         } else if (body is List) {
           items = List<dynamic>.from(body);
         }
 
-        if (items.isNotEmpty) products.addAll(items);
+        if (items.isNotEmpty) {
+          products.addAll(items);
+        }
 
-        // update pagination similar to fetchProducts
         Map? pagination;
         if (body is Map && body['pagination'] is Map) {
           pagination = Map<String, dynamic>.from(body['pagination']);
@@ -230,7 +203,7 @@ class ProductsController extends GetxController {
         if (pagination != null) {
           page.value = (pagination['page'] is int)
               ? pagination['page']
-              : page.value;
+              : nextPage;
           limit.value = (pagination['limit'] is int)
               ? pagination['limit']
               : limit.value;
@@ -240,12 +213,14 @@ class ProductsController extends GetxController {
           totalPages.value = (pagination['totalPages'] is int)
               ? pagination['totalPages']
               : totalPages.value;
+        } else {
+          page.value = nextPage;
         }
       }
-    } catch (_) {
-      // ignore
+    } catch (e) {
+      print('[ProductsController] loadMore error: $e');
     } finally {
-      isLoading.value = false;
+      isLoadingMore.value = false;
     }
   }
 }

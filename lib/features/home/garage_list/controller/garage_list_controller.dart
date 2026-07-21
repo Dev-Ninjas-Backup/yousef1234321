@@ -20,7 +20,6 @@ class GarageListController extends GetxController {
   var selectedService = RxnString();
   var selectedStatus = 'approved'.obs;
 
-  final statuses = ['all', 'approved', 'pending', 'rejected'];
   final cities = [
     'abu_dhabi',
     'al_ain',
@@ -121,8 +120,10 @@ class GarageListController extends GetxController {
       if (selectedEmirate.value != null)
         url +=
             '&emirate=${Uri.encodeQueryComponent(_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)}';
-      if (selectedService.value != null)
-        url += '&service=${Uri.encodeQueryComponent(selectedService.value!)}';
+      if (selectedService.value != null && selectedService.value!.isNotEmpty) {
+        final serviceVal = Uri.encodeQueryComponent(selectedService.value!);
+        url += '&serviceName=$serviceVal&service=$serviceVal';
+      }
 
       final response = await ApiClient.to.get(url);
 
@@ -140,20 +141,22 @@ class GarageListController extends GetxController {
             }
           } else if (data is List) {
             list = data;
-            if (list.length < limit) hasMore = false;
           }
 
-          final newGarages = list.map((e) => GarageModel.fromJson(e)).toList();
+          List<GarageModel> parsedGarages = list
+              .where((e) => e != null && e is Map<String, dynamic>)
+              .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
+              .toList();
 
           if (refresh) {
-            garages.assignAll(newGarages);
+            garages.assignAll(parsedGarages);
           } else {
-            garages.addAll(newGarages);
+            garages.addAll(parsedGarages);
           }
         }
       }
     } catch (e) {
-      print('Error fetching garages: $e');
+      print('[GarageListController] fetchGarages error: $e');
     } finally {
       isLoading.value = false;
       isLoadingMore.value = false;
@@ -192,13 +195,25 @@ class GarageListController extends GetxController {
       final response = await ApiClient.to.get(Endpoint.getService);
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
-        if (body != null && body['serviceCategories'] != null) {
-          final List<dynamic> categories = body['serviceCategories'];
-          serviceTypes.value = categories.map((e) => e.toString()).toList();
+        List<dynamic>? categories;
+        if (body != null) {
+          if (body['data'] is List) {
+            categories = body['data'];
+          } else if (body['serviceCategories'] is List) {
+            categories = body['serviceCategories'];
+          }
+        }
+
+        if (categories != null) {
+          final fetchedNames = categories
+              .map((e) => e is Map ? (e['name']?.toString() ?? '') : e.toString())
+              .where((s) => s.isNotEmpty)
+              .toList();
+          serviceTypes.assignAll(fetchedNames);
         }
       }
     } catch (e) {
-      print(e);
+      print('[GarageListController] fetchServices error: $e');
     }
   }
 }

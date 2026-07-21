@@ -481,11 +481,61 @@ class SparePartsScreen extends StatelessWidget {
               ),
             );
           }
+          final showPaginationFooter =
+              productsCtrl.hasMore || productsCtrl.isLoadingMore.value;
+
           return ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            itemCount: productsCtrl.products.length,
+            itemCount:
+                productsCtrl.products.length + (showPaginationFooter ? 1 : 0),
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (_, idx) {
+              if (idx == productsCtrl.products.length) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Center(
+                    child: productsCtrl.isLoadingMore.value
+                        ? const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primaryColor,
+                              ),
+                            ),
+                          )
+                        : ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 2,
+                            ),
+                            onPressed: () => productsCtrl.loadMore(),
+                            icon: const Icon(
+                              Icons.expand_more_rounded,
+                              color: Colors.white,
+                            ),
+                            label: TranslatedText(
+                              text: 'see_more',
+                              style: getTextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                  ),
+                );
+              }
+
               final p = productsCtrl.products[idx];
               final name = (p is Map && p['partName'] != null)
                   ? p['partName'].toString()
