@@ -12,6 +12,7 @@ import 'package:yousef1234321/features/spare_parts/widget/parts_search_section.d
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/profile/profile_page/scrreen/profile_page.dart';
+import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
@@ -72,9 +73,17 @@ class SparePartsScreen extends StatelessWidget {
                 Image.asset("assets/icons/logo.png", height: 37),
                 Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.black.withValues(alpha: 0.1),
-                      child: Image.asset(Iconpath.notification, scale: 2),
+                    Tooltip(
+                      message: "notifications".tr,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black.withValues(alpha: 0.1),
+                        child: GestureDetector(
+                          onTap: () {
+                            Get.to(() => NotificationScreen());
+                          },
+                          child: Image.asset(Iconpath.notification, scale: 2),
+                        ),
+                      ),
                     ),
                     SizedBox(width: 12),
                     GestureDetector(
