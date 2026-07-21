@@ -115,18 +115,16 @@ class GarageListScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
 
-                // Status Filter
-                Obx(
-                  () => FilterChip(
-                    label: TranslatedText(
-                      text: controller.selectedStatus.value,
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    selected: true,
-                    selectedColor: AppColors.primaryColor,
-                    backgroundColor: const Color(0xFFF9FAFB),
-                    onSelected: (_) => _showStatusPicker(context, controller),
+                // Status Filter (Always Approved)
+                FilterChip(
+                  label: TranslatedText(
+                    text: 'approved',
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
+                  selected: true,
+                  selectedColor: AppColors.primaryColor,
+                  backgroundColor: const Color(0xFFF9FAFB),
+                  onSelected: null,
                 ),
                 const SizedBox(width: 8),
 
@@ -326,44 +324,6 @@ class GarageListScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showStatusPicker(
-    BuildContext context,
-    GarageListController controller,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TranslatedText(
-              text: 'Select Status',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView(
-                children: [
-                  ...controller.statuses.map(
-                    (status) => ListTile(
-                      title: TranslatedText(text: status),
-                      onTap: () {
-                        controller.selectedStatus.value = status;
-                        controller.applyFilters();
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

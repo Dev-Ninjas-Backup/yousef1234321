@@ -168,6 +168,8 @@ class MyListingPage extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   Text(
                                     item.description,
+                                    maxLines: 5,
+                                    overflow: TextOverflow.ellipsis,
                                     style: getTextStyle(
                                       fontSize: 12,
                                       color: Colors.grey.shade600,
