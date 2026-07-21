@@ -8,6 +8,7 @@ class ChatPageController extends GetxController {
   RxList<ChatUserModel> chatList = <ChatUserModel>[].obs;
   RxList<ChatUserModel> filteredChatList = <ChatUserModel>[].obs;
   final isLoading = false.obs;
+  final Set<String> readRecipientIds = <String>{};
 
   @override
   void onInit() {
@@ -99,6 +100,11 @@ class ChatPageController extends GetxController {
                   final isPhotoAvailable = profilePhoto != null && profilePhoto.toString().isNotEmpty;
                   final firstLetter = fullName.isNotEmpty ? fullName[0].toUpperCase() : '?';
 
+                  int rawUnread = conv['unreadCount'] ?? conv['unread'] ?? 0;
+                  if (readRecipientIds.contains(userId)) {
+                    rawUnread = 0;
+                  }
+
                   final user = ChatUserModel(
                     id: userId,
                     name: fullName,
@@ -107,7 +113,7 @@ class ChatPageController extends GetxController {
                       lastMsgTime ?? conv['updatedAt'] ?? DateTime.now(),
                     ),
                     imageUrl: isPhotoAvailable ? profilePhoto : '',
-                    unreadCount: conv['unreadCount'] ?? 0,
+                    unreadCount: rawUnread,
                     initial: !isPhotoAvailable ? firstLetter : null,
                   );
                   users.add(user);
@@ -222,5 +228,39 @@ class ChatPageController extends GetxController {
           )
           .toList();
     }
+  }
+
+  Future<void> clearUnreadCount(String recipientId) async {
+    print('🧹 [ChatPageController] Clearing unread count for recipient: $recipientId');
+    if (recipientId.isNotEmpty) {
+      readRecipientIds.add(recipientId);
+    }
+    final index = chatList.indexWhere((c) => c.id == recipientId);
+    if (index != -1) {
+      final item = chatList[index];
+      final updated = ChatUserModel(
+        id: item.id,
+        name: item.name,
+        lastMessage: item.lastMessage,
+        time: item.time,
+        imageUrl: item.imageUrl,
+        unreadCount: 0,
+        initial: item.initial,
+      );
+      chatList[index] = updated;
+      final fIndex = filteredChatList.indexWhere((c) => c.id == recipientId);
+      if (fIndex != -1) {
+        filteredChatList[fIndex] = updated;
+      }
+      chatList.refresh();
+      filteredChatList.refresh();
+    }
+
+    try {
+      await ApiClient.to.patch('/private-chat/$recipientId/read', {});
+    } catch (_) {}
+    try {
+      await ApiClient.to.patch('/private-chat/read/$recipientId', {});
+    } catch (_) {}
   }
 }

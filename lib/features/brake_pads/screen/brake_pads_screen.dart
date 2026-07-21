@@ -57,15 +57,17 @@ class BrakePadsScreen extends StatelessWidget {
                     ),
                     Expanded(
                       child: TranslatedText(
-                        text: "brake_pads",
+                        text: c.product['partName']?.toString() ?? "brake_pads",
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    SizedBox(width: 40.w),
+                    SizedBox(width: 10.w),
                   ],
                 ),
 
@@ -306,76 +308,77 @@ class BrakePadsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Row(
-                      children: [
-                        _contactButton(
-                          Icons.call,
-                          Colors.blue,
-                          onTap: () {
-                            final phoneNumber =
-                                c.product['seller']?['phoneNumber']
-                                    ?.toString() ??
-                                '';
-                            final sellerName =
-                                c.product['seller']?['name']?.toString() ??
-                                'Seller';
-                            _showConfirmCallDialog(
-                              context,
-                              sellerName,
-                              phoneNumber,
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 10),
-                        _contactButton(
-                          Icons.chat_bubble_outline,
-                          Colors.blue,
-                          onTap: () async {
-                            // Use createdById (actual user) instead of sellerId
-                            final userId = c.product['createdById'];
-                            final sellerName =
-                                c.product['createdBy']?['fullName'];
+                    if (!c.isMyListing.value)
+                      Row(
+                        children: [
+                          _contactButton(
+                            Icons.call,
+                            Colors.blue,
+                            onTap: () {
+                              final phoneNumber =
+                                  c.product['seller']?['phoneNumber']
+                                      ?.toString() ??
+                                  '';
+                              final sellerName =
+                                  c.product['seller']?['name']?.toString() ??
+                                  'Seller';
+                              _showConfirmCallDialog(
+                                context,
+                                sellerName,
+                                phoneNumber,
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 10),
+                          _contactButton(
+                            Icons.chat_bubble_outline,
+                            Colors.blue,
+                            onTap: () async {
+                              // Use createdById (actual user) instead of sellerId
+                              final userId = c.product['createdById'];
+                              final sellerName =
+                                  c.product['createdBy']?['fullName'];
 
-                            print('\n\n');
-                            print('═══════════════════════════════════════');
-                            print('🟦 [BrakePadsScreen] CHAT BUTTON TAPPED');
-                            print('═══════════════════════════════════════');
-                            print('userId (createdById): $userId');
-                            print('userId type: ${userId.runtimeType}');
-                            print('userId is not null: ${userId != null}');
-                            print('userId is not empty: ${userId?.isNotEmpty}');
-                            print('sellerName: $sellerName');
-                            print('sellerName type: ${sellerName.runtimeType}');
-                            print(
-                              'product data keys: ${(c.product as Map).keys.toList()}',
-                            );
-                            print('═══════════════════════════════════════\n');
+                              print('\n\n');
+                              print('═══════════════════════════════════════');
+                              print('🟦 [BrakePadsScreen] CHAT BUTTON TAPPED');
+                              print('═══════════════════════════════════════');
+                              print('userId (createdById): $userId');
+                              print('userId type: ${userId.runtimeType}');
+                              print('userId is not null: ${userId != null}');
+                              print('userId is not empty: ${userId?.isNotEmpty}');
+                              print('sellerName: $sellerName');
+                              print('sellerName type: ${sellerName.runtimeType}');
+                              print(
+                                'product data keys: ${(c.product as Map).keys.toList()}',
+                              );
+                              print('═══════════════════════════════════════\n');
 
-                            if (userId != null && userId.isNotEmpty) {
-                              print(
-                                '✅ [BrakePadsScreen] User data valid, navigating to ServiceMessage',
-                              );
-                              Get.to(
-                                ServiceMessage(
-                                  recipientId: userId,
-                                  garageName: sellerName,
-                                ),
-                              );
-                            } else {
-                              print(
-                                '❌ [BrakePadsScreen] User data missing! userId=$userId',
-                              );
-                              EasyLoading.showError(
-                                await Get.find<TranslationService>().translate(
-                                  Get.translations['en_US']?['seller_info_unavailable'] ??
-                                      'Seller info unavailable',
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
+                              if (userId != null && userId.isNotEmpty) {
+                                print(
+                                  '✅ [BrakePadsScreen] User data valid, navigating to ServiceMessage',
+                                );
+                                Get.to(
+                                  ServiceMessage(
+                                    recipientId: userId,
+                                    garageName: sellerName,
+                                  ),
+                                );
+                              } else {
+                                print(
+                                  '❌ [BrakePadsScreen] User data missing! userId=$userId',
+                                );
+                                EasyLoading.showError(
+                                  await Get.find<TranslationService>().translate(
+                                    Get.translations['en_US']?['seller_info_unavailable'] ??
+                                        'Seller info unavailable',
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                   ],
                 ),
 
@@ -583,63 +586,65 @@ class _FeatureItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.h),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
-            SizedBox(width: 8.w),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final textStyle =
-                      TextStyle(fontSize: 14.sp, color: Colors.black87);
-                  final textPainter = TextPainter(
-                    text: TextSpan(text: text, style: textStyle),
-                    maxLines: 5,
-                    textDirection: TextDirection.ltr,
-                  )..layout(maxWidth: constraints.maxWidth);
+    padding: EdgeInsets.symmetric(vertical: 4.h),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(Icons.check_circle, color: Colors.green, size: 18.sp),
+        SizedBox(width: 8.w),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final textStyle = TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black87,
+              );
+              final textPainter = TextPainter(
+                text: TextSpan(text: text, style: textStyle),
+                maxLines: 5,
+                textDirection: TextDirection.ltr,
+              )..layout(maxWidth: constraints.maxWidth);
 
-                  final bool isOverflown = textPainter.didExceedMaxLines;
+              final bool isOverflown = textPainter.didExceedMaxLines;
 
-                  return Obx(
-                    () => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        TranslatedText(
-                          text: text,
-                          maxLines: isExpanded.value ? null : 5,
-                          overflow: isExpanded.value
-                              ? TextOverflow.visible
-                              : TextOverflow.ellipsis,
-                          style: textStyle,
-                        ),
-                        if (isOverflown || isExpanded.value) ...[
-                          SizedBox(height: 4.h),
-                          InkWell(
-                            onTap: () {
-                              isExpanded.value = !isExpanded.value;
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 2.h),
-                              child: TranslatedText(
-                                text: isExpanded.value ? "see_less" : "see_more",
-                                style: TextStyle(
-                                  fontSize: 13.sp,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+              return Obx(
+                () => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TranslatedText(
+                      text: text,
+                      maxLines: isExpanded.value ? null : 5,
+                      overflow: isExpanded.value
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: textStyle,
+                    ),
+                    if (isOverflown || isExpanded.value) ...[
+                      SizedBox(height: 4.h),
+                      InkWell(
+                        onTap: () {
+                          isExpanded.value = !isExpanded.value;
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2.h),
+                          child: TranslatedText(
+                            text: isExpanded.value ? "see_less" : "see_more",
+                            style: TextStyle(
+                              fontSize: 13.sp,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ],
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
         ),
-      );
+      ],
+    ),
+  );
 }

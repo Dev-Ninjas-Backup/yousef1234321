@@ -6,6 +6,7 @@ class BrakePadsController extends GetxController {
   var selectedImageIndex = 0.obs;
   final RxBool isLoading = true.obs;
   final RxMap<String, dynamic> product = <String, dynamic>{}.obs;
+  final RxBool isMyListing = false.obs;
 
   // reactive image list; default assets used as fallback
   final RxList<String> images = <String>[].obs;
@@ -22,6 +23,9 @@ class BrakePadsController extends GetxController {
     } else if (args is String) {
       productId = args;
     } else if (args is Map) {
+      if (args['isMyListing'] == true || args['fromMyListing'] == true) {
+        isMyListing.value = true;
+      }
       // Common keys used across the app: 'productId' or 'id'
       if (args['productId'] != null) {
         productId = args['productId'].toString();
@@ -54,6 +58,17 @@ class BrakePadsController extends GetxController {
         }
 
         product.value = map;
+
+        final String? createdById =
+            map['createdById']?.toString() ??
+            map['sellerId']?.toString() ??
+            map['userId']?.toString();
+        final String? currentUserId = ApiClient.to.userId;
+        if (createdById != null &&
+            currentUserId != null &&
+            createdById == currentUserId) {
+          isMyListing.value = true;
+        }
 
         // populate gallery from photos if available
         if (map['photos'] is List && (map['photos'] as List).isNotEmpty) {

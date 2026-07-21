@@ -171,6 +171,9 @@ class ServiceBookingController extends GetxController {
     }
 
     recipientId.value = recId;
+    if (recId != null && recId.isNotEmpty && Get.isRegistered<ChatPageController>()) {
+      Get.find<ChatPageController>().clearUnreadCount(recId);
+    }
     print('🔵 [initializeChat] recipientId set to: ${recipientId.value}');
     loadInitialMessages();
     print('🔵 [initializeChat] loadInitialMessages called');
