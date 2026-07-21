@@ -161,17 +161,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     );
                     return ChatTile(
                       chat: chat,
-                      onTap: () {
+                      onTap: () async {
                         /// Navigate to message screen with recipient ID
                         final recipientId = chat.id;
                         print(
                           '💬 [ChatList] Opening chat with recipient: $recipientId (${chat.name})',
                         );
 
+                        controller.clearUnreadCount(recipientId);
+
                         Get.find<ServiceBookingController>().initializeChat(
                           recipientId,
                         ); // Initialize chat for this recipient
-                        Get.to(() => ServiceMessage(recipientId: recipientId));
+                        await Get.to(() => ServiceMessage(recipientId: recipientId));
+                        controller.loadConversations();
                       },
                     );
                   },

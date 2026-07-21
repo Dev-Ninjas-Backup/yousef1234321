@@ -216,8 +216,11 @@ class MyListingPage extends StatelessWidget {
                                         textColor: Colors.blue,
                                         onTap: () {
                                           Get.toNamed(
-                                            arguments: {'productId': item.id},
                                             Approute.brakePadsScreen,
+                                            arguments: {
+                                              'productId': item.id,
+                                              'isMyListing': true,
+                                            },
                                           );
                                         },
                                       ),
