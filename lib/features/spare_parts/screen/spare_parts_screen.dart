@@ -144,8 +144,9 @@ class SparePartsScreen extends StatelessWidget {
                       title: cat['name'] as String,
                       color: controller.getRandomColor(),
                       onTap: () async {
-                        // extract category name
+                        // extract category name and id
                         final cname = (cat['name'] ?? 'category').toString();
+                        final catId = (cat['id'] ?? '').toString();
 
                         final productsCtrl = Get.put(
                           ProductsController(),
@@ -154,6 +155,7 @@ class SparePartsScreen extends StatelessWidget {
                         await productsCtrl.fetchProducts(
                           page: 1,
                           limit: 20,
+                          categoryId: catId.isNotEmpty ? catId : null,
                           category: cname,
                         );
 

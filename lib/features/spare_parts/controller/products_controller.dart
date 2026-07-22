@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
@@ -52,7 +51,7 @@ class ProductsController extends GetxController {
         url = '$url&status=${Uri.encodeQueryComponent(status)}';
       }
       if (categoryId != null && categoryId.isNotEmpty) {
-        url = '$url&categoryId=$categoryId';
+        url = '$url&categoryId=$categoryId&category_id=$categoryId';
       }
       if (category != null && category.isNotEmpty) {
         url = '$url&category=${Uri.encodeQueryComponent(category)}';
@@ -72,7 +71,7 @@ class ProductsController extends GetxController {
         final altUrl =
             '${Endpoint.baseUrl}${Endpoint.products}?page=$page&limit=$limit'
             '${status != null && status.isNotEmpty ? '&status=${Uri.encodeQueryComponent(status)}' : ''}'
-            '${categoryId != null && categoryId.isNotEmpty ? '&categoryId=$categoryId' : ''}'
+            '${categoryId != null && categoryId.isNotEmpty ? '&categoryId=$categoryId&category_id=$categoryId' : ''}'
             '${category != null && category.isNotEmpty ? '&category=${Uri.encodeQueryComponent(category)}' : ''}'
             '${search != null && search.isNotEmpty ? '&search=${Uri.encodeQueryComponent(search)}' : ''}';
         try {
@@ -131,6 +130,8 @@ class ProductsController extends GetxController {
           items = List<dynamic>.from(body);
         }
 
+        items = _filterItemsByCategory(items, categoryId, category);
+
         error.value = null;
         products.assignAll(items);
       } else {
@@ -144,6 +145,73 @@ class ProductsController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Helper method to filter products by category ID or category name
+  List<dynamic> _filterItemsByCategory(
+    List<dynamic> items,
+    String? categoryId,
+    String? category,
+  ) {
+    if ((categoryId == null || categoryId.trim().isEmpty) &&
+        (category == null || category.trim().isEmpty)) {
+      return items;
+    }
+
+    final reqId = (categoryId ?? '').trim().toLowerCase();
+    final reqName = (category ?? '').trim().toLowerCase();
+
+    final filtered = items.where((item) {
+      if (item is! Map) return true;
+
+      final itemCatId = (item['categoryId'] ??
+              item['category_id'] ??
+              item['partsCategoryId'] ??
+              '')
+          .toString()
+          .trim()
+          .toLowerCase();
+
+      String itemCatName = '';
+      final catObj = item['category'];
+      if (catObj is Map) {
+        final objId = (catObj['id'] ?? catObj['_id'] ?? '')
+            .toString()
+            .trim()
+            .toLowerCase();
+        if (reqId.isNotEmpty && objId.isNotEmpty && objId == reqId) return true;
+
+        itemCatName = (catObj['name'] ?? catObj['title'] ?? '')
+            .toString()
+            .trim()
+            .toLowerCase();
+      } else if (catObj is String) {
+        final str = catObj.trim().toLowerCase();
+        if (reqId.isNotEmpty && str == reqId) return true;
+        if (reqName.isNotEmpty && str == reqName) return true;
+        itemCatName = str;
+      }
+
+      if (reqId.isNotEmpty && itemCatId.isNotEmpty && itemCatId == reqId) {
+        return true;
+      }
+
+      if (reqName.isNotEmpty && itemCatName.isNotEmpty && itemCatName == reqName) {
+        return true;
+      }
+
+      final partName = (item['partName'] ?? item['name'] ?? item['title'] ?? '')
+          .toString()
+          .trim()
+          .toLowerCase();
+      if (reqName.isNotEmpty && partName.contains(reqName)) {
+        return true;
+      }
+
+      return false;
+    }).toList();
+
+    return filtered;
   }
 
   /// Helper to load next page using pagination without resetting existing products list
@@ -161,7 +229,7 @@ class ProductsController extends GetxController {
       if (st != null && st.isNotEmpty) {
         url = '$url&status=${Uri.encodeQueryComponent(st)}';
       }
-      if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid';
+      if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid&category_id=$cid';
       if (cs != null && cs.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(cs)}';
       }
@@ -186,6 +254,8 @@ class ProductsController extends GetxController {
         } else if (body is List) {
           items = List<dynamic>.from(body);
         }
+
+        items = _filterItemsByCategory(items, cid, null);
 
         if (items.isNotEmpty) {
           products.addAll(items);
