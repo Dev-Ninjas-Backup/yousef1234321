@@ -29,7 +29,7 @@ class _OperationHourState extends State<OperationHour> {
   String? _getHoursForToday(dynamic garage) {
     final now = DateTime.now();
     final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-    
+
     // Map weekday number to string name
     const weekdayNames = {
       1: 'Monday',
@@ -41,7 +41,7 @@ class _OperationHourState extends State<OperationHour> {
       7: 'Sunday',
     };
     final todayName = weekdayNames[currentDay]!;
-    
+
     // Try to get from weekdaysHours first if it is JSON
     final weekdaysParsed = _parseHoursJson(garage.weekdaysHours);
     if (weekdaysParsed != null) {
@@ -51,7 +51,7 @@ class _OperationHourState extends State<OperationHour> {
       );
       if (key.isNotEmpty) return weekdaysParsed[key];
     }
-    
+
     // Try weekendsHours if it is JSON
     final weekendsParsed = _parseHoursJson(garage.weekendsHours);
     if (weekendsParsed != null) {
@@ -61,7 +61,7 @@ class _OperationHourState extends State<OperationHour> {
       );
       if (key.isNotEmpty) return weekendsParsed[key];
     }
-    
+
     // If not JSON, fallback to traditional check
     final isWeekend = currentDay == 6 || currentDay == 7;
     final hoursString = isWeekend ? garage.weekendsHours : garage.weekdaysHours;
@@ -73,7 +73,9 @@ class _OperationHourState extends State<OperationHour> {
     if (garage == null) return {'isOpen': false, 'label': 'closed'};
 
     final hoursString = _getHoursForToday(garage);
-    if (hoursString == null || hoursString.isEmpty || hoursString.toLowerCase() == 'closed') {
+    if (hoursString == null ||
+        hoursString.isEmpty ||
+        hoursString.toLowerCase() == 'closed') {
       return {'isOpen': false, 'label': 'closed'};
     }
 
@@ -160,9 +162,17 @@ class _OperationHourState extends State<OperationHour> {
       // Show all days starting with the current day (latest day first)
       final now = DateTime.now();
       final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-      final daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      final daysOfWeek = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ];
       final startIndex = currentDay - 1;
-      
+
       final List<String> daysOrder = [];
       for (int i = 0; i < 7; i++) {
         daysOrder.add(daysOfWeek[(startIndex + i) % 7]);
@@ -186,7 +196,8 @@ class _OperationHourState extends State<OperationHour> {
       if (garage.weekdaysHours.isNotEmpty) {
         lines.add("Weekdays: ${garage.weekdaysHours}");
       }
-      if (garage.weekendsHours.isNotEmpty && garage.weekendsHours != 'JSON_SCHEDULE') {
+      if (garage.weekendsHours.isNotEmpty &&
+          garage.weekendsHours != 'JSON_SCHEDULE') {
         lines.add("Weekends: ${garage.weekendsHours}");
       }
     }
@@ -210,7 +221,7 @@ class _OperationHourState extends State<OperationHour> {
           style: getTextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
-        
+
         Container(
           decoration: BoxDecoration(
             color: Colors.grey.shade50,
@@ -234,7 +245,11 @@ class _OperationHourState extends State<OperationHour> {
                     Expanded(
                       child: Row(
                         children: [
-                          Icon(Icons.access_time, size: 18, color: Colors.grey.shade600),
+                          Icon(
+                            Icons.access_time,
+                            size: 18,
+                            color: Colors.grey.shade600,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Builder(
@@ -242,25 +257,34 @@ class _OperationHourState extends State<OperationHour> {
                                 if (formattedHours.isEmpty) {
                                   return TranslatedText(
                                     text: "default_weekdays_hours",
-                                    style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                    style: getTextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   );
                                 }
-                                
+
                                 final firstLine = formattedHours.first;
                                 final parts = firstLine.split(':');
                                 final dayName = parts.first;
                                 final hoursVal = parts.skip(1).join(':');
-                                
+
                                 return Wrap(
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
                                     TranslatedText(
                                       text: dayName,
-                                      style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     Text(
                                       ":$hoursVal",
-                                      style: getTextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                      style: getTextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
@@ -282,9 +306,14 @@ class _OperationHourState extends State<OperationHour> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: isOpen ? Colors.green.shade100 : Colors.red.shade100,
+                            color: isOpen
+                                ? Colors.green.shade100
+                                : Colors.red.shade100,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TranslatedText(
@@ -298,7 +327,9 @@ class _OperationHourState extends State<OperationHour> {
                         ),
                         const SizedBox(width: 8),
                         Icon(
-                          _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
                           color: Colors.grey.shade600,
                         ),
                       ],
@@ -306,7 +337,7 @@ class _OperationHourState extends State<OperationHour> {
                   ],
                 ),
               ),
-              
+
               // Expanded Section (Show other days)
               if (_isExpanded && formattedHours.isNotEmpty) ...[
                 const Padding(
@@ -318,7 +349,7 @@ class _OperationHourState extends State<OperationHour> {
                   final parts = line.split(':');
                   final dayName = parts.first;
                   final hoursVal = parts.skip(1).join(':');
-                  
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Row(
@@ -332,16 +363,24 @@ class _OperationHourState extends State<OperationHour> {
                                 text: dayName,
                                 style: getTextStyle(
                                   fontSize: 13,
-                                  fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
-                                  color: isToday ? Colors.black : Colors.grey.shade700,
+                                  fontWeight: isToday
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: isToday
+                                      ? Colors.black
+                                      : Colors.grey.shade700,
                                 ),
                               ),
                               Text(
                                 ":$hoursVal",
                                 style: getTextStyle(
                                   fontSize: 13,
-                                  fontWeight: isToday ? FontWeight.w600 : FontWeight.normal,
-                                  color: isToday ? Colors.black : Colors.grey.shade700,
+                                  fontWeight: isToday
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  color: isToday
+                                      ? Colors.black
+                                      : Colors.grey.shade700,
                                 ),
                               ),
                             ],
@@ -349,7 +388,10 @@ class _OperationHourState extends State<OperationHour> {
                         ),
                         if (isToday)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade50,
                               borderRadius: BorderRadius.circular(4),

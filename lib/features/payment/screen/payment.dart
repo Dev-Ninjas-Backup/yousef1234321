@@ -3,7 +3,10 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 
-class Payment extends StatelessWidget {
+import 'package:get/get.dart';
+import 'package:yousef1234321/features/payment/controller/payment_controller.dart';
+
+class Payment extends GetView<PaymentController> {
   const Payment({super.key});
 
   @override
@@ -19,14 +22,12 @@ class Payment extends StatelessWidget {
           children: [
             CustomAppBar(title: "Payment & Publish listing"),
 
-                           
-SizedBox(height: 25,),
+            SizedBox(height: 25),
 
             // Text(
             //   "Payment Method",
             //   style: getTextStyle(fontWeight: FontWeight.w500, fontSize: 25),
             // ),
-
             Center(
               child: Column(
                 children: [

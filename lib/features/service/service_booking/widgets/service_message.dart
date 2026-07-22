@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
-import 'package:yousef1234321/core/common/constants/imagepath.dart';
+
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/features/chat/controller/chat_page_controller.dart';
 import 'package:path_provider/path_provider.dart';
@@ -17,7 +17,7 @@ import '../controller/service_booking_controller.dart';
 class ServiceMessage extends StatelessWidget {
   final controller = Get.isRegistered<ServiceBookingController>()
       ? Get.find<ServiceBookingController>()
-      : Get.put(ServiceBookingController());
+      : Get.put(ServiceBookingController(Get.find()));
   final String? recipientId;
   final String? garageName;
   late final selectedFiles = <PlatformFile>[].obs;
@@ -178,42 +178,6 @@ class ServiceMessage extends StatelessWidget {
     }
   }
 
-  Future<void> _pickFiles() async {
-    print('📁 [_pickFiles] Opening file picker');
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        type: FileType.any,
-        onFileLoading: (FilePickerStatus status) {
-          print('📁 [FilePicker] Status: $status');
-        },
-      );
-
-      if (result != null) {
-        print('📁 [_pickFiles] Selected ${result.files.length} file(s)');
-        selectedFiles.addAll(result.files);
-        print('📁 [_pickFiles] Total files: ${selectedFiles.length}');
-
-        // Show selected files
-        Get.snackbar(
-          'files_selected'.tr,
-          '${result.files.length} ${'files_selected_msg'.tr}',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: Duration(seconds: 2),
-        );
-      } else {
-        print('📁 [_pickFiles] File picker cancelled');
-      }
-    } catch (e) {
-      print('❌ [_pickFiles] Error: $e');
-      Get.snackbar(
-        'error'.tr,
-        '${'failed_pick_files'.tr}: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
-
   void _sendWithFiles() {
     print('📤 [_sendWithFiles] Sending with ${selectedFiles.length} file(s)');
     final filePaths = selectedFiles.map((file) => file.path!).toList();
@@ -249,7 +213,10 @@ class ServiceMessage extends StatelessWidget {
                   children: [
                     Obx(
                       () => TranslatedText(
-                        text: controller.otherParticipantName.value ?? garageName ?? "garage",
+                        text:
+                            controller.otherParticipantName.value ??
+                            garageName ??
+                            "garage",
                         style: getTextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/style/global_text_style.dart';
-import 'package:yousef1234321/features/service/rate_service/screen/service_review_scree.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
 import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
@@ -14,7 +14,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-class ServiceBooking extends StatelessWidget {
+class ServiceBooking extends GetView<ServiceBookingController> {
   ServiceBooking({super.key});
 
   @override
@@ -24,11 +24,6 @@ class ServiceBooking extends StatelessWidget {
     final garageId = (args is Map && args['garageId'] != null)
         ? args['garageId'] as String
         : null;
-
-    // Get or create controller
-    final controller = Get.isRegistered<ServiceBookingController>()
-        ? Get.find<ServiceBookingController>()
-        : Get.put(ServiceBookingController());
 
     // Manually set garageId and fetch details
     if (garageId != null && controller.garageId != garageId) {
@@ -204,8 +199,8 @@ class ServiceBooking extends StatelessWidget {
                         ),
                         onPressed: () {
                           final garageId = controller.garageDetail.value?.id;
-                          Get.to(
-                            ServiceReviewScreen(),
+                          Get.toNamed(
+                            Approute.getRateServiceScreen(),
                             arguments: {'garageId': garageId},
                           );
                         },

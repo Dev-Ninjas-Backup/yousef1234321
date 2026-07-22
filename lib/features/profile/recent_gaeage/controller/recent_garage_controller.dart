@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
 import 'package:yousef1234321/features/profile/recent_gaeage/model/recent_garage_model.dart';
 
+import 'package:yousef1234321/features/profile/recent_gaeage/service/recent_garage_service.dart';
+
 class RecentGarageController extends GetxController {
+  RecentGarageController(RecentGarageService recentGarageService);
   var garages = <RecentGarageModel>[
     RecentGarageModel(
       name: "Al Majid Auto Service",

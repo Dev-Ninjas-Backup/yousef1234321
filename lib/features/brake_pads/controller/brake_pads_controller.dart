@@ -1,8 +1,12 @@
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/features/brake_pads/service/brake_pads_service.dart';
+
+import '../../../core/network/api_client.dart';
 
 class BrakePadsController extends GetxController {
+  final BrakePadsService _brakePadsService;
+
+  BrakePadsController(this._brakePadsService);
   var selectedImageIndex = 0.obs;
   final RxBool isLoading = true.obs;
   final RxMap<String, dynamic> product = <String, dynamic>{}.obs;
@@ -44,9 +48,9 @@ class BrakePadsController extends GetxController {
   Future<void> fetchProductDetails(String productId) async {
     try {
       isLoading.value = true;
-      final resp = await ApiClient.to.get('${Endpoint.products}/$productId');
+      final resp = await _brakePadsService.fetchProductDetails(productId);
 
-      if (resp.statusCode == 200 && resp.body != null) {
+      if (resp.statusCode == 200) {
         final body = resp.body;
         Map<String, dynamic> map;
         if (body is Map && body['id'] != null) {

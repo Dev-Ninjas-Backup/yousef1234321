@@ -19,7 +19,7 @@ class FindService extends StatefulWidget {
 }
 
 class _FindServiceState extends State<FindService> {
-  final ServiceController controller = Get.put(ServiceController());
+  final ServiceController controller = Get.find<ServiceController>();
 
   @override
   void initState() {
@@ -283,7 +283,8 @@ class _FindServiceState extends State<FindService> {
                                           color: AppColors.subTextColor,
                                         ),
                                       ),
-                                      if (controller.isNearbyMode.value && distance.isNotEmpty) ...[
+                                      if (controller.isNearbyMode.value &&
+                                          distance.isNotEmpty) ...[
                                         const SizedBox(width: 8),
                                         const Icon(
                                           Icons.circle,
@@ -337,10 +338,7 @@ class _FindServiceState extends State<FindService> {
 
                                   const SizedBox(height: 6),
                                   // Open / Closed badge for this garage
-                                  Row(children: [
-                                      
-                                    ],
-                                  ),
+                                  Row(children: []),
 
                                   const SizedBox(height: 6),
                                   TranslatedText(

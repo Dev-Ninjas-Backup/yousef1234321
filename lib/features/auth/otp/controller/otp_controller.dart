@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/auth/otp/service/otp_service.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class OtpController extends GetxController {
+  final OtpService _otpService;
+
+  OtpController(this._otpService);
+
   final pinController = TextEditingController();
   final isOtpComplete = false.obs;
   final remainingSeconds = 60.obs;
@@ -44,46 +48,19 @@ class OtpController extends GetxController {
     isLoading.value = true;
 
     try {
-      final response = await ApiClient.to.post(Endpoint.verifyOtp, {
-        "resetToken": ApiClient.to.resetToken ?? '',
-        "emailOtp": otp,
-      });
+      await _otpService.verifyOtp(ApiClient.to.resetToken ?? '', otp);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar(
-          "Success",
-          "OTP Verified Successfully",
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-        Get.toNamed(Approute.resetPasswordScreen);
-      } else {
-        String errorMessage = "Invalid or incorrect OTP code";
-        if (response.body != null && response.body is Map) {
-          final rawMessage = response.body['message'] ??
-              response.body['error'] ??
-              response.body['errorMessage'];
-          if (rawMessage is List && rawMessage.isNotEmpty) {
-            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
-          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
-            errorMessage = rawMessage.toString();
-          }
-        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
-          errorMessage = response.statusText!;
-        }
-
-        Get.snackbar(
-          "Verification Failed",
-          errorMessage,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
-        );
-      }
+      Get.snackbar(
+        "Success",
+        "OTP Verified Successfully",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      Get.toNamed(Approute.resetPasswordScreen);
     } catch (e) {
       Get.snackbar(
         "Verification Error",
-        "Failed to verify OTP: $e",
+        "Failed to verify OTP: ${e.toString().replaceAll('Exception: ', '')}",
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
       );
@@ -94,23 +71,16 @@ class OtpController extends GetxController {
 
   Future<void> resendOtp() async {
     try {
-      final response = await ApiClient.to.post(Endpoint.forgetPassword, {
-        'email': email,
-      });
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.body != null &&
-            response.body['data'] != null &&
-            response.body['data']['resetToken'] != null) {
-          await ApiClient.to.setResetToken(response.body['data']['resetToken']);
-        }
-        startTimer();
-        Get.snackbar("Sent", "OTP Resent successfully");
+      final resetToken = await _otpService.resendOtp(email);
+      if (resetToken != null) {
+        await ApiClient.to.setResetToken(resetToken);
       }
+      startTimer();
+      Get.snackbar("Sent", "OTP Resent successfully");
     } catch (e) {
       Get.snackbar(
         "Error",
-        "Something went wrong while resending OTP: $e",
+        "Something went wrong while resending OTP: ${e.toString().replaceAll('Exception: ', '')}",
         backgroundColor: Colors.red,
         colorText: Colors.white,
       );

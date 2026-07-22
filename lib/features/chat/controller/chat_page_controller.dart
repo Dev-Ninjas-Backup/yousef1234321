@@ -1,10 +1,13 @@
 // ignore_for_file: avoid_print
 
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/chat/service/chat_page_service.dart';
 import '../model/chat_user_model.dart';
 
 class ChatPageController extends GetxController {
+  final ChatPageService _chatPageService;
+
+  ChatPageController(this._chatPageService);
   RxList<ChatUserModel> chatList = <ChatUserModel>[].obs;
   RxList<ChatUserModel> filteredChatList = <ChatUserModel>[].obs;
   final isLoading = false.obs;
@@ -28,7 +31,7 @@ class ChatPageController extends GetxController {
       print('🔄 [ChatPageController] isLoading set to true');
 
       print('📡 [ChatPageController] Making API call to /private-chat...');
-      final response = await ApiClient.to.get('/private-chat');
+      final response = await _chatPageService.getPrivateChats();
       print('📡 [ChatPageController] API ENDPOINT: GET /private-chat');
       print('📡 [ChatPageController] API Response received');
       print('📡 [ChatPageController] Status Code: ${response.statusCode}');
@@ -71,60 +74,60 @@ class ChatPageController extends GetxController {
                   '📋 [ChatPageController] Processing conversation $i: $conv',
                 );
 
-                final participant = conv['participant'];
+                dynamic participant = conv['participant'];
                 print(
                   '👤 [ChatPageController] Participant for $i: $participant',
                 );
 
-                if (participant != null) {
-                  final userId = participant['id'] ?? '';
-                  final fullName = participant['fullName'] ?? 'Unknown User';
+                final userId = (participant['id'] ?? '').toString();
+                final fullName = (participant['fullName'] ?? 'Unknown User')
+                    .toString();
 
-                  // lastMessage is a Map object, extract content from it
-                  final lastMessageObj = conv['lastMessage'];
-                  String lastMsg = 'No messages yet';
-                  String? lastMsgTime;
-                  if (lastMessageObj is Map) {
-                    lastMsg = lastMessageObj['content'] ?? 'No messages yet';
-                    lastMsgTime = lastMessageObj['createdAt'];
-                  } else if (lastMessageObj is String) {
-                    lastMsg = lastMessageObj;
-                  }
-
-                  print(
-                    '👤 [ChatPageController] Extracted - ID: $userId, Name: $fullName, LastMsg: $lastMsg',
-                  );
-
-                  // Extract first letter if profilePhoto is null or empty
-                  final profilePhoto = participant['profilePhoto'];
-                  final isPhotoAvailable = profilePhoto != null && profilePhoto.toString().isNotEmpty;
-                  final firstLetter = fullName.isNotEmpty ? fullName[0].toUpperCase() : '?';
-
-                  int rawUnread = conv['unreadCount'] ?? conv['unread'] ?? 0;
-                  if (readRecipientIds.contains(userId)) {
-                    rawUnread = 0;
-                  }
-
-                  final user = ChatUserModel(
-                    id: userId,
-                    name: fullName,
-                    lastMessage: lastMsg,
-                    time: _formatTime(
-                      lastMsgTime ?? conv['updatedAt'] ?? DateTime.now(),
-                    ),
-                    imageUrl: isPhotoAvailable ? profilePhoto : '',
-                    unreadCount: rawUnread,
-                    initial: !isPhotoAvailable ? firstLetter : null,
-                  );
-                  users.add(user);
-                  print(
-                    '✅ [ChatPageController] Added user: ${user.name} (${user.id})',
-                  );
-                } else {
-                  print(
-                    '⚠️ [ChatPageController] Participant is null for conversation $i',
-                  );
+                // lastMessage is a Map object, extract content from it
+                final lastMessageObj = conv['lastMessage'];
+                String lastMsg = 'No messages yet';
+                dynamic lastMsgTime;
+                if (lastMessageObj is Map) {
+                  lastMsg = lastMessageObj['content'].toString();
+                  lastMsgTime = lastMessageObj['createdAt'];
                 }
+
+                print(
+                  '👤 [ChatPageController] Extracted - ID: $userId, Name: $fullName, LastMsg: $lastMsg',
+                );
+
+                // Extract first letter if profilePhoto is null or empty
+                final profilePhoto = participant['profilePhoto'];
+                final isPhotoAvailable =
+                    profilePhoto != null && profilePhoto.toString().isNotEmpty;
+                final firstLetter = fullName.isNotEmpty
+                    ? fullName[0].toUpperCase()
+                    : '?';
+
+                int rawUnread =
+                    int.tryParse(conv['unreadCount'].toString()) ?? 0;
+                if (readRecipientIds.contains(userId)) {
+                  rawUnread = 0;
+                }
+
+                final user = ChatUserModel(
+                  id: userId,
+                  name: fullName,
+                  lastMessage: lastMsg,
+                  time: _formatTime(
+                    (lastMsgTime ??
+                            conv['updatedAt'] ??
+                            DateTime.now().toString())
+                        .toString(),
+                  ),
+                  imageUrl: isPhotoAvailable ? profilePhoto.toString() : '',
+                  unreadCount: rawUnread,
+                  initial: !isPhotoAvailable ? firstLetter : null,
+                );
+                users.add(user);
+                print(
+                  '✅ [ChatPageController] Added user: ${user.name} (${user.id})',
+                );
               } catch (e) {
                 print('❌ [ChatPageController] Error parsing conversation: $e');
                 print(
@@ -231,7 +234,9 @@ class ChatPageController extends GetxController {
   }
 
   Future<void> clearUnreadCount(String recipientId) async {
-    print('🧹 [ChatPageController] Clearing unread count for recipient: $recipientId');
+    print(
+      '🧹 [ChatPageController] Clearing unread count for recipient: $recipientId',
+    );
     if (recipientId.isNotEmpty) {
       readRecipientIds.add(recipientId);
     }
@@ -257,10 +262,10 @@ class ChatPageController extends GetxController {
     }
 
     try {
-      await ApiClient.to.patch('/private-chat/$recipientId/read', {});
+      await _chatPageService.markAsRead1(recipientId);
     } catch (_) {}
     try {
-      await ApiClient.to.patch('/private-chat/read/$recipientId', {});
+      await _chatPageService.markAsRead2(recipientId);
     } catch (_) {}
   }
 }

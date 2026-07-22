@@ -5,13 +5,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
-import 'package:yousef1234321/core/service/network_service/network_client.dart';
+
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
+import 'package:yousef1234321/features/profile/edit_profile/service/edit_profile_service.dart';
 
 class EditProfileController extends GetxController {
+  final EditProfileService _editProfileService;
   final ProfileController profileController = Get.find<ProfileController>();
+
+  EditProfileController(this._editProfileService);
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final addressController = TextEditingController();
@@ -24,8 +26,6 @@ class EditProfileController extends GetxController {
   final email = ''.obs;
   final profilePhotoUrl = Rx<String?>(null);
 
-  late final NetworkClient _networkClient;
-
   Future<void> pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -37,7 +37,6 @@ class EditProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _networkClient = NetworkClient(onUnAuthorize: () {});
 
     // Pre-fill email from token immediately (Fix for "No email" issue)
     final tokenEmail = _getEmailFromToken();
@@ -50,8 +49,7 @@ class EditProfileController extends GetxController {
 
   Future<void> loadProfile() async {
     try {
-      print('EditProfileController: ApiClient token: ${ApiClient.to.token}');
-      final response = await ApiClient.to.get(Endpoint.profile);
+      final response = await _editProfileService.loadProfile();
 
       print(
         'EditProfileController: profile GET status=${response.statusCode} body=${response.body}',
@@ -76,11 +74,11 @@ class EditProfileController extends GetxController {
           }
 
           // Populate other fields if available
-          addressController.text = data['address'] ?? '';
-          cityController.text = data['city'] ?? '';
-          emirateController.text = data['emirate'] ?? '';
+          addressController.text = (data['address'] as String?) ?? '';
+          cityController.text = (data['city'] as String?) ?? '';
+          emirateController.text = (data['emirate'] as String?) ?? '';
           // Load phone number as-is from API
-          phoneController.text = (data['phone'] ?? '').toString();
+          phoneController.text = (data['phone']?.toString()) ?? '';
         }
       } else if (response.statusCode == 404) {
         // This is expected for new users who haven't set up a profile yet.
@@ -119,13 +117,9 @@ class EditProfileController extends GetxController {
 
       // If user picked a new image, upload as multipart PATCH
       if (selectedImage.value != null) {
-        final url = '${Endpoint.baseUrl}${Endpoint.editProfile}';
-        final result = await _networkClient.uploadFile(
-          url: url,
+        final result = await _editProfileService.updateProfileWithImage(
           file: selectedImage.value!,
-          fieldName: 'file',
           extraFields: extraFields,
-          method: 'PATCH',
         );
 
         if (result.isSuccess) {
@@ -156,7 +150,6 @@ class EditProfileController extends GetxController {
         }
       } else {
         // No image: send JSON PATCH
-        final url = '${Endpoint.baseUrl}${Endpoint.editProfile}';
         final body = {
           'fullName': combinedName,
           'bio': '',
@@ -167,7 +160,7 @@ class EditProfileController extends GetxController {
           'email': email.value,
         };
 
-        final result = await _networkClient.patchRequest(url: url, body: body);
+        final result = await _editProfileService.updateProfile(body: body);
         if (result.isSuccess) {
           final respData = result.responseData;
           final data = respData != null && respData['data'] != null
@@ -209,7 +202,7 @@ class EditProfileController extends GetxController {
   // Helper to extract email from JWT Token
   String _getEmailFromToken() {
     try {
-      final token = ApiClient.to.token;
+      final token = _editProfileService.token;
       if (token != null) {
         final parts = token.split('.');
         if (parts.length == 3) {

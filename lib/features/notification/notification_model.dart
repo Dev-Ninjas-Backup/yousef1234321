@@ -47,6 +47,7 @@ class AppNotification {
     };
   }
 }
+
 class NotificationMeta {
   final String? id;
   final DateTime? date;
@@ -67,9 +68,7 @@ class NotificationMeta {
   factory NotificationMeta.fromJson(Map<String, dynamic> json) {
     return NotificationMeta(
       id: json['id'] as String?,
-      date: json['date'] != null
-          ? DateTime.tryParse(json['date'])
-          : null,
+      date: json['date'] != null ? DateTime.tryParse(json['date']) : null,
       message: json['message'] as String?,
       subject: json['subject'] as String?,
       senderName: json['senderName'] as String?,

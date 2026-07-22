@@ -11,9 +11,8 @@ import '../widgets/add_photos.dart';
 import '../widgets/rating.dart';
 import '../widgets/recomendation.dart';
 
-class ServiceReviewScreen extends StatelessWidget {
+class ServiceReviewScreen extends GetView<ServiceReviewController> {
   ServiceReviewScreen({super.key});
-  final ServiceReviewController controller = Get.put(ServiceReviewController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(

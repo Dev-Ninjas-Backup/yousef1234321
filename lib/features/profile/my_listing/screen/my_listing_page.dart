@@ -8,10 +8,8 @@ import 'package:yousef1234321/routes/app_route.dart';
 
 import '../../../../core/common/widgets/action_button.dart';
 
-class MyListingPage extends StatelessWidget {
-  final controller = Get.put(ListingController());
-
-  MyListingPage({super.key});
+class MyListingPage extends GetView<ListingController> {
+  const MyListingPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -9,11 +9,12 @@ import 'package:yousef1234321/features/service/service_booking/model/garage_deta
 import 'package:yousef1234321/features/chat/controller/chat_page_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:intl/intl.dart';
-import 'package:http/http.dart' as http;
-import 'dart:io';
+import 'package:yousef1234321/features/service/service_booking/service/service_booking_service.dart';
 
 class ServiceBookingController extends GetxController {
-  ServiceBookingController() {
+  final ServiceBookingService _serviceBookingService;
+
+  ServiceBookingController(this._serviceBookingService) {
     print('🏗️ [ServiceBookingController] Constructor called');
   }
 
@@ -171,7 +172,9 @@ class ServiceBookingController extends GetxController {
     }
 
     recipientId.value = recId;
-    if (recId != null && recId.isNotEmpty && Get.isRegistered<ChatPageController>()) {
+    if (recId != null &&
+        recId.isNotEmpty &&
+        Get.isRegistered<ChatPageController>()) {
       Get.find<ChatPageController>().clearUnreadCount(recId);
     }
     print('🔵 [initializeChat] recipientId set to: ${recipientId.value}');
@@ -315,13 +318,14 @@ class ServiceBookingController extends GetxController {
   Future<void> _fetchConversationHistory() async {
     print('📡 [_fetchConversationHistory] Fetching conversation history');
     try {
-      final response = await ApiClient.to.get('/private-chat');
-      print(
-        '📡 [_fetchConversationHistory] Response status: ${response.statusCode}',
-      );
+      final response = await _serviceBookingService.fetchConversationHistory();
+      final statusCode = response['statusCode'];
+      final body = response['body'];
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final conversations = response.body['data'] as List;
+      print('📡 [_fetchConversationHistory] Response status: $statusCode');
+
+      if (statusCode == 200 && body['success'] == true) {
+        final conversations = body['data'] as List;
         print(
           '📡 [_fetchConversationHistory] Found ${conversations.length} conversations',
         );
@@ -362,7 +366,7 @@ class ServiceBookingController extends GetxController {
         }
       } else {
         print(
-          '❌ [_fetchConversationHistory] API error - Status: ${response.statusCode}, Success: ${response.body['success']}',
+          '❌ [_fetchConversationHistory] API error - Status: $statusCode, Success: ${body['success']}',
         );
       }
     } catch (e) {
@@ -372,17 +376,18 @@ class ServiceBookingController extends GetxController {
 
   Future<void> _fetchSingleConversation(String conversationId) async {
     try {
-      final response = await ApiClient.to.get('/private-chat/$conversationId');
-      print(
-        '📡 [_fetchSingleConversation] Response status: ${response.statusCode}',
+      final response = await _serviceBookingService.fetchSingleConversation(
+        conversationId,
       );
-      print(
-        '📡 [_fetchSingleConversation] Full response body: ${response.body}',
-      );
+      final statusCode = response['statusCode'];
+      final body = response['body'];
 
-      if (response.statusCode == 200) {
+      print('📡 [_fetchSingleConversation] Response status: $statusCode');
+      print('📡 [_fetchSingleConversation] Full response body: $body');
+
+      if (statusCode == 200) {
         // Extract and store participants
-        final participants = response.body['participants'] as List? ?? [];
+        final participants = body['participants'] as List? ?? [];
         conversationParticipants.value = participants
             .cast<Map<String, dynamic>>();
 
@@ -406,7 +411,7 @@ class ServiceBookingController extends GetxController {
           );
         }
 
-        final messageList = response.body['messages'] as List;
+        final messageList = body['messages'] as List;
         print(
           '📡 [_fetchSingleConversation] Loaded ${messageList.length} messages from history',
         );
@@ -463,7 +468,7 @@ class ServiceBookingController extends GetxController {
         // Scroll to bottom after loading messages
         _scrollToBottom();
       } else {
-        print('❌ [_fetchSingleConversation] Error: ${response.statusCode}');
+        print('❌ [_fetchSingleConversation] Error: $statusCode');
       }
     } catch (e) {
       print('Failed to fetch conversation: $e');
@@ -596,18 +601,12 @@ class ServiceBookingController extends GetxController {
       print(
         '📡 [_sendTextMessageViaRest] 🚀 Starting REST message send to recipientId: $recId',
       );
-      final uri = Uri.parse(
-        '${Endpoint.baseUrl}/private-chat/send-message/$recId',
-      );
-      final token = ApiClient.to.token ?? '';
-      final request = http.MultipartRequest('POST', uri);
-      request.headers['Authorization'] = 'Bearer $token';
-      request.fields['content'] = content;
-      request.fields['recipientId'] = recId;
 
-      print('📡 [_sendTextMessageViaRest] POST ${request.url}');
-      final streamed = await request.send();
-      final response = await http.Response.fromStream(streamed);
+      final response = await _serviceBookingService.sendTextMessage(
+        content,
+        recId,
+      );
+
       print('📡 [_sendTextMessageViaRest] Status: ${response.statusCode}');
       if (response.statusCode == 200 || response.statusCode == 201) {
         print(
@@ -645,57 +644,11 @@ class ServiceBookingController extends GetxController {
         return;
       }
 
-      final token = ApiClient.to.token ?? '';
-      final uri = Uri.parse(
-        '${Endpoint.baseUrl}/private-chat/send-message/$recId',
+      final response = await _serviceBookingService.sendMessageWithFiles(
+        content,
+        recId,
+        filePaths,
       );
-
-      // Backend requires `content` even when sending only files.
-      final safeContent = content.trim().isEmpty
-          ? 'Attachment'
-          : content.trim();
-
-      // Create a temporary optimistic message with local file names
-      final nowIso = DateTime.now().toIso8601String();
-      final tempId = 'temp-${DateTime.now().millisecondsSinceEpoch}';
-      messages.add({
-        'id': tempId,
-        'text': safeContent,
-        'isUser': true,
-        'time': _formatTime(nowIso),
-        'sender': {'id': 'me'},
-        'files': filePaths.map((p) => p.toString()).toList(),
-        'isTemp': true,
-      });
-
-      // Create multipart request
-      final request = http.MultipartRequest('POST', uri)
-        ..headers['Authorization'] = 'Bearer $token'
-        ..fields['content'] = safeContent
-        ..fields['recipientId'] = recId
-        // Some server implementations validate recipientId from body too.
-        ..fields['recipientId'] = recId;
-
-      // Add files to request (field name is "file", not "files")
-      for (final filePath in filePaths) {
-        print('📁 [_sendMessageWithFiles] Adding file: $filePath');
-        final file = File(filePath);
-        if (await file.exists()) {
-          final multipartFile = await http.MultipartFile.fromPath(
-            'file',
-            filePath,
-            filename: file.path.split('/').last,
-          );
-          request.files.add(multipartFile);
-        } else {
-          print('❌ [_sendMessageWithFiles] File not found: $filePath');
-        }
-      }
-
-      print('📁 [_sendMessageWithFiles] Sending to ${uri.path}');
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
 
       print(
         '📁 [_sendMessageWithFiles] Response status: ${response.statusCode}',
@@ -830,16 +783,17 @@ class ServiceBookingController extends GetxController {
         '📡 [fetchGarageDetails] Fetching garage details for ID: $garageId',
       );
 
-      final endpoint = '${Endpoint.garageDetails}/$garageId';
-      print('📡 [fetchGarageDetails] Using endpoint: $endpoint');
+      final response = await _serviceBookingService.fetchGarageDetails(
+        garageId!,
+      );
 
-      final response = await ApiClient.to.get(endpoint);
+      final statusCode = response['statusCode'];
+      final body = response['body'];
 
-      print('📡 [fetchGarageDetails] Response status=${response.statusCode}');
-      print('📡 [fetchGarageDetails] Response body: ${response.body}');
+      print('📡 [fetchGarageDetails] Response status=$statusCode');
+      print('📡 [fetchGarageDetails] Response body: $body');
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
+      if (statusCode == 200 || statusCode == 201) {
         print('📡 [fetchGarageDetails] Response body structure: ${body?.keys}');
         print('📡 [fetchGarageDetails] Success field: ${body?['success']}');
         print(
@@ -897,7 +851,7 @@ class ServiceBookingController extends GetxController {
         }
       } else {
         print(
-          'ServiceBookingController: Failed with status ${response.statusCode}',
+          'ServiceBookingController: Failed with status $statusCode',
         );
         hasError.value = true;
       }
@@ -915,11 +869,13 @@ class ServiceBookingController extends GetxController {
       isLoading.value = true;
       print('📡 Fetching global services list...');
       // Fetching services from backend API: /services
-      final response = await ApiClient.to.get(Endpoint.getService);
-      print('📡 Services API Status: ${response.statusCode}');
+      final response = await _serviceBookingService.fetchServices();
+      final statusCode = response['statusCode'];
+      final body = response['body'];
+      print('📡 Services API Status: $statusCode');
 
-      if (response.statusCode == 200 && response.body['success'] == true) {
-        final data = response.body['data'];
+      if (statusCode == 200 && body['success'] == true) {
+        final data = body['data'];
         if (data is List) {
           final fetchedServices = data.map((item) {
             final dynamicItem = item as dynamic;

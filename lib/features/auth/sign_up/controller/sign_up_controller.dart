@@ -2,10 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/auth/sign_up/service/sign_up_service.dart';
 
 class SignUpController extends GetxController {
+  final SignUpService _signUpService;
+
+  SignUpController(this._signUpService);
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
@@ -54,7 +57,10 @@ class SignUpController extends GetxController {
       return;
     }
 
-    final cleanPhone = phoneController.text.trim().replaceAll(RegExp(r'[\s\-]'), '');
+    final cleanPhone = phoneController.text.trim().replaceAll(
+      RegExp(r'[\s\-]'),
+      '',
+    );
     final phoneRegExp = RegExp(r'^\+?[0-9]{7,15}$');
     if (!phoneRegExp.hasMatch(cleanPhone)) {
       Get.snackbar(
@@ -89,94 +95,38 @@ class SignUpController extends GetxController {
     isLoading.value = true;
 
     try {
-      final formData = FormData({
+      final verifyToken = await _signUpService.signUp({
         'fullName': nameController.text,
         'email': emailController.text,
         'phone': phoneController.text,
         'password': passwordController.text,
         'confirmPassword': confirmPasswordController.text,
-        'role': role, // Hardcoded as CAR_OWNER
+        'role': role,
       });
 
-      // Debug: Print form data
-      // ignore: avoid_function_literals_in_foreach_calls
-      formData.fields.forEach((field) {});
-      print("Form Data Fields:");
-      for (var field in formData.fields) {
-        print("${field.key}: ${field.value}");
-      }
+      Get.snackbar(
+        "Success",
+        "Account created successfully!",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
-      final response = await ApiClient.to.post(Endpoint.register, formData);
-
-      // Print API Response
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Extract verifyToken from Response with null safety
-        if (response.body != null && response.body is Map) {
-          String verifyToken = response.body['verifyToken'] ?? "";
-
-          if (verifyToken.isNotEmpty) {
-            Get.snackbar(
-              "Success",
-              "Account created successfully!",
-              backgroundColor: Colors.green,
-              colorText: Colors.white,
-            );
-
-            // Navigate to OTP screen
-            Get.toNamed(
-              '/signupOtpScreen',
-              arguments: {
-                'email': emailController.text,
-                'role': role,
-                'verifyToken': verifyToken,
-              },
-            );
-          } else {
-            Get.snackbar(
-              "Error",
-              "Invalid verification token received",
-              backgroundColor: Colors.redAccent,
-              colorText: Colors.white,
-            );
-          }
-        } else {
-          Get.snackbar(
-            "Error",
-            "Invalid response format",
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
-          );
-        }
-      } else {
-        String errorMessage = "Registration failed";
-        if (response.body != null && response.body is Map) {
-          final rawMessage = response.body['message'] ??
-              response.body['error'] ??
-              response.body['errorMessage'];
-          if (rawMessage is List && rawMessage.isNotEmpty) {
-            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
-          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
-            errorMessage = rawMessage.toString();
-          }
-        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
-          errorMessage = response.statusText!;
-        }
-
-        Get.snackbar(
-          "Registration Failed",
-          errorMessage,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 4),
-        );
-      }
+      // Navigate to OTP screen
+      Get.toNamed(
+        '/signupOtpScreen',
+        arguments: {
+          'email': emailController.text,
+          'role': role,
+          'verifyToken': verifyToken,
+        },
+      );
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Something went wrong: $e",
+        "Registration Failed",
+        e.toString().replaceAll("Exception: ", ""),
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
       );
     } finally {
       isLoading.value = false;

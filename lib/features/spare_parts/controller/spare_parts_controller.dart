@@ -1,13 +1,16 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/service/translation_service.dart';
 import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
 import 'package:yousef1234321/features/spare_parts/screen/parts_search_results_screen.dart';
+import 'package:yousef1234321/features/spare_parts/service/spare_parts_service.dart';
 
 class SparePartsController extends GetxController {
+  final SparePartsService _sparePartsService;
+
+  SparePartsController(this._sparePartsService);
+
   final TextEditingController searchInputController = TextEditingController();
   var selectedModel = RxnString();
   var selectedCategory = RxnString();
@@ -68,7 +71,9 @@ class SparePartsController extends GetxController {
     if (searchText.isEmpty && (category == null || category.isEmpty)) {
       final ts = Get.find<TranslationService>();
       final title = await ts.translate(_getEnglishText("selection_required"));
-      final msg = await ts.translate(_getEnglishText("enter_search_term_or_category"));
+      final msg = await ts.translate(
+        _getEnglishText("enter_search_term_or_category"),
+      );
 
       Get.snackbar(
         title,
@@ -91,11 +96,8 @@ class SparePartsController extends GetxController {
 
     final searchTerm = searchText.isNotEmpty ? searchText : null;
 
-    // Clear search keyword and selected item after gathering parameters
-    clearSearchFields();
-
     final productsCtrl = Get.put(
-      ProductsController(),
+      ProductsController(Get.find()),
       tag: 'productsList',
     );
 
@@ -107,12 +109,15 @@ class SparePartsController extends GetxController {
       search: searchTerm,
     );
 
-    Get.to(() => const PartsSearchResultsScreen());
+    await Get.to(() => const PartsSearchResultsScreen());
+
+    // Clear search keyword and selected item after returning from the search page
+    clearSearchFields();
   }
 
   Future<void> fetchCategoriesFromApi() async {
     try {
-      final resp = await ApiClient.to.get(Endpoint.partsCategory);
+      final resp = await _sparePartsService.fetchCategories();
       if (resp.statusCode == 200 && resp.body != null) {
         final body = resp.body;
         // body expected shape: { success, message, data: { data: [...], pagination: {...}}}
@@ -148,4 +153,3 @@ class SparePartsController extends GetxController {
     }
   }
 }
-

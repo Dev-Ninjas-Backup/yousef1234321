@@ -6,12 +6,11 @@ import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/forget_password/controller/forget_password_controller.dart';
 
-class ForgetPasswordScreen extends StatelessWidget {
+class ForgetPasswordScreen extends GetView<ForgetPasswordController> {
   const ForgetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ForgetPasswordController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -29,7 +28,11 @@ class ForgetPasswordScreen extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 24, top: 24),
-                    child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+                    child: Image.asset(
+                      Iconpath.arrowback,
+                      height: 44,
+                      width: 44,
+                    ),
                   ),
                 ),
               ),

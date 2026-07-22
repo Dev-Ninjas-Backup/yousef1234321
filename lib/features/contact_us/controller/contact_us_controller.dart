@@ -3,10 +3,12 @@
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/contact_us/service/contact_us_service.dart';
 
 class ContactUsController extends GetxController {
+  final ContactUsService _contactUsService;
+
+  ContactUsController(this._contactUsService);
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final messageController = TextEditingController();
@@ -25,14 +27,14 @@ class ContactUsController extends GetxController {
     try {
       isLoadingProfile.value = true;
 
-      final response = await ApiClient.to.get(Endpoint.profile);
+      final response = await _contactUsService.getProfile();
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.body != null &&
             response.body is Map &&
             response.body['data'] != null) {
           final data = response.body['data'];
-          final fullName = (data['fullName'] ?? '').toString();
-          final email = (data['email'] ?? '').toString();
+          final fullName = data['fullName']?.toString() ?? '';
+          final email = data['email']?.toString() ?? '';
 
           // Split fullName into first and last (best-effort)
           String firstName = fullName;
@@ -93,15 +95,16 @@ class ContactUsController extends GetxController {
         'message': message,
       };
 
-      final response = await ApiClient.to.post(Endpoint.contactUs, body);
+      final response = await _contactUsService.postContactUs(body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         EasyLoading.showSuccess('Your message has been sent to ADMIN!');
         messageController.clear();
       } else {
         String err = 'Failed to send message';
-        if (response.body is Map && response.body['message'] != null) {
-          final msg = response.body['message'];
+        final body = response.body;
+        if (body is Map<String, dynamic> && body['message'] != null) {
+          final msg = body['message'];
           if (msg is String) {
             err = msg;
           } else if (msg is List) {

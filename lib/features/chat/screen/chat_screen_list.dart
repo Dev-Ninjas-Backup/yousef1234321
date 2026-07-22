@@ -28,14 +28,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     print('🟦 [ChatScreen] initState() called');
     print('════════════════════════════════════════════════════\n');
 
-    // Use Get.find if exists, otherwise create new
-    if (Get.isRegistered<ChatPageController>()) {
-      print('🟦 [ChatScreen] Found existing ChatPageController');
-      controller = Get.find<ChatPageController>();
-    } else {
-      print('🟦 [ChatScreen] Creating new ChatPageController');
-      controller = Get.put(ChatPageController());
-    }
+    controller = Get.find<ChatPageController>();
 
     print('🟦 [ChatScreen] Calling loadConversations()...');
     controller.loadConversations();
@@ -173,7 +166,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                         Get.find<ServiceBookingController>().initializeChat(
                           recipientId,
                         ); // Initialize chat for this recipient
-                        await Get.to(() => ServiceMessage(recipientId: recipientId));
+                        await Get.to(
+                          () => ServiceMessage(recipientId: recipientId),
+                        );
                         controller.loadConversations();
                       },
                     );

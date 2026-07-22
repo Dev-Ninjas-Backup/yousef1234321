@@ -4,12 +4,11 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/contact_us/controller/contact_us_controller.dart';
 
-class ContactUsScreen extends StatelessWidget {
+class ContactUsScreen extends GetView<ContactUsController> {
   const ContactUsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ContactUsController());
     InputDecoration fieldDecoration(String hint) => InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Colors.black54),

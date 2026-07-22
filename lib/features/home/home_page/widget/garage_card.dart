@@ -25,7 +25,7 @@ class GarageCard extends StatelessWidget {
   String? _getHoursForToday() {
     final now = DateTime.now();
     final currentDay = now.weekday; // 1 = Monday, 7 = Sunday
-    
+
     // Map weekday number to string name
     const weekdayNames = {
       1: 'Monday',
@@ -37,7 +37,7 @@ class GarageCard extends StatelessWidget {
       7: 'Sunday',
     };
     final todayName = weekdayNames[currentDay]!;
-    
+
     // Try to get from weekdaysHours first if it is JSON
     final weekdaysParsed = _parseHoursJson(garage.weekdaysHours);
     if (weekdaysParsed != null) {
@@ -47,7 +47,7 @@ class GarageCard extends StatelessWidget {
       );
       if (key.isNotEmpty) return weekdaysParsed[key];
     }
-    
+
     // Try weekendsHours if it is JSON
     final weekendsParsed = _parseHoursJson(garage.weekendsHours);
     if (weekendsParsed != null) {
@@ -57,7 +57,7 @@ class GarageCard extends StatelessWidget {
       );
       if (key.isNotEmpty) return weekendsParsed[key];
     }
-    
+
     // If not JSON, fallback to traditional check
     final isWeekend = currentDay == 6 || currentDay == 7;
     final hoursString = isWeekend ? garage.weekendsHours : garage.weekdaysHours;
@@ -67,7 +67,9 @@ class GarageCard extends StatelessWidget {
   /// Check if garage is currently open based on time
   Map<String, dynamic> _getOpenStatus() {
     final hoursString = _getHoursForToday();
-    if (hoursString == null || hoursString.isEmpty || hoursString.toLowerCase() == 'closed') {
+    if (hoursString == null ||
+        hoursString.isEmpty ||
+        hoursString.toLowerCase() == 'closed') {
       return {'isOpen': false, 'label': 'Closed'};
     }
 
@@ -249,7 +251,7 @@ class GarageCard extends StatelessWidget {
                   ],
                 ),
               ),
-            //  Column(children: [const Icon(Icons.more_vert, size: 20)]),
+              //  Column(children: [const Icon(Icons.more_vert, size: 20)]),
             ],
           ),
         ),

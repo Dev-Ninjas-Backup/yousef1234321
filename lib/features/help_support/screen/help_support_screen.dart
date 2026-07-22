@@ -5,13 +5,11 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 import '../controller/help_support_controller.dart';
 
-class HelpSupportScreen extends StatelessWidget {
+class HelpSupportScreen extends GetView<HelpSupportController> {
   const HelpSupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HelpSupportController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

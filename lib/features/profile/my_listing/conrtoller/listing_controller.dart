@@ -1,12 +1,15 @@
 // ignore_for_file: avoid_print
 
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/profile/my_listing/service/my_listing_service.dart';
 import '../model/listing_model.dart';
 import '../model/product_model.dart';
 
 class ListingController extends GetxController {
+  final MyListingService _myListingService;
+
+  ListingController(this._myListingService);
+
   var selectedTab = 0.obs;
   var tabs = ["All listing", "Active listing", "Previous listing"].obs;
 
@@ -28,7 +31,7 @@ class ListingController extends GetxController {
       hasError.value = false;
       print('ListingController: Fetching my listings...');
 
-      final response = await ApiClient.to.get(Endpoint.myListing);
+      final response = await _myListingService.getMyListings();
       print('ListingController: Response status=${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {

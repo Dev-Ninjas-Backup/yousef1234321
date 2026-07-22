@@ -21,13 +21,11 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 
 import '../../../core/common/style/global_text_style.dart';
 
-class SparePartsScreen extends StatelessWidget {
-  SparePartsScreen({super.key});
+class SparePartsScreen extends GetView<SparePartsController> {
+  const SparePartsScreen({super.key});
 
   // Ensure we only run the initial fetch once per app lifecycle to avoid repeated network calls
   static bool _initialized = false;
-
-  final SparePartsController controller = Get.put(SparePartsController());
 
   // Helper to get English text for a key to send to TranslationService
   String _getEnglishText(String key) {
@@ -44,12 +42,15 @@ class SparePartsScreen extends StatelessWidget {
     if (!SparePartsScreen._initialized) {
       SparePartsScreen._initialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final allPartsCtrl = Get.put(ProductsController(), tag: 'allParts');
+        final allPartsCtrl = Get.put(
+          ProductsController(Get.find()),
+          tag: 'allParts',
+        );
         if (allPartsCtrl.products.isEmpty && !allPartsCtrl.isLoading.value) {
           allPartsCtrl.fetchProducts(page: 1, limit: 10);
         }
         final todaysDealsCtrl = Get.put(
-          ProductsController(),
+          ProductsController(Get.find()),
           tag: 'todaysDeals',
         );
         if (todaysDealsCtrl.products.isEmpty &&
@@ -98,7 +99,7 @@ class SparePartsScreen extends StatelessWidget {
                         final profileController =
                             Get.isRegistered<ProfileController>()
                             ? Get.find<ProfileController>()
-                            : Get.put(ProfileController());
+                            : Get.put(ProfileController(Get.find()));
                         final profilePhoto =
                             profileController.profilePhoto.value;
 
@@ -130,7 +131,7 @@ class SparePartsScreen extends StatelessWidget {
             PartsSearchSection(),
             const SizedBox(height: 16),
             // Category section - Single row horizontally scrollable
-            SizedBox(
+            Obx(() => SizedBox(
               height: 130,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -149,7 +150,7 @@ class SparePartsScreen extends StatelessWidget {
                         final catId = (cat['id'] ?? '').toString();
 
                         final productsCtrl = Get.put(
-                          ProductsController(),
+                          ProductsController(Get.find()),
                           tag: 'productsList',
                         );
                         await productsCtrl.fetchProducts(
@@ -165,7 +166,7 @@ class SparePartsScreen extends StatelessWidget {
                   );
                 },
               ),
-            ),
+            )),
 
             const SizedBox(height: 20),
 
@@ -232,7 +233,7 @@ class SparePartsScreen extends StatelessWidget {
             //_sectionCard("all_parts"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
-            partsList(Get.put(ProductsController(), tag: 'allParts')),
+            partsList(Get.put(ProductsController(Get.find()), tag: 'allParts')),
 
             const SizedBox(height: 20),
 
@@ -242,7 +243,9 @@ class SparePartsScreen extends StatelessWidget {
             //_sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
-            partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
+            partsList(
+              Get.put(ProductsController(Get.find()), tag: 'todaysDeals'),
+            ),
           ],
         ),
       ),
@@ -263,7 +266,7 @@ class SparePartsScreen extends StatelessWidget {
             // Navigate to products list page with API call (page=1, limit=10)
             // Create ProductsController and fetch products
             final productsCtrl = Get.put(
-              ProductsController(),
+              ProductsController(Get.find()),
               tag: 'productsList',
             );
             await productsCtrl.fetchProducts(page: 1, limit: 10);

@@ -5,13 +5,11 @@ import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/forget_password/reset_password/reset_password_controller.dart';
 
-class ResetPasswordScreen extends StatelessWidget {
+class ResetPasswordScreen extends GetView<ResetPasswordController> {
   const ResetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ResetPasswordController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

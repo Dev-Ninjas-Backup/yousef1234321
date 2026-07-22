@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';
+import 'package:yousef1234321/features/home/garage_list/service/garage_list_service.dart';
 
 class GarageListController extends GetxController {
+  final GarageListService _garageListService;
+
+  GarageListController(this._garageListService);
+
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
@@ -103,57 +106,36 @@ class GarageListController extends GetxController {
     }
 
     try {
-      String url = '${Endpoint.findGarage}?page=$page&limit=$limit';
+      final statusVal =
+          selectedStatus.value.isNotEmpty && selectedStatus.value != 'all'
+          ? (_apiValues[selectedStatus.value] ?? selectedStatus.value)
+          : null;
 
-      if (searchController.text.isNotEmpty) {
-        url += '&searchTerm=${Uri.encodeQueryComponent(searchController.text)}';
-      }
+      final cityVal = selectedCity.value != null
+          ? (_apiValues[selectedCity.value!] ?? selectedCity.value!)
+          : null;
 
-      if (selectedStatus.value.isNotEmpty && selectedStatus.value != 'all') {
-        url +=
-            '&status=${_apiValues[selectedStatus.value] ?? selectedStatus.value}';
-      }
+      final emirateVal = selectedEmirate.value != null
+          ? (_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)
+          : null;
 
-      if (selectedCity.value != null)
-        url +=
-            '&city=${Uri.encodeQueryComponent(_apiValues[selectedCity.value!] ?? selectedCity.value!)}';
-      if (selectedEmirate.value != null)
-        url +=
-            '&emirate=${Uri.encodeQueryComponent(_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)}';
-      if (selectedService.value != null && selectedService.value!.isNotEmpty) {
-        final serviceVal = Uri.encodeQueryComponent(selectedService.value!);
-        url += '&serviceName=$serviceVal&service=$serviceVal';
-      }
+      final response = await _garageListService.fetchGarages(
+        page: page,
+        limit: limit,
+        searchTerm: searchController.text,
+        status: statusVal,
+        city: cityVal,
+        emirate: emirateVal,
+        serviceName: selectedService.value,
+      );
 
-      final response = await ApiClient.to.get(url);
+      final List<GarageModel> parsedGarages = response['garages'];
+      hasMore = response['hasMore'];
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-        if (body['success'] == true && body['data'] != null) {
-          final data = body['data'];
-          List<dynamic> list = [];
-
-          if (data is Map && data['data'] is List) {
-            list = data['data'];
-            if (data['pagination'] != null) {
-              final totalPages = data['pagination']['totalPages'] ?? 1;
-              if (page >= totalPages) hasMore = false;
-            }
-          } else if (data is List) {
-            list = data;
-          }
-
-          List<GarageModel> parsedGarages = list
-              .where((e) => e != null && e is Map<String, dynamic>)
-              .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
-              .toList();
-
-          if (refresh) {
-            garages.assignAll(parsedGarages);
-          } else {
-            garages.addAll(parsedGarages);
-          }
-        }
+      if (refresh) {
+        garages.assignAll(parsedGarages);
+      } else {
+        garages.addAll(parsedGarages);
       }
     } catch (e) {
       print('[GarageListController] fetchGarages error: $e');
@@ -192,26 +174,8 @@ class GarageListController extends GetxController {
 
   Future<void> fetchServices() async {
     try {
-      final response = await ApiClient.to.get(Endpoint.getService);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-        List<dynamic>? categories;
-        if (body != null) {
-          if (body['data'] is List) {
-            categories = body['data'];
-          } else if (body['serviceCategories'] is List) {
-            categories = body['serviceCategories'];
-          }
-        }
-
-        if (categories != null) {
-          final fetchedNames = categories
-              .map((e) => e is Map ? (e['name']?.toString() ?? '') : e.toString())
-              .where((s) => s.isNotEmpty)
-              .toList();
-          serviceTypes.assignAll(fetchedNames);
-        }
-      }
+      final fetchedServices = await _garageListService.fetchServices();
+      serviceTypes.assignAll(fetchedServices);
     } catch (e) {
       print('[GarageListController] fetchServices error: $e');
     }

@@ -19,7 +19,7 @@ class FindGaragePage extends StatefulWidget {
 }
 
 class _FindGaragePageState extends State<FindGaragePage> {
-  final FindGarageController controller = Get.put(FindGarageController());
+  final FindGarageController controller = Get.find<FindGarageController>();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
   String _youText = 'You';
@@ -53,10 +53,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
           Marker(
             markerId: MarkerId(g.id),
             position: LatLng(g.garageLat!, g.garageLng!),
-            infoWindow: InfoWindow(
-              title: g.name,
-              snippet: g.address ?? '',
-            ),
+            infoWindow: InfoWindow(title: g.name, snippet: g.address ?? ''),
           ),
         );
       }
@@ -254,10 +251,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     controller.currentLat.value != null &&
                     controller.currentLng.value != null;
 
-                return
-                
-                
-                 Container(
+                return Container(
                   height: 400,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -314,35 +308,34 @@ class _FindGaragePageState extends State<FindGaragePage> {
                         bottom: 12,
                         right: 12,
                         child: FloatingActionButton(
-                            mini: true,
-                            backgroundColor: Colors.white,
-                            onPressed: () async {
-                              await controller.loadCurrentLocation();
-                              if (controller.currentLat.value != null &&
-                                  controller.currentLng.value != null) {
-                                try {
-                                  final mapCtrl =
-                                      await _mapController.future;
-                                  final lat = controller.currentLat.value!;
-                                  final lng = controller.currentLng.value!;
-                                  await mapCtrl.animateCamera(
-                                    CameraUpdate.newLatLngZoom(
-                                      LatLng(lat, lng),
-                                      14,
-                                    ),
-                                  );
-                                } catch (e) {
-                                  // ignore errors
-                                }
+                          mini: true,
+                          backgroundColor: Colors.white,
+                          onPressed: () async {
+                            await controller.loadCurrentLocation();
+                            if (controller.currentLat.value != null &&
+                                controller.currentLng.value != null) {
+                              try {
+                                final mapCtrl = await _mapController.future;
+                                final lat = controller.currentLat.value!;
+                                final lng = controller.currentLng.value!;
+                                await mapCtrl.animateCamera(
+                                  CameraUpdate.newLatLngZoom(
+                                    LatLng(lat, lng),
+                                    14,
+                                  ),
+                                );
+                              } catch (e) {
+                                // ignore errors
                               }
-                            },
-                            child: const Icon(
-                              Icons.my_location,
-                              color: Colors.black54,
-                              size: 18,
-                            ),
+                            }
+                          },
+                          child: const Icon(
+                            Icons.my_location,
+                            color: Colors.black54,
+                            size: 18,
                           ),
                         ),
+                      ),
                     ],
                   ),
                 );
@@ -403,25 +396,13 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                 ),
                                 child:
                                     (g.profileImage != null &&
-                                            g.profileImage!.isNotEmpty)
-                                        ? Image.network(
-                                          g.profileImage!,
-                                          height: 84,
-                                          width: 220,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (_, __, ___) => Container(
-                                                height: 84,
-                                                width: 220,
-                                                color: Colors.grey.shade100,
-                                                child: const Icon(
-                                                  Icons.storefront_outlined,
-                                                  size: 36,
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                        )
-                                        : Container(
+                                        g.profileImage!.isNotEmpty)
+                                    ? Image.network(
+                                        g.profileImage!,
+                                        height: 84,
+                                        width: 220,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) => Container(
                                           height: 84,
                                           width: 220,
                                           color: Colors.grey.shade100,
@@ -431,6 +412,17 @@ class _FindGaragePageState extends State<FindGaragePage> {
                                             color: Colors.grey,
                                           ),
                                         ),
+                                      )
+                                    : Container(
+                                        height: 84,
+                                        width: 220,
+                                        color: Colors.grey.shade100,
+                                        child: const Icon(
+                                          Icons.storefront_outlined,
+                                          size: 36,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),

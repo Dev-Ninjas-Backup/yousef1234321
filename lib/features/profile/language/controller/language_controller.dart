@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yousef1234321/features/profile/language/service/language_service.dart';
 
 class LanguageController extends GetxController {
-  final SharedPreferences _prefs = Get.find<SharedPreferences>();
+  final LanguageService _languageService;
+
+  LanguageController(this._languageService);
   var selectedLanguage = 'English'.obs;
 
   @override
@@ -13,7 +15,7 @@ class LanguageController extends GetxController {
   }
 
   void _loadSavedLanguage() {
-    final savedLang = _prefs.getString('language_name');
+    final savedLang = _languageService.getSavedLanguageName();
 
     if (savedLang != null) {
       selectedLanguage.value = savedLang;
@@ -24,8 +26,8 @@ class LanguageController extends GetxController {
   }
 
   Locale? get initialLocale {
-    final savedCode = _prefs.getString('language_code');
-    final savedCountry = _prefs.getString('country_code');
+    final savedCode = _languageService.getSavedLanguageCode();
+    final savedCountry = _languageService.getSavedCountryCode();
     if (savedCode != null && savedCountry != null) {
       return Locale(savedCode, savedCountry);
     }
@@ -34,9 +36,7 @@ class LanguageController extends GetxController {
 
   void changeLanguage(String name, String code, String country) {
     selectedLanguage.value = name;
-    _prefs.setString('language_name', name);
-    _prefs.setString('language_code', code);
-    _prefs.setString('country_code', country);
+    _languageService.saveLanguage(name, code, country);
     Get.updateLocale(Locale(code, country));
   }
 }

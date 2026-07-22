@@ -4,10 +4,8 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/notification/notification_model.dart';
 import '../controller/notification_controller.dart';
 
-class NotificationScreen extends StatelessWidget {
-  NotificationScreen({super.key});
-
-  final NotificationController controller = Get.find<NotificationController>();
+class NotificationScreen extends GetView<NotificationController> {
+  const NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
