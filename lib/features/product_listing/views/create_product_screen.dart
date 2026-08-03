@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
@@ -41,6 +43,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   List<String> _photoPaths = [];
   String? _verificationImagePath;
   bool _termsAgreed = false;
+  bool _usePromotionCredits = false;
+  double _promoPrice7Days = 49.0;
+  double _promoPrice15Days = 99.0;
 
   bool _isLoadingCategories = true;
   List<PartCategory> _categories = [];
@@ -49,6 +54,23 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
   ProductLimitQuota? _quota;
 
   late final ProductApiService _apiService;
+
+  double get _currentPromoPrice =>
+      _promotedDuration == '7' ? _promoPrice7Days : _promoPrice15Days;
+
+  double get _creditDeduction {
+    if (_isPromoted && _usePromotionCredits) {
+      return min(_quota?.promotionCredits ?? 0.0, _currentPromoPrice);
+    }
+    return 0.0;
+  }
+
+  double get _totalToPay {
+    if (_isPromoted) {
+      return _currentPromoPrice - _creditDeduction;
+    }
+    return 0.0;
+  }
 
   @override
   void initState() {
@@ -64,15 +86,23 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     try {
       final categories = await _apiService.fetchCategories();
       ProductLimitQuota? quota;
+      Map<String, dynamic>? paymentConfig;
       try {
         quota = await _apiService.checkUserQuota();
+        paymentConfig = await _apiService.getPaymentConfigure();
       } catch (e) {
-        debugPrint("Failed to fetch quota: $e");
+        debugPrint("Failed to fetch quota or config: $e");
       }
 
       setState(() {
         _categories = categories;
         _quota = quota;
+        if (paymentConfig != null) {
+          _promoPrice7Days = (paymentConfig['promotionalAdPrice3Days'] ?? 49.0)
+              .toDouble();
+          _promoPrice15Days = (paymentConfig['promotionalAdPrice7Days'] ?? 99.0)
+              .toDouble();
+        }
         if (quota != null) {
           if (quota.hasProductMonthly) {
             _hasActiveMonthly = true;
@@ -81,6 +111,8 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                 : ListingPlan.MONTHLY_BASIC;
           } else if (quota.freeProductsLeft > 0) {
             _plan = ListingPlan.FREE;
+            _isPromoted =
+                false; // "Free Plan Restriction: If isFreePlanSelected == true, force isPromoted = false"
           } else {
             _plan = ListingPlan.PAY_PER;
           }
@@ -89,11 +121,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       });
     } catch (e) {
       setState(() => _isLoadingCategories = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load categories: $e')),
-        );
-      }
+      EasyLoading.showError('Failed to load categories: $e');
     }
   }
 
@@ -106,11 +134,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to initiate payment: $e')),
-        );
-      }
+      EasyLoading.showError('Failed to initiate payment: $e');
     }
   }
 
@@ -121,11 +145,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to initiate payment: $e')),
-        );
-      }
+      EasyLoading.showError('Failed to initiate payment: $e');
     }
   }
 
@@ -159,12 +179,13 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             child: const Text(
               'Confirm Downgrade',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -173,26 +194,15 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
 
     if (confirm == true) {
       try {
-        final result = await _apiService.downgradeProductPlan(planType: 'BASIC');
-        final message = result['message'] ?? 'Plan will be downgraded to BASIC on renewal';
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
+        final result = await _apiService.downgradeProductPlan(
+          planType: 'BASIC',
+        );
+        final message =
+            result['message'] ?? 'Plan will be downgraded to BASIC on renewal';
+        EasyLoading.showSuccess(message);
         await _loadInitialData();
       } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Downgrade failed: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        EasyLoading.showError('Downgrade failed: $e');
       }
     }
   }
@@ -201,9 +211,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     final List<XFile> images = await _picker.pickMultiImage();
     if (images.isNotEmpty) {
       if (_photoPaths.length + images.length > 5) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Maximum 5 photos allowed')),
-        );
+        EasyLoading.showError('Maximum 5 photos allowed');
         return;
       }
       setState(() {
@@ -225,34 +233,24 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (!_termsAgreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please agree to the Terms of Service')),
-      );
+      EasyLoading.showError('Please agree to the Terms of Service');
       return;
     }
 
     if (_selectedCategoryId == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a Category')));
+      EasyLoading.showError('Please select a Category');
       return;
     }
 
     if (_photoPaths.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please upload at least 1 product photo')),
-      );
+      EasyLoading.showError('Please upload at least 1 product photo');
       return;
     }
 
     if (_sellerType == SellerType.VERIFIED_SUPPLIER &&
         _verificationImagePath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Verification Image is required for Verified Suppliers',
-          ),
-        ),
+      EasyLoading.showError(
+        'Verification Image is required for Verified Suppliers',
       );
       return;
     }
@@ -277,6 +275,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       garageId: _garageIdCtrl.text.isNotEmpty ? _garageIdCtrl.text : null,
       isPromoted: _isPromoted,
       promotedDuration: _isPromoted ? _promotedDuration : null,
+      usePromotionCredits: _isPromoted ? _usePromotionCredits : false,
       photoPaths: _photoPaths,
       verificationImagePath: _verificationImagePath,
     );
@@ -1146,59 +1145,82 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                                             isCross: true,
                                             small: true,
                                           ),
-                                        if (_quota?.hasProductMonthly == true &&
-                                            _quota?.productMonthlyPlanType == 'PRO') ...[
-                                          const SizedBox(height: 12),
-                                          if (_quota?.productMonthlyPendingPlanType == 'BASIC')
-                                            Container(
-                                              padding: const EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFFFFFBEB),
-                                                borderRadius: BorderRadius.circular(8),
-                                                border: Border.all(color: const Color(0xFFFDE68A)),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.warning_amber_rounded,
-                                                    color: Color(0xFFD97706),
-                                                    size: 18,
+                                          if (_quota?.hasProductMonthly ==
+                                                  true &&
+                                              _quota?.productMonthlyPlanType ==
+                                                  'PRO') ...[
+                                            const SizedBox(height: 12),
+                                            if (_quota
+                                                    ?.productMonthlyPendingPlanType ==
+                                                'BASIC')
+                                              Container(
+                                                padding: const EdgeInsets.all(
+                                                  10,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(
+                                                    0xFFFFFBEB,
                                                   ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      'Your plan is scheduled to downgrade to BASIC on ${_quota?.productMonthlyEndDate != null ? _quota!.productMonthlyEndDate!.split('T')[0] : 'end of cycle'}.',
-                                                      style: const TextStyle(
-                                                        color: Color(0xFF92400E),
-                                                        fontSize: 12,
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: const Color(
+                                                      0xFFFDE68A,
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            )
-                                          else
-                                            SizedBox(
-                                              width: double.infinity,
-                                              child: OutlinedButton(
-                                                onPressed: _downgradeToBasic,
-                                                style: OutlinedButton.styleFrom(
-                                                  side: const BorderSide(color: Color(0xFFD97706)),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons
+                                                          .warning_amber_rounded,
+                                                      color: Color(0xFFD97706),
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: Text(
+                                                        'Your plan is scheduled to downgrade to BASIC on ${_quota?.productMonthlyEndDate != null ? _quota!.productMonthlyEndDate!.split('T')[0] : 'end of cycle'}.',
+                                                        style: const TextStyle(
+                                                          color: Color(
+                                                            0xFF92400E,
+                                                          ),
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            else
+                                              SizedBox(
+                                                width: double.infinity,
+                                                child: OutlinedButton(
+                                                  onPressed: _downgradeToBasic,
+                                                  style: OutlinedButton.styleFrom(
+                                                    side: const BorderSide(
+                                                      color: Color(0xFFD97706),
+                                                    ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: const Text(
+                                                    'Downgrade to Basic',
+                                                    style: TextStyle(
+                                                      color: Color(0xFFD97706),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 13,
+                                                    ),
                                                   ),
                                                 ),
-                                                child: const Text(
-                                                  'Downgrade to Basic',
-                                                  style: TextStyle(
-                                                    color: Color(0xFFD97706),
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
                                               ),
-                                            ),
                                           ],
                                         ],
                                       ),
@@ -1594,7 +1616,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
               title: 'Promote This Product',
               trailing: Switch(
                 value: _isPromoted,
-                onChanged: (v) => setState(() => _isPromoted = v),
+                onChanged: _plan == ListingPlan.FREE
+                    ? null
+                    : (v) => setState(() => _isPromoted = v),
                 activeColor: const Color(0xFFEC4899),
               ),
               child: Column(
@@ -1605,7 +1629,36 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                     style: TextStyle(color: Colors.grey, fontSize: 13),
                   ),
 
-                  if (_isPromoted) ...[
+                  if (_plan == ListingPlan.FREE) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.lock,
+                            color: Colors.red.shade400,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: Text(
+                              'Promotion not available for free listings.',
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else if (_isPromoted) ...[
                     const SizedBox(height: 20),
 
                     // Silver Promotion Card
@@ -1640,7 +1693,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                               ),
                             ),
                             Text(
-                              '49 AED',
+                              '${_promoPrice7Days.toInt()} AED',
                               style: TextStyle(
                                 color: _promotedDuration == '7'
                                     ? const Color(0xFF8B5CF6)
@@ -1699,7 +1752,7 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                                   ),
                                 ),
                                 Text(
-                                  '99 AED',
+                                  '${_promoPrice15Days.toInt()} AED',
                                   style: TextStyle(
                                     color: _promotedDuration == '15'
                                         ? const Color(0xFFEC4899)
@@ -1745,46 +1798,294 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                         ],
                       ),
                     ),
+
+                    if (_isPromoted) ...[
+                      const SizedBox(height: 24),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.auto_graph,
+                                  color: Color(0xFF4A72FF),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                const Text(
+                                  'How Promotion Works',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1E293B),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            _buildInfoListItem(
+                              '1. Select promotion duration (7 or 15 days)',
+                            ),
+                            _buildInfoListItem(
+                              '2. Pay or consume promotion credits (1 credit = 1 AED)',
+                            ),
+                            _buildInfoListItem(
+                              '3. Your product gets a "Promoted" badge on active listing list',
+                            ),
+                            _buildInfoListItem(
+                              '4. Your listing appears higher in searches',
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'YOUR PROMOTION STATUS',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEEF2FF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.circle,
+                                        color: Color(0xFF4F46E5),
+                                        size: 12,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Promotion Selected: $_promotedDuration Days',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF312E81),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16),
+                                  if ((_quota?.promotionCredits ?? 0) > 0)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: Checkbox(
+                                              value: _usePromotionCredits,
+                                              onChanged: (v) => setState(
+                                                () => _usePromotionCredits =
+                                                    v ?? false,
+                                              ),
+                                              activeColor: const Color(
+                                                0xFF4F46E5,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          const Expanded(
+                                            child: Text(
+                                              'Use available promotion credits',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0xFF1E293B),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Promotion Cost:',
+                                        style: TextStyle(
+                                          color: Color(0xFF4F46E5),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${_currentPromoPrice.toInt()} AED',
+                                        style: const TextStyle(
+                                          color: Color(0xFF4F46E5),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (_isPromoted && _usePromotionCredits) ...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text(
+                                          'Credit Deduction:',
+                                          style: TextStyle(
+                                            color: Color(0xFF059669),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          '-${_creditDeduction.toInt()} AED',
+                                          style: const TextStyle(
+                                            color: Color(0xFF059669),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                  const SizedBox(height: 16),
+                                  const Divider(
+                                    height: 1,
+                                    color: Color(0xFFE0E7FF),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Total to Pay:',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 16,
+                                          color: Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                      Text(
+                                        '${_totalToPay.toInt()} AED',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 16,
+                                          color: Color(0xFF0F172A),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if ((_quota?.promotionCredits ?? 0) > 0) ...[
+                              const SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Available promotion credits:',
+                                    style: TextStyle(color: Color(0xFF475569)),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFEEF2FF),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Text(
+                                      '${(_quota?.promotionCredits ?? 0).toInt()} AED',
+                                      style: const TextStyle(
+                                        color: Color(0xFF4F46E5),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ],
               ),
             ),
             const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF5F7FF),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline, color: Color(0xFF4A72FF)),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: RichText(
-                      text: const TextSpan(
-                        text:
-                            'By completing this listing, you confirm that you have read and agreed to the SayaraHub ',
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 12,
-                          height: 1.4,
-                        ),
-                        children: [
-                          TextSpan(
-                            text: 'Terms & Conditions.',
-                            style: TextStyle(
-                              color: Color(0xFF4A72FF),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(16),
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFFF5F7FF),
+            //     borderRadius: BorderRadius.circular(12),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       const Icon(Icons.info_outline, color: Color(0xFF4A72FF)),
+            //       const SizedBox(width: 12),
+            //       Expanded(
+            //         child: RichText(
+            //           text: const TextSpan(
+            //             text:
+            //                 'By completing this listing, you confirm that you have read and agreed to the SayaraHub ',
+            //             style: TextStyle(
+            //               color: Colors.black87,
+            //               fontSize: 12,
+            //               height: 1.4,
+            //             ),
+            //             children: [
+            //               TextSpan(
+            //                 text: 'Terms & Conditions.',
+            //                 style: TextStyle(
+            //                   color: Color(0xFF4A72FF),
+            //                   fontWeight: FontWeight.bold,
+            //                 ),
+            //               ),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: () => Navigator.pop(context),
@@ -1980,6 +2281,20 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         fontWeight: FontWeight.bold,
       ),
       suffixIcon: suffixIcon,
+    );
+  }
+
+  Widget _buildInfoListItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFF64748B),
+          fontSize: 13,
+          height: 1.5,
+        ),
+      ),
     );
   }
 }

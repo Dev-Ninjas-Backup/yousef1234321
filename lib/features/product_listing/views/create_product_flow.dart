@@ -21,20 +21,33 @@ Future<bool> handleCreateProduct(ProductApiService apiService, CreateProductRequ
       if (errorCode == 'PAY_PER_PAYMENT_REQUIRED') {
         debugPrint("PAY_PER_PAYMENT_REQUIRED - Redirecting to stripe...");
         EasyLoading.showInfo("Redirecting to payment...");
-        final String checkoutUrl = await apiService.createPayPerPaymentSession();
-        openStripeWebView(checkoutUrl);
+        try {
+          final String checkoutUrl = await apiService.createPayPerPaymentSession();
+          openStripeWebView(checkoutUrl);
+        } catch (e) {
+          EasyLoading.showError("Failed to initiate payment session.");
+        }
       } else if (errorCode == 'PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED') {
         debugPrint("PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED - Redirecting to stripe...");
         EasyLoading.showInfo("Redirecting to subscription...");
-        final String checkoutUrl = await apiService.createMonthlySubscriptionSession(planType: 'PRO');
-        openStripeWebView(checkoutUrl);
+        try {
+          final String checkoutUrl = await apiService.createMonthlySubscriptionSession(planType: 'PRO');
+          openStripeWebView(checkoutUrl);
+        } catch (e) {
+          EasyLoading.showError("Failed to initiate subscription session.");
+        }
       } else if (errorCode == 'PROMOTION_PAYMENT_REQUIRED') {
         debugPrint("PROMOTION_PAYMENT_REQUIRED - Redirecting to stripe...");
         EasyLoading.showInfo("Redirecting to promotion payment...");
-        final String checkoutUrl = await apiService.createPromotionPaymentSession(
-          duration: request.promotedDuration ?? '7',
-        );
-        openStripeWebView(checkoutUrl);
+        try {
+          final String checkoutUrl = await apiService.createPromotionPaymentSession(
+            duration: request.promotedDuration ?? '7',
+            useCredits: request.usePromotionCredits,
+          );
+          openStripeWebView(checkoutUrl);
+        } catch (e) {
+          EasyLoading.showError("Failed to initiate promotion payment.");
+        }
       } else {
         debugPrint("API Error Message: ${error['message']}");
         EasyLoading.showError(error['message'].toString());

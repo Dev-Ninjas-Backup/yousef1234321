@@ -12,6 +12,7 @@ class ProductLimitQuota {
   final String? productMonthlyEndDate;
   final bool hasPayPerCredit;
   final int payPerCredits;
+  final double promotionCredits;
 
   ProductLimitQuota({
     required this.userType,
@@ -23,6 +24,7 @@ class ProductLimitQuota {
     this.productMonthlyEndDate,
     required this.hasPayPerCredit,
     required this.payPerCredits,
+    this.promotionCredits = 0.0,
   });
 
   factory ProductLimitQuota.fromJson(Map<String, dynamic> json) {
@@ -45,6 +47,7 @@ class ProductLimitQuota {
       productMonthlyEndDate: data['productMonthlyEndDate'],
       hasPayPerCredit: data['productCredits'] != null && data['productCredits'] > 0,
       payPerCredits: data['productCredits'] ?? 0,
+      promotionCredits: (data['promotionCredits'] ?? 0).toDouble(),
     );
   }
 }
@@ -65,6 +68,7 @@ class CreateProductRequest {
   final String? garageId;
   final bool isPromoted;
   final String? promotedDuration; // "7" or "15"
+  final bool usePromotionCredits;
   final List<String> photoPaths;
   final String? verificationImagePath;
 
@@ -84,6 +88,7 @@ class CreateProductRequest {
     this.garageId,
     this.isPromoted = false,
     this.promotedDuration,
+    this.usePromotionCredits = false,
     this.photoPaths = const [],
     this.verificationImagePath,
   });

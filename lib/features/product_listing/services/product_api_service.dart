@@ -11,9 +11,9 @@ class ProductApiService {
   ProductApiService({required this.baseUrl, required this.token});
 
   Map<String, String> get _headers => {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      };
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+  };
 
   /// Check User Product Listing Limit Quota
   Future<ProductLimitQuota> checkUserQuota({String? garageId}) async {
@@ -59,39 +59,51 @@ class ProductApiService {
     request.fields['sellerType'] = req.sellerType.name;
     request.fields['sellerEmail'] = req.sellerEmail;
     String planString = req.plan.name;
-    if (req.plan == ListingPlan.MONTHLY_BASIC || req.plan == ListingPlan.MONTHLY_PRO) {
+    if (req.plan == ListingPlan.MONTHLY_BASIC ||
+        req.plan == ListingPlan.MONTHLY_PRO) {
       planString = 'MONTHLY';
     }
     request.fields['plan'] = planString;
 
     if (req.brand != null) request.fields['brand'] = req.brand!;
-    if (req.description != null) request.fields['description'] = req.description!;
+    if (req.description != null)
+      request.fields['description'] = req.description!;
     if (req.sellerName != null) request.fields['sellerName'] = req.sellerName!;
-    if (req.sellerPhoneNumber != null) request.fields['sellerPhoneNumber'] = req.sellerPhoneNumber!;
+    if (req.sellerPhoneNumber != null)
+      request.fields['sellerPhoneNumber'] = req.sellerPhoneNumber!;
     if (req.garageId != null) request.fields['garageId'] = req.garageId!;
     request.fields['isPromoted'] = req.isPromoted.toString();
-    if (req.promotedDuration != null) request.fields['promotedDuration'] = req.promotedDuration!;
+    if (req.promotedDuration != null)
+      request.fields['promotedDuration'] = req.promotedDuration!;
+    request.fields['usePromotionCredits'] = req.usePromotionCredits
+        ? 'true'
+        : 'false';
+    request.fields['useCredits'] = req.usePromotionCredits ? 'true' : 'false';
 
     // Attach Product Photos
     for (String path in req.photoPaths) {
       final ext = path.split('.').last.toLowerCase();
       final type = ext == 'png' ? 'png' : 'jpeg';
-      request.files.add(await http.MultipartFile.fromPath(
-        'photos', 
-        path,
-        contentType: MediaType('image', type),
-      ));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'photos',
+          path,
+          contentType: MediaType('image', type),
+        ),
+      );
     }
 
     // Attach Verification Image (Required for VERIFIED_SUPPLIER)
     if (req.verificationImagePath != null) {
       final ext = req.verificationImagePath!.split('.').last.toLowerCase();
       final type = ext == 'png' ? 'png' : 'jpeg';
-      request.files.add(await http.MultipartFile.fromPath(
-        'verificationImage', 
-        req.verificationImagePath!,
-        contentType: MediaType('image', type),
-      ));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'verificationImage',
+          req.verificationImagePath!,
+          contentType: MediaType('image', type),
+        ),
+      );
     }
 
     final streamedResponse = await request.send();
@@ -112,7 +124,9 @@ class ProductApiService {
     final response = await http.post(uri, headers: _headers);
     final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final url = data['url'] ?? (data['data'] != null ? data['data']['checkoutUrl'] : null);
+      final url =
+          data['url'] ??
+          (data['data'] != null ? data['data']['checkoutUrl'] : null);
       return url ?? '';
     } else {
       throw data;
@@ -120,7 +134,9 @@ class ProductApiService {
   }
 
   /// Generate Monthly Subscription Session
-  Future<String> createMonthlySubscriptionSession({String planType = 'PRO'}) async {
+  Future<String> createMonthlySubscriptionSession({
+    String planType = 'PRO',
+  }) async {
     final uri = Uri.parse('$baseUrl/products/create-monthly-payment');
     final response = await http.post(
       uri,
@@ -129,7 +145,9 @@ class ProductApiService {
     );
     final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final url = data['url'] ?? (data['data'] != null ? data['data']['checkoutUrl'] : null);
+      final url =
+          data['url'] ??
+          (data['data'] != null ? data['data']['checkoutUrl'] : null);
       return url ?? '';
     } else {
       throw data;
@@ -137,19 +155,21 @@ class ProductApiService {
   }
 
   /// Generate Promotion Payment Session
-  Future<String> createPromotionPaymentSession({String duration = '7', bool useCredits = true}) async {
+  Future<String> createPromotionPaymentSession({
+    String duration = '7',
+    bool useCredits = true,
+  }) async {
     final uri = Uri.parse('$baseUrl/products/create-promotion-payment');
     final response = await http.post(
       uri,
       headers: _headers,
-      body: jsonEncode({
-        'duration': duration,
-        'useCredits': useCredits,
-      }),
+      body: jsonEncode({'duration': duration, 'useCredits': useCredits}),
     );
     final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final url = data['url'] ?? (data['data'] != null ? data['data']['checkoutUrl'] : null);
+      final url =
+          data['url'] ??
+          (data['data'] != null ? data['data']['checkoutUrl'] : null);
       return url ?? '';
     } else {
       throw data;
@@ -157,7 +177,9 @@ class ProductApiService {
   }
 
   /// Downgrade Product Plan
-  Future<Map<String, dynamic>> downgradeProductPlan({String planType = 'BASIC'}) async {
+  Future<Map<String, dynamic>> downgradeProductPlan({
+    String planType = 'BASIC',
+  }) async {
     final uri = Uri.parse('$baseUrl/subscription/downgrade-product-plan');
     final response = await http.patch(
       uri,
@@ -166,7 +188,21 @@ class ProductApiService {
     );
     final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      return data is Map<String, dynamic> ? data : {'message': 'Plan downgraded successfully'};
+      return data is Map<String, dynamic>
+          ? data
+          : {'message': 'Plan downgraded successfully'};
+    } else {
+      throw data;
+    }
+  }
+
+  /// Get Payment Configure
+  Future<Map<String, dynamic>> getPaymentConfigure() async {
+    final uri = Uri.parse('$baseUrl/admin-setting/payment-configure');
+    final response = await http.get(uri, headers: _headers);
+    final data = jsonDecode(response.body);
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return data['data'] ?? data;
     } else {
       throw data;
     }
