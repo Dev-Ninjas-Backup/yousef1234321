@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/features/product_listing/views/create_product_screen.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
@@ -131,42 +132,44 @@ class SparePartsScreen extends GetView<SparePartsController> {
             PartsSearchSection(),
             const SizedBox(height: 16),
             // Category section - Single row horizontally scrollable
-            Obx(() => SizedBox(
-              height: 130,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: controller.categories.length,
-                itemBuilder: (context, index) {
-                  final cat = controller.categories[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: CategoryItem(
-                      icon: cat['icon'] as IconData,
-                      title: cat['name'] as String,
-                      color: controller.getRandomColor(),
-                      onTap: () async {
-                        // extract category name and id
-                        final cname = (cat['name'] ?? 'category').toString();
-                        final catId = (cat['id'] ?? '').toString();
+            Obx(
+              () => SizedBox(
+                height: 130,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = controller.categories[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: CategoryItem(
+                        icon: cat['icon'] as IconData,
+                        title: cat['name'] as String,
+                        color: controller.getRandomColor(),
+                        onTap: () async {
+                          // extract category name and id
+                          final cname = (cat['name'] ?? 'category').toString();
+                          final catId = (cat['id'] ?? '').toString();
 
-                        final productsCtrl = Get.put(
-                          ProductsController(Get.find()),
-                          tag: 'productsList',
-                        );
-                        await productsCtrl.fetchProducts(
-                          page: 1,
-                          limit: 20,
-                          categoryId: catId.isNotEmpty ? catId : null,
-                          category: cname,
-                        );
+                          final productsCtrl = Get.put(
+                            ProductsController(Get.find()),
+                            tag: 'productsList',
+                          );
+                          await productsCtrl.fetchProducts(
+                            page: 1,
+                            limit: 20,
+                            categoryId: catId.isNotEmpty ? catId : null,
+                            category: cname,
+                          );
 
-                        _openProductListScreen(cname, productsCtrl);
-                      },
-                    ),
-                  );
-                },
+                          _openProductListScreen(cname, productsCtrl);
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
-            )),
+            ),
 
             const SizedBox(height: 20),
 
@@ -204,7 +207,7 @@ class SparePartsScreen extends GetView<SparePartsController> {
                           ),
                         ),
                         onPressed: () {
-                          Get.toNamed(Approute.partsDetailsScreen);
+                          Get.to(() => const CreateProductScreen());
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

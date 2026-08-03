@@ -71,8 +71,11 @@ class SignInController extends GetxController {
 
   @override
   void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
+    // Delay disposal to allow route transition to complete
+    Future.delayed(const Duration(milliseconds: 500), () {
+      emailController.dispose();
+      passwordController.dispose();
+    });
     super.onClose();
   }
 }
