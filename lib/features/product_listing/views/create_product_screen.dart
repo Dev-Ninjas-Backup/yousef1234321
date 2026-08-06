@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/parts_details/model.dart/part_categories_model.dart';
+import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
 import '../models/product_models.dart';
 import '../services/product_api_service.dart';
 import 'create_product_flow.dart';
@@ -84,6 +86,18 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
 
   Future<void> _loadInitialData() async {
     try {
+      try {
+        final profileCtrl = Get.find<ProfileController>();
+        if (profileCtrl.fullName.value.isEmpty) {
+          await profileCtrl.fetchProfile();
+        }
+        _sellerNameCtrl.text = profileCtrl.fullName.value;
+        _sellerEmailCtrl.text = profileCtrl.email.value;
+        _sellerPhoneCtrl.text = profileCtrl.phone.value;
+      } catch (e) {
+        debugPrint("Could not fetch profile for pre-fill: $e");
+      }
+
       final categories = await _apiService.fetchCategories();
       ProductLimitQuota? quota;
       Map<String, dynamic>? paymentConfig;
