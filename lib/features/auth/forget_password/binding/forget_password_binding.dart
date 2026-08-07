@@ -14,9 +14,6 @@ class ForgetPasswordBinding extends Bindings {
       () => ForgetPasswordService(Get.find()),
       fenix: true,
     );
-    Get.lazyPut<ForgetPasswordController>(
-      () => ForgetPasswordController(Get.find()),
-      fenix: true,
-    );
+    Get.put<ForgetPasswordController>(ForgetPasswordController(Get.find()));
   }
 }

@@ -11,9 +11,6 @@ class SignInBinding extends Bindings {
       fenix: true,
     );
     Get.lazyPut<SignInService>(() => SignInService(Get.find()), fenix: true);
-    Get.lazyPut<SignInController>(
-      () => SignInController(Get.find()),
-      fenix: true,
-    );
+    Get.put<SignInController>(SignInController(Get.find()));
   }
 }

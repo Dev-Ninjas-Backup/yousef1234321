@@ -9,9 +9,6 @@ class ResetPasswordBinding extends Bindings {
       () => ForgetPasswordService(Get.find()),
       fenix: true,
     );
-    Get.lazyPut<ResetPasswordController>(
-      () => ResetPasswordController(Get.find()),
-      fenix: true,
-    );
+    Get.put<ResetPasswordController>(ResetPasswordController(Get.find()));
   }
 }

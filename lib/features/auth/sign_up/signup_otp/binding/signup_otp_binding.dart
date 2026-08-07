@@ -14,9 +14,6 @@ class SignupOtpBinding extends Bindings {
       () => SignupOtpService(Get.find()),
       fenix: true,
     );
-    Get.lazyPut<SignupOtpController>(
-      () => SignupOtpController(Get.find()),
-      fenix: true,
-    );
+    Get.put<SignupOtpController>(SignupOtpController(Get.find()));
   }
 }

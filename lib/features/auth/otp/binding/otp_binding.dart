@@ -11,6 +11,6 @@ class OtpBinding extends Bindings {
       fenix: true,
     );
     Get.lazyPut<OtpService>(() => OtpService(Get.find()), fenix: true);
-    Get.lazyPut<OtpController>(() => OtpController(Get.find()), fenix: true);
+    Get.put<OtpController>(OtpController(Get.find()));
   }
 }
