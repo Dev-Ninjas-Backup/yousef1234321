@@ -16,17 +16,17 @@ import '../controller/service_booking_controller.dart';
 import '../service/service_booking_service.dart';
 
 class ServiceMessage extends StatelessWidget {
-  late final ServiceBookingController controller = () {
-    if (Get.isRegistered<ServiceBookingController>()) {
-      return Get.find<ServiceBookingController>();
-    }
-    if (!Get.isRegistered<ServiceBookingService>()) {
-      Get.put(ServiceBookingService(Get.find()));
-    }
-    return Get.put(
-      ServiceBookingController(Get.find<ServiceBookingService>()),
-    );
-  }();
+  final ServiceBookingController controller =
+      Get.isRegistered<ServiceBookingController>()
+          ? Get.find<ServiceBookingController>()
+          : Get.put(
+              ServiceBookingController(
+                Get.isRegistered<ServiceBookingService>()
+                    ? Get.find<ServiceBookingService>()
+                    : Get.put(ServiceBookingService(Get.find()), permanent: true),
+              ),
+              permanent: true,
+            );
   final String? recipientId;
   final String? garageName;
   late final selectedFiles = <PlatformFile>[].obs;
@@ -175,13 +175,15 @@ class ServiceMessage extends StatelessWidget {
     print('═══════════════════════════════════════════════════════\n');
 
     if (recipientId != null) {
-      print(
-        '✅ [ServiceMessage Constructor] recipientId is valid, calling initializeChat',
-      );
-      controller.initializeChat(recipientId);
-      print(
-        '✅ [ServiceMessage Constructor] initializeChat completed, controller.recipientId=${controller.recipientId.value}',
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print(
+          '✅ [ServiceMessage PostFrameCallback] recipientId is valid, calling initializeChat',
+        );
+        controller.initializeChat(recipientId);
+        print(
+          '✅ [ServiceMessage PostFrameCallback] initializeChat completed, controller.recipientId=${controller.recipientId.value}',
+        );
+      });
     } else {
       print('❌ [ServiceMessage Constructor] recipientId is NULL!');
     }
