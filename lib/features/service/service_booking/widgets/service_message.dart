@@ -13,11 +13,20 @@ import 'dart:io';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 import '../controller/service_booking_controller.dart';
+import '../service/service_booking_service.dart';
 
 class ServiceMessage extends StatelessWidget {
-  final controller = Get.isRegistered<ServiceBookingController>()
-      ? Get.find<ServiceBookingController>()
-      : Get.put(ServiceBookingController(Get.find()));
+  late final ServiceBookingController controller = () {
+    if (Get.isRegistered<ServiceBookingController>()) {
+      return Get.find<ServiceBookingController>();
+    }
+    if (!Get.isRegistered<ServiceBookingService>()) {
+      Get.put(ServiceBookingService(Get.find()));
+    }
+    return Get.put(
+      ServiceBookingController(Get.find<ServiceBookingService>()),
+    );
+  }();
   final String? recipientId;
   final String? garageName;
   late final selectedFiles = <PlatformFile>[].obs;
