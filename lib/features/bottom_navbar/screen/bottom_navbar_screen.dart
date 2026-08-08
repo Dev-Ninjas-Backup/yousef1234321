@@ -41,6 +41,7 @@ class BottomNavbarScreen extends GetView<BottomNavbarController> {
 
     return Obx(
       () => Scaffold(
+        extendBody: true,
         backgroundColor: Colors.white,
         body: pages[controller.currentIndex.value],
         bottomNavigationBar: Container(

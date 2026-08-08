@@ -106,36 +106,67 @@ class GarageListController extends GetxController {
     }
 
     try {
-      final statusVal =
-          selectedStatus.value.isNotEmpty && selectedStatus.value != 'all'
-          ? (_apiValues[selectedStatus.value] ?? selectedStatus.value)
-          : null;
+      String url = '${Endpoint.findGarage}?page=$page&limit=$limit';
 
-      final cityVal = selectedCity.value != null
-          ? (_apiValues[selectedCity.value!] ?? selectedCity.value!)
-          : null;
+      if (searchController.text.isNotEmpty) {
+        url += '&searchTerm=${Uri.encodeQueryComponent(searchController.text)}';
+      }
 
-      final emirateVal = selectedEmirate.value != null
-          ? (_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)
-          : null;
+      if (selectedStatus.value.isNotEmpty && selectedStatus.value != 'all') {
+        url +=
+            '&status=${_apiValues[selectedStatus.value] ?? selectedStatus.value}';
+      }
 
-      final response = await _garageListService.fetchGarages(
-        page: page,
-        limit: limit,
-        searchTerm: searchController.text,
-        status: statusVal,
-        city: cityVal,
-        emirate: emirateVal,
-        serviceName: selectedService.value,
-      );
+      if (selectedCity.value != null)
+        url +=
+            '&city=${Uri.encodeQueryComponent(_apiValues[selectedCity.value!] ?? selectedCity.value!)}';
+      if (selectedEmirate.value != null)
+        url +=
+            '&emirate=${Uri.encodeQueryComponent(_apiValues[selectedEmirate.value!] ?? selectedEmirate.value!)}';
+      if (selectedService.value != null && selectedService.value!.isNotEmpty) {
+        final serviceVal = Uri.encodeQueryComponent(selectedService.value!);
+        url += '&serviceName=$serviceVal&service=$serviceVal';
+      }
 
-      final List<GarageModel> parsedGarages = response['garages'];
-      hasMore = response['hasMore'];
+      try {
+        final profileRes = await ApiClient.to.get(Endpoint.profile);
+        if (profileRes.statusCode == 200 && profileRes.body != null) {
+          final data = profileRes.body is Map ? profileRes.body['data'] : null;
+          if (data is Map && data['userLat'] != null && data['userLng'] != null) {
+            url += '&userLat=${data['userLat']}&userLng=${data['userLng']}';
+          }
+        }
+      } catch (_) {}
 
-      if (refresh) {
-        garages.assignAll(parsedGarages);
-      } else {
-        garages.addAll(parsedGarages);
+      final response = await ApiClient.to.get(url);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final body = response.body;
+        if (body['success'] == true && body['data'] != null) {
+          final data = body['data'];
+          List<dynamic> list = [];
+
+          if (data is Map && data['data'] is List) {
+            list = data['data'];
+            if (data['pagination'] != null) {
+              final totalPages = data['pagination']['totalPages'] ?? 1;
+              if (page >= totalPages) hasMore = false;
+            }
+          } else if (data is List) {
+            list = data;
+          }
+
+          List<GarageModel> parsedGarages = list
+              .where((e) => e != null && e is Map<String, dynamic>)
+              .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
+              .toList();
+
+          if (refresh) {
+            garages.assignAll(parsedGarages);
+          } else {
+            garages.addAll(parsedGarages);
+          }
+        }
       }
     } catch (e) {
       print('[GarageListController] fetchGarages error: $e');

@@ -327,6 +327,7 @@ class HomeScreen extends GetView<HomeController> {
                     .toList(),
               );
             }),
+            const SizedBox(height: 100),
           ],
         ),
       ),

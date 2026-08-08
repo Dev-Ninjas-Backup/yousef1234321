@@ -9,6 +9,7 @@ class PartItem extends StatelessWidget {
   final double price;
   final double rating;
   final String fallbackAsset;
+  final bool isPromoted;
 
   const PartItem({
     super.key,
@@ -18,6 +19,7 @@ class PartItem extends StatelessWidget {
     required this.price,
     required this.rating,
     this.fallbackAsset = '',
+    this.isPromoted = false,
   });
 
   @override
@@ -33,49 +35,92 @@ class PartItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Builder(
-              builder: (context) {
-                final isNetwork = image.startsWith('http');
-                if (isNetwork) {
-                  return Image.network(
-                    image,
-                    height: 100,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Image.asset(
-                        fallbackAsset.isNotEmpty
-                            ? fallbackAsset
-                            : Imagepath.image2,
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: Builder(
+                  builder: (context) {
+                    final isNetwork = image.startsWith('http');
+                    if (isNetwork) {
+                      return Image.network(
+                        image,
                         height: 100,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Image.asset(
+                            fallbackAsset.isNotEmpty
+                                ? fallbackAsset
+                                : Imagepath.image2,
+                            height: 100,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            fallbackAsset.isNotEmpty
+                                ? fallbackAsset
+                                : Imagepath.image2,
+                            height: 100,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        },
                       );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Image.asset(
-                        fallbackAsset.isNotEmpty
-                            ? fallbackAsset
-                            : Imagepath.image2,
-                        height: 100,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      );
-                    },
-                  );
-                }
-                // treat as asset path
-                return Image.asset(
-                  image,
-                  height: 100,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
+                    }
+                    // treat as asset path
+                    return Image.asset(
+                      image,
+                      height: 100,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  },
+                ),
+              ),
+              if (isPromoted)
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF9800),
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.bolt, color: Colors.white, size: 11),
+                        SizedBox(width: 2),
+                        TranslatedText(
+                          text: "promoted",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
           Expanded(
             child: Padding(

@@ -196,7 +196,30 @@ class ServiceController extends GetxController {
       isLoadingLocation.value = true;
       EasyLoading.show(status: 'loading_location'.tr);
 
-      // Import geolocator if not already done
+      // 1. Check profile location first
+      try {
+        final profileRes = await ApiClient.to.get(Endpoint.profile);
+        if (profileRes.statusCode == 200 && profileRes.body != null) {
+          final data = profileRes.body is Map ? profileRes.body['data'] : null;
+          if (data is Map) {
+            final uLatRaw = data['userLat'];
+            final uLngRaw = data['userLng'];
+            if (uLatRaw != null && uLngRaw != null) {
+              final double? pLat = double.tryParse(uLatRaw.toString());
+              final double? pLng = double.tryParse(uLngRaw.toString());
+              if (pLat != null && pLng != null && pLat != 0 && pLng != 0) {
+                currentLat.value = pLat;
+                currentLng.value = pLng;
+                hasCurrentLocation.value = true;
+                EasyLoading.dismiss();
+                return;
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 2. Fall back to device GPS location
       final permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         final requested = await Geolocator.requestPermission();

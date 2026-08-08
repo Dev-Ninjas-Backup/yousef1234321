@@ -286,7 +286,7 @@ class ProfilePage extends GetView<ProfileController> {
                     ),
                   ],
                 ),
-                SizedBox(height: 15.h),
+                SizedBox(height: 100.h),
               ],
             ),
           ),
