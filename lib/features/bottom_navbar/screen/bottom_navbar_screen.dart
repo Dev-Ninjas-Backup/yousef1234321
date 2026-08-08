@@ -163,6 +163,7 @@ class BottomNavbarScreen extends StatelessWidget {
 
     return Obx(
       () => Scaffold(
+        extendBody: true,
         backgroundColor: Colors.white,
         body: pages[controller.currentIndex.value],
         bottomNavigationBar: Container(
@@ -175,7 +176,7 @@ class BottomNavbarScreen extends StatelessWidget {
             color: Colors.white,
             boxShadow: [
               BoxShadow(
-               // color: Colors.red,
+                // color: Colors.red,
                 color: Color(0xFFAFB8C6).withValues(alpha: .18),
                 spreadRadius: 0,
                 blurRadius: 16,

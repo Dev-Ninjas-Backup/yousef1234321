@@ -197,7 +197,7 @@ class _FindServiceState extends State<FindService> {
                   controller: controller.scrollController,
                   itemCount:
                       list.length + (controller.isLoadingMore.value ? 1 : 0),
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.only(bottom: 100),
                   shrinkWrap: false,
                   itemBuilder: (_, index) {
                     if (index == list.length) {
