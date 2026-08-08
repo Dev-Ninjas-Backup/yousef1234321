@@ -1,8 +1,5 @@
-// ignore_for_file: avoid_print
-
 import 'package:get/get.dart';
 import 'package:yousef1234321/features/profile/my_listing/service/my_listing_service.dart';
-import '../model/listing_model.dart';
 import '../model/product_model.dart';
 
 class ListingController extends GetxController {
@@ -11,10 +8,16 @@ class ListingController extends GetxController {
   ListingController(this._myListingService);
 
   var selectedTab = 0.obs;
-  var tabs = ["All listing", "Active listing", "Previous listing"].obs;
+  var tabs = [
+    "All Active",
+    "Promoted",
+    "Approved",
+    "Pending",
+    "Expired",
+  ].obs;
 
-  final allListings = <ListingModel>[].obs;
-  var listings = <ListingModel>[].obs;
+  final allProducts = <ProductModel>[].obs;
+  final products = <ProductModel>[].obs;
 
   final isLoading = false.obs;
   final hasError = false.obs;
@@ -36,37 +39,30 @@ class ListingController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;
+        List<dynamic> listData = [];
 
         if (body is List<dynamic>) {
-          print('ListingController: Found ${body.length} products');
-
-          final products = body
-              .map(
-                (json) => ProductModel.fromJson(json as Map<String, dynamic>),
-              )
-              .toList();
-
-          // Convert ProductModel to ListingModel for UI compatibility
-          final convertedListings = products
-              .map(
-                (product) => ListingModel(
-                  id: product.id,
-                  title: product.partName,
-                  description: product.description,
-                  image: product.mainImage,
-                  price: double.tryParse(product.price) ?? 0.0,
-                  rating: 0.0, // Not provided by API
-                  reviews: product.inquiries,
-                  isActive: product.isActive,
-                ),
-              )
-              .toList();
-
-          allListings.assignAll(convertedListings);
-          print('ListingController: Loaded ${allListings.length} listings');
-
-          filterListings();
+          listData = body;
+        } else if (body is Map<String, dynamic>) {
+          if (body['data'] is List) {
+            listData = body['data'];
+          } else if (body['products'] is List) {
+            listData = body['products'];
+          }
         }
+
+        print('ListingController: Found ${listData.length} products');
+
+        final fetchedProducts = listData
+            .map(
+              (json) => ProductModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
+
+        allProducts.assignAll(fetchedProducts);
+        print('ListingController: Loaded ${allProducts.length} products');
+
+        filterListings();
       } else {
         print('ListingController: Failed with status ${response.statusCode}');
         hasError.value = true;
@@ -86,12 +82,35 @@ class ListingController extends GetxController {
   }
 
   void filterListings() {
-    if (selectedTab.value == 0) {
-      listings.assignAll(allListings);
-    } else if (selectedTab.value == 1) {
-      listings.assignAll(allListings.where((e) => e.isActive).toList());
-    } else {
-      listings.assignAll(allListings.where((e) => !e.isActive).toList());
+    final list = allProducts;
+    switch (selectedTab.value) {
+      case 0: // All Active: status != 'DRAFT' && !isExpired
+        products.assignAll(
+          list.where((p) => p.status != 'DRAFT' && !p.isExpired).toList(),
+        );
+        break;
+      case 1: // Promoted Only: isPromoted == true && status != 'DRAFT' && !isExpired
+        products.assignAll(
+          list.where((p) => p.isPromoted && p.status != 'DRAFT' && !p.isExpired).toList(),
+        );
+        break;
+      case 2: // Approved: status == 'APPROVED' && !isExpired
+        products.assignAll(
+          list.where((p) => p.status == 'APPROVED' && !p.isExpired).toList(),
+        );
+        break;
+      case 3: // Pending: status == 'PENDING'
+        products.assignAll(
+          list.where((p) => p.status == 'PENDING').toList(),
+        );
+        break;
+      case 4: // Expired: status == 'APPROVED' && isExpired == true
+        products.assignAll(
+          list.where((p) => p.status == 'APPROVED' && p.isExpired).toList(),
+        );
+        break;
+      default:
+        products.assignAll(list);
     }
   }
 
