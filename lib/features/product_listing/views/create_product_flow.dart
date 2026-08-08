@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 import '../models/product_models.dart';
 import '../services/product_api_service.dart';
+import 'payment_webview_screen.dart';
 
 Future<bool> handleCreateProduct(ProductApiService apiService, CreateProductRequest request) async {
   try {
@@ -14,43 +15,85 @@ Future<bool> handleCreateProduct(ProductApiService apiService, CreateProductRequ
   } catch (error) {
     debugPrint("Error creating product: $error");
     EasyLoading.dismiss();
-    if (error is Map && error.containsKey('message')) {
-      final messageObj = error['message'];
-      final String? errorCode = messageObj is Map ? messageObj['code'] : null;
+    if (error is Map) {
+      final String code = (error['code'] ??
+              (error['message'] is Map ? error['message']['code'] : null) ??
+              '')
+          .toString();
+      final String rawMessage = (error['message'] is String
+              ? error['message']
+              : (error['message'] is Map
+                  ? (error['message']['text'] ?? error['message']['message'])
+                  : error.toString()))
+          .toString();
+      final String lowerMessage = rawMessage.toLowerCase();
 
-      if (errorCode == 'PAY_PER_PAYMENT_REQUIRED') {
-        debugPrint("PAY_PER_PAYMENT_REQUIRED - Redirecting to stripe...");
-        EasyLoading.showInfo("Redirecting to payment...");
+      final bool isPayPerRequired = code == 'PAY_PER_PAYMENT_REQUIRED' ||
+          lowerMessage.contains('pay_per_payment_required') ||
+          lowerMessage.contains('pay per payment required') ||
+          lowerMessage.contains('pay-per payment required');
+
+      final bool isSubscriptionRequired =
+          code == 'PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED' ||
+              lowerMessage.contains('product_monthly_subscription_required') ||
+              lowerMessage.contains('monthly subscription required');
+
+      final bool isPromotionRequired = code == 'PROMOTION_PAYMENT_REQUIRED' ||
+          lowerMessage.contains('promotion_payment_required') ||
+          lowerMessage.contains('payment required for product promotion') ||
+          lowerMessage.contains('promotion payment required');
+
+      if (isPayPerRequired) {
+        debugPrint("PAY_PER_PAYMENT_REQUIRED - Redirecting to in-app payment...");
+        EasyLoading.showInfo("Opening payment...");
         try {
-          final String checkoutUrl = await apiService.createPayPerPaymentSession();
-          openStripeWebView(checkoutUrl);
+          final String checkoutUrl =
+              await apiService.createPayPerPaymentSession();
+          if (checkoutUrl.isNotEmpty) {
+            await openStripeWebView(checkoutUrl, title: 'Pay-Per-Listing Payment');
+          } else {
+            EasyLoading.showError("Failed to generate payment URL.");
+          }
         } catch (e) {
+          debugPrint("Failed to initiate payment session: $e");
           EasyLoading.showError("Failed to initiate payment session.");
         }
-      } else if (errorCode == 'PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED') {
-        debugPrint("PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED - Redirecting to stripe...");
-        EasyLoading.showInfo("Redirecting to subscription...");
+      } else if (isSubscriptionRequired) {
+        debugPrint("PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED - Redirecting to in-app payment...");
+        EasyLoading.showInfo("Opening subscription...");
         try {
-          final String checkoutUrl = await apiService.createMonthlySubscriptionSession(planType: 'PRO');
-          openStripeWebView(checkoutUrl);
+          final String checkoutUrl = await apiService
+              .createMonthlySubscriptionSession(planType: 'PRO');
+          if (checkoutUrl.isNotEmpty) {
+            await openStripeWebView(checkoutUrl, title: 'Subscription Payment');
+          } else {
+            EasyLoading.showError("Failed to generate subscription URL.");
+          }
         } catch (e) {
+          debugPrint("Failed to initiate subscription session: $e");
           EasyLoading.showError("Failed to initiate subscription session.");
         }
-      } else if (errorCode == 'PROMOTION_PAYMENT_REQUIRED') {
-        debugPrint("PROMOTION_PAYMENT_REQUIRED - Redirecting to stripe...");
-        EasyLoading.showInfo("Redirecting to promotion payment...");
+      } else if (isPromotionRequired) {
+        debugPrint("PROMOTION_PAYMENT_REQUIRED - Redirecting to in-app payment...");
+        EasyLoading.showInfo("Opening promotion payment...");
         try {
-          final String checkoutUrl = await apiService.createPromotionPaymentSession(
+          final String checkoutUrl =
+              await apiService.createPromotionPaymentSession(
             duration: request.promotedDuration ?? '7',
             useCredits: request.usePromotionCredits,
           );
-          openStripeWebView(checkoutUrl);
+          if (checkoutUrl.isNotEmpty) {
+            await openStripeWebView(checkoutUrl, title: 'Promotion Payment');
+          } else {
+            EasyLoading.showError("Failed to generate promotion payment URL.");
+          }
         } catch (e) {
+          debugPrint("Failed to initiate promotion payment: $e");
           EasyLoading.showError("Failed to initiate promotion payment.");
         }
       } else {
-        debugPrint("API Error Message: ${error['message']}");
-        EasyLoading.showError(error['message'].toString());
+        debugPrint("API Error Message: $rawMessage");
+        EasyLoading.showError(rawMessage.isNotEmpty ? rawMessage : "Failed to create product.");
       }
     } else {
       EasyLoading.showError("Unexpected error occurred.");
@@ -59,10 +102,9 @@ Future<bool> handleCreateProduct(ProductApiService apiService, CreateProductRequ
   }
 }
 
-Future<void> openStripeWebView(String url) async {
-  final uri = Uri.parse(url);
-  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-    debugPrint("Could not launch URL: $url");
-    EasyLoading.showError('Could not launch payment URL');
-  }
+Future<bool> openStripeWebView(String url, {String title = 'Complete Payment'}) async {
+  final result = await Get.to<bool>(
+    () => PaymentWebViewScreen(initialUrl: url, title: title),
+  );
+  return result ?? false;
 }

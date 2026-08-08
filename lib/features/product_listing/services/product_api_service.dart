@@ -198,7 +198,7 @@ class ProductApiService {
 
   /// Get Payment Configure
   Future<Map<String, dynamic>> getPaymentConfigure() async {
-    final uri = Uri.parse('$baseUrl/admin-setting/payment-configure');
+    final uri = Uri.parse('$baseUrl/admin-setting/payment-config');
     final response = await http.get(uri, headers: _headers);
     final data = jsonDecode(response.body);
     if (response.statusCode >= 200 && response.statusCode < 300) {

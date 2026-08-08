@@ -37,6 +37,14 @@ class ProductLimitQuota {
     
     if (remaining < 0) remaining = 0;
 
+    double promoCredits = 0.0;
+    final pcRaw = data['promotionCredits'];
+    if (pcRaw is num) {
+      promoCredits = pcRaw.toDouble();
+    } else if (pcRaw is String) {
+      promoCredits = double.tryParse(pcRaw) ?? 0.0;
+    }
+
     return ProductLimitQuota(
       userType: data['userType'] ?? 'INDIVIDUAL',
       freeProductsLeft: remaining,
@@ -47,7 +55,7 @@ class ProductLimitQuota {
       productMonthlyEndDate: data['productMonthlyEndDate'],
       hasPayPerCredit: data['productCredits'] != null && data['productCredits'] > 0,
       payPerCredits: data['productCredits'] ?? 0,
-      promotionCredits: (data['promotionCredits'] ?? 0).toDouble(),
+      promotionCredits: promoCredits,
     );
   }
 }

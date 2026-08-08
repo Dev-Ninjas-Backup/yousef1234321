@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/parts_details/model.dart/part_categories_model.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
+import 'package:yousef1234321/features/profile/my_listing/conrtoller/listing_controller.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 import '../models/product_models.dart';
 import '../services/product_api_service.dart';
 import 'create_product_flow.dart';
@@ -112,10 +113,25 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
         _categories = categories;
         _quota = quota;
         if (paymentConfig != null) {
-          _promoPrice7Days = (paymentConfig['promotionalAdPrice3Days'] ?? 49.0)
-              .toDouble();
-          _promoPrice15Days = (paymentConfig['promotionalAdPrice7Days'] ?? 99.0)
-              .toDouble();
+          double parseDouble(dynamic v, double fallback) {
+            if (v == null) return fallback;
+            if (v is num) return v.toDouble();
+            if (v is String) return double.tryParse(v) ?? fallback;
+            return fallback;
+          }
+
+          _promoPrice7Days = parseDouble(
+            paymentConfig['promotionalAdPrice3Days'] ??
+                paymentConfig['promotionalAdPrice7Days'] ??
+                paymentConfig['promoPrice7Days'],
+            49.0,
+          );
+          _promoPrice15Days = parseDouble(
+            paymentConfig['promotionalAdPrice7Days'] ??
+                paymentConfig['promotionalAdPrice15Days'] ??
+                paymentConfig['promoPrice15Days'],
+            99.0,
+          );
         }
         if (quota != null) {
           if (quota.hasProductMonthly) {
@@ -139,13 +155,59 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     }
   }
 
+  Future<void> _refreshQuotaAndConfig() async {
+    try {
+      final quota = await _apiService.checkUserQuota();
+      final paymentConfig = await _apiService.getPaymentConfigure();
+      setState(() {
+        _quota = quota;
+        double parseDouble(dynamic v, double fallback) {
+          if (v == null) return fallback;
+          if (v is num) return v.toDouble();
+          if (v is String) return double.tryParse(v) ?? fallback;
+          return fallback;
+        }
+
+        _promoPrice7Days = parseDouble(
+          paymentConfig['promotionalAdPrice3Days'] ??
+              paymentConfig['promotionalAdPrice7Days'] ??
+              paymentConfig['promoPrice7Days'],
+          49.0,
+        );
+        _promoPrice15Days = parseDouble(
+          paymentConfig['promotionalAdPrice7Days'] ??
+              paymentConfig['promotionalAdPrice15Days'] ??
+              paymentConfig['promoPrice15Days'],
+          99.0,
+        );
+        if (quota.promotionCredits > 0) {
+          _usePromotionCredits = true;
+        }
+        if (quota.hasProductMonthly) {
+          _hasActiveMonthly = true;
+          _plan = quota.productMonthlyPlanType == 'PRO'
+              ? ListingPlan.MONTHLY_PRO
+              : ListingPlan.MONTHLY_BASIC;
+        } else if (quota.freeProductsLeft > 0) {
+          _plan = ListingPlan.FREE;
+          _isPromoted = false;
+        } else if (quota.payPerCredits > 0) {
+          _plan = ListingPlan.PAY_PER;
+        }
+      });
+    } catch (e) {
+      debugPrint("Could not refresh quota: $e");
+    }
+  }
+
   Future<void> _purchaseMonthlySubscription() async {
     try {
       final url = await _apiService.createMonthlySubscriptionSession(
         planType: _plan == ListingPlan.MONTHLY_PRO ? 'PRO' : 'BASIC',
       );
       if (url.isNotEmpty) {
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        await openStripeWebView(url, title: 'Subscription Payment');
+        await _refreshQuotaAndConfig();
       }
     } catch (e) {
       EasyLoading.showError('Failed to initiate payment: $e');
@@ -156,7 +218,8 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
     try {
       final url = await _apiService.createPayPerPaymentSession();
       if (url.isNotEmpty) {
-        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+        await openStripeWebView(url, title: 'Pay Per Listing Payment');
+        await _refreshQuotaAndConfig();
       }
     } catch (e) {
       EasyLoading.showError('Failed to initiate payment: $e');
@@ -294,7 +357,15 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
       verificationImagePath: _verificationImagePath,
     );
 
-    await handleCreateProduct(_apiService, request);
+    final success = await handleCreateProduct(_apiService, request);
+    if (success) {
+      if (Get.isRegistered<ListingController>()) {
+        Get.find<ListingController>().fetchMyListings();
+      }
+      Get.offNamed(Approute.myListingPage);
+    } else {
+      await _refreshQuotaAndConfig();
+    }
   }
 
   @override
@@ -622,11 +693,17 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                     controller: _sellerNameCtrl,
                     decoration: _inputDeco('Enter your name'),
                   ),
-                  _buildLabel('Seller Email'),
+                  _buildLabel('Seller Email *'),
                   TextFormField(
                     controller: _sellerEmailCtrl,
                     keyboardType: TextInputType.emailAddress,
                     decoration: _inputDeco('Enter your email'),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) return 'Required';
+                      if (!GetUtils.isEmail(v.trim()))
+                        return 'Enter a valid email address';
+                      return null;
+                    },
                   ),
                   _buildLabel('Seller Phone Number *'),
                   TextFormField(
@@ -1676,55 +1753,58 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                     const SizedBox(height: 20),
 
                     // Silver Promotion Card
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _promotedDuration == '7'
-                              ? const Color(0xFF8B5CF6)
-                              : Colors.grey.shade300,
-                          width: 1.5,
+                    Material(
+                      color: _promotedDuration == '7'
+                          ? const Color(0xFFF5F3FF)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _promotedDuration == '7'
+                                ? const Color(0xFF8B5CF6)
+                                : Colors.grey.shade300,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        color: _promotedDuration == '7'
-                            ? const Color(0xFFF5F3FF)
-                            : Colors.white,
-                      ),
-                      child: RadioListTile<String>(
-                        value: '7',
-                        groupValue: _promotedDuration,
-                        onChanged: (v) =>
-                            setState(() => _promotedDuration = v!),
-                        activeColor: const Color(0xFF8B5CF6),
-                        contentPadding: const EdgeInsets.all(8),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Silver Promotion',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
+                        child: RadioListTile<String>(
+                          value: '7',
+                          groupValue: _promotedDuration,
+                          onChanged: (v) =>
+                              setState(() => _promotedDuration = v!),
+                          activeColor: const Color(0xFF8B5CF6),
+                          contentPadding: const EdgeInsets.all(8),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Silver Promotion',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
                               ),
-                            ),
-                            Text(
-                              '${_promoPrice7Days.toInt()} AED',
-                              style: TextStyle(
-                                color: _promotedDuration == '7'
-                                    ? const Color(0xFF8B5CF6)
-                                    : Colors.black,
-                                fontWeight: FontWeight.bold,
+                              Text(
+                                '${_promoPrice7Days.toInt()} AED',
+                                style: TextStyle(
+                                  color: _promotedDuration == '7'
+                                      ? const Color(0xFF8B5CF6)
+                                      : Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 8),
-                            _planFeatureLine('Top of search results'),
-                            _planFeatureLine('Highlighted in feed'),
-                            _planFeatureLine('7 Days visibility'),
-                          ],
+                            ],
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 8),
+                              _planFeatureLine('Top of search results'),
+                              _planFeatureLine('Highlighted in feed'),
+                              _planFeatureLine('7 Days visibility'),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1732,84 +1812,88 @@ class _CreateProductScreenState extends State<CreateProductScreen> {
                     const SizedBox(height: 12),
 
                     // Gold Promotion Card
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _promotedDuration == '15'
-                              ? const Color(0xFFEC4899)
-                              : Colors.grey.shade300,
-                          width: 1.5,
+                    Material(
+                      color: _promotedDuration == '15'
+                          ? const Color(0xFFFDF2F8)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: _promotedDuration == '15'
+                                ? const Color(0xFFEC4899)
+                                : Colors.grey.shade300,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        borderRadius: BorderRadius.circular(12),
-                        color: _promotedDuration == '15'
-                            ? const Color(0xFFFDF2F8)
-                            : Colors.white,
-                      ),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          RadioListTile<String>(
-                            value: '15',
-                            groupValue: _promotedDuration,
-                            onChanged: (v) =>
-                                setState(() => _promotedDuration = v!),
-                            activeColor: const Color(0xFFEC4899),
-                            contentPadding: const EdgeInsets.all(8),
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Gold Promotion',
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            RadioListTile<String>(
+                              value: '15',
+                              groupValue: _promotedDuration,
+                              onChanged: (v) =>
+                                  setState(() => _promotedDuration = v!),
+                              activeColor: const Color(0xFFEC4899),
+                              contentPadding: const EdgeInsets.all(8),
+                              title: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    'Gold Promotion',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${_promoPrice15Days.toInt()} AED',
+                                    style: TextStyle(
+                                      color: _promotedDuration == '15'
+                                          ? const Color(0xFFEC4899)
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 8),
+                                  _planFeatureLine('Top of search results'),
+                                  _planFeatureLine('Highlighted in feed'),
+                                  _planFeatureLine('Homepage slider inclusion'),
+                                  _planFeatureLine('15 Days visibility'),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: -10,
+                              right: 16,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEC4899),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  'RECOMMENDED',
                                   style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15,
                                   ),
                                 ),
-                                Text(
-                                  '${_promoPrice15Days.toInt()} AED',
-                                  style: TextStyle(
-                                    color: _promotedDuration == '15'
-                                        ? const Color(0xFFEC4899)
-                                        : Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 8),
-                                _planFeatureLine('Top of search results'),
-                                _planFeatureLine('Highlighted in feed'),
-                                _planFeatureLine('Homepage slider inclusion'),
-                                _planFeatureLine('15 Days visibility'),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: -10,
-                            right: 16,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEC4899),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Text(
-                                'RECOMMENDED',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
 
