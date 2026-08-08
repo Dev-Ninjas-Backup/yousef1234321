@@ -9,6 +9,8 @@ import 'package:yousef1234321/features/profile/language/controller/language_cont
 import 'package:yousef1234321/core/service/translation_service.dart';
 import 'package:yousef1234321/features/notification/service/notification_rest_service.dart';
 import 'package:yousef1234321/features/profile/language/service/language_service.dart';
+import 'package:yousef1234321/features/service/service_booking/service/service_booking_service.dart';
+import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +32,15 @@ void main() async {
   Get.put<LanguageController>(LanguageController(Get.find()), permanent: true);
 
   Get.put(TranslationService(), permanent: true);
+
+  Get.put<ServiceBookingService>(
+    ServiceBookingService(Get.find()),
+    permanent: true,
+  );
+  Get.put<ServiceBookingController>(
+    ServiceBookingController(Get.find()),
+    permanent: true,
+  );
 
   configEasyLoading();
   runApp(const MyApp());

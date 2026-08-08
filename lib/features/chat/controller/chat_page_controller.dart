@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/features/chat/service/chat_page_service.dart';
 import '../model/chat_user_model.dart';
 
+import 'package:yousef1234321/features/service/service_booking/service/service_booking_service.dart';
+import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
+
 class ChatPageController extends GetxController {
   final ChatPageService _chatPageService;
 
@@ -17,8 +20,25 @@ class ChatPageController extends GetxController {
   void onInit() {
     super.onInit();
     print('🔵 [ChatPageController] onInit called');
+    _ensureSocketController();
     loadConversations();
     print('🔵 [ChatPageController] loadConversations() triggered');
+  }
+
+  void _ensureSocketController() {
+    try {
+      if (!Get.isRegistered<ServiceBookingService>()) {
+        Get.put(ServiceBookingService(Get.find()), permanent: true);
+      }
+      if (!Get.isRegistered<ServiceBookingController>()) {
+        Get.put(
+          ServiceBookingController(Get.find<ServiceBookingService>()),
+          permanent: true,
+        );
+      }
+    } catch (e) {
+      print('⚠️ [ChatPageController] Failed to initialize socket controller: $e');
+    }
   }
 
   Future<void> loadConversations() async {

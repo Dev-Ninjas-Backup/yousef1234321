@@ -203,7 +203,7 @@ class ServiceBookingController extends GetxController {
       socket = IO.io(
         '${Endpoint.baseUrl}/pv/message',
         IO.OptionBuilder()
-            .setTransports(['websocket'])
+            .setTransports(['websocket', 'polling'])
             .disableAutoConnect()
             .setAuth({'token': 'Bearer $token'})
             .build(),
