@@ -13,8 +13,13 @@ import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/parts_details/model.dart/part_categories_model.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:yousef1234321/features/parts_details/service/parts_details_service.dart';
 
 class PartsDetailsController extends GetxController {
+  final PartsDetailsService _partsDetailsService;
+
+  PartsDetailsController(this._partsDetailsService);
+
   /// ---------------- Text Controllers ----------------
   final partNameCtrl = TextEditingController();
   final partNumberCtrl = TextEditingController();
@@ -40,13 +45,7 @@ class PartsDetailsController extends GetxController {
     try {
       EasyLoading.show(status: "Redirecting to payment...");
 
-      final response = await http.post(
-        Uri.parse("${Endpoint.baseUrl}/products/create-monthly-payment"),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ApiClient.to.token}',
-        },
-      );
+      final response = await _partsDetailsService.createMonthlyPayment();
 
       final data = json.decode(response.body);
 
@@ -76,13 +75,7 @@ class PartsDetailsController extends GetxController {
     try {
       EasyLoading.show(status: "Redirecting to payment...");
 
-      final response = await http.post(
-        Uri.parse("${Endpoint.baseUrl}/products/create-payper-payment"),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ApiClient.to.token}',
-        },
-      );
+      final response = await _partsDetailsService.createPayPerListingPayment();
 
       final data = json.decode(response.body);
 
@@ -110,13 +103,7 @@ class PartsDetailsController extends GetxController {
     try {
       EasyLoading.show(status: "Redirecting to payment...");
 
-      final response = await http.post(
-        Uri.parse("${Endpoint.baseUrl}/products/create-promotion-payment"),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${ApiClient.to.token}',
-        },
-      );
+      final response = await _partsDetailsService.createPromotionPayment();
 
       final data = json.decode(response.body);
 
@@ -251,13 +238,7 @@ class PartsDetailsController extends GetxController {
 
   Future<void> checkUserProductLimit() async {
     try {
-      final response = await http.get(
-        Uri.parse("${Endpoint.baseUrl}/products/user/limit"),
-        headers: {
-          'Authorization': 'Bearer ${ApiClient.to.token}',
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await _partsDetailsService.checkUserProductLimit();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = json.decode(response.body);
@@ -334,15 +315,7 @@ class PartsDetailsController extends GetxController {
 
   Future<void> fetchCategories() async {
     try {
-      final headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${ApiClient.to.token}',
-      };
-
-      final response = await http.get(
-        Uri.parse("${Endpoint.baseUrl}/parts-category"),
-        headers: headers,
-      );
+      final response = await _partsDetailsService.fetchCategories();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final jsonData = json.decode(response.body);
@@ -448,7 +421,9 @@ class PartsDetailsController extends GetxController {
       }
 
       // ---------- SEND REQUEST ----------
-      final streamedResponse = await request.send();
+      final streamedResponse = await _partsDetailsService.createProduct(
+        request,
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200 || response.statusCode == 201) {

@@ -5,9 +5,6 @@ class PartCategory {
   PartCategory({required this.id, required this.name});
 
   factory PartCategory.fromJson(Map<String, dynamic> json) {
-    return PartCategory(
-      id: json['id'],
-      name: json['name'],
-    );
+    return PartCategory(id: json['id'], name: json['name']);
   }
 }

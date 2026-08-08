@@ -4,13 +4,11 @@ import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/onboarding/controller/onboarding_controller.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends GetView<OnboardingController> {
   const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(OnboardingController());
-
     final List<Map<String, String>> onboardingData = [
       {
         'image': Imagepath.onboarding1,

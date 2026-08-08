@@ -7,40 +7,11 @@ import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/sign_in/controller/sign_in_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends GetView<SignInController> {
   const SignInScreen({super.key});
 
   @override
-  State<SignInScreen> createState() => _SignInScreenState();
-}
-
-class _SignInScreenState extends State<SignInScreen> {
-  late final TextEditingController _emailController;
-  late final TextEditingController _passwordController;
-
-  @override
-  void initState() {
-    super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
-
-    // Ensure controller exists and keep it permanent to avoid accidental disposal.
-    if (!Get.isRegistered<SignInController>()) {
-      Get.put(SignInController(), permanent: true);
-    }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final controller = Get.find<SignInController>();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -59,7 +30,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 24, top: 24),
-                    child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+                    child: Image.asset(
+                      Iconpath.arrowback,
+                      height: 44,
+                      width: 44,
+                    ),
                   ),
                 ),
               ),
@@ -88,9 +63,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // Use widget-local controllers instead of controller.emailController
                     TextField(
-                      controller: _emailController,
+                      controller: controller.emailController,
                       keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         hintText: "emailAddress".tr,
@@ -110,7 +84,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     const SizedBox(height: 24),
                     Obx(
                       () => TextField(
-                        controller: _passwordController,
+                        controller: controller.passwordController,
                         obscureText: !controller.isPasswordVisible.value,
                         decoration: InputDecoration(
                           hintText: "password".tr,
@@ -154,16 +128,13 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    CustomButton(
-                      title: 'signIn'.tr,
-                      onPressed: () {
-                        // Pass local controller values to avoid relying on possibly
-                        // disposed controllers inside the SignInController.
-                        controller.signIn(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        );
-                      },
+                    Obx(
+                      () => controller.isLoading.value
+                          ? const CircularProgressIndicator()
+                          : CustomButton(
+                              title: 'signIn'.tr,
+                              onPressed: () => controller.signIn(),
+                            ),
                     ),
                     const SizedBox(height: 48),
                     RichText(

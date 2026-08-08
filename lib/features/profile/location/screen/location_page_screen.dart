@@ -5,13 +5,11 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/location/controller/location_page_controller.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class LocationPageScreen extends StatelessWidget {
+class LocationPageScreen extends GetView<LocationPageController> {
   const LocationPageScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(LocationPageController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

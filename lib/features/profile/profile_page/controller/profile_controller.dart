@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/profile/profile_page/model/profile_model.dart';
 import 'package:yousef1234321/routes/app_route.dart';
+import 'package:yousef1234321/features/profile/profile_page/service/profile_service.dart';
 
 class ProfileController extends GetxController {
+  final ProfileService _profileService;
+
+  ProfileController(this._profileService);
   var selectedIndex = (-1).obs;
   final isLoggingOut = false.obs;
   final isLoadingProfile = false.obs;
@@ -76,8 +78,7 @@ class ProfileController extends GetxController {
   Future<void> fetchProfile() async {
     try {
       isLoadingProfile.value = true;
-
-      final response = await ApiClient.to.get(Endpoint.profile);
+      final response = await _profileService.fetchProfile();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         if (response.body != null &&
@@ -124,8 +125,7 @@ class ProfileController extends GetxController {
     try {
       isLoggingOut.value = true;
 
-      // Clear tokens from shared preferences
-      await ApiClient.to.logout();
+      await _profileService.logout();
 
       // Show success message
       Get.snackbar(

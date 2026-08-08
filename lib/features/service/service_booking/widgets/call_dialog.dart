@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/common/constants/app_colors.dart';
 import '../../../../core/common/style/global_text_style.dart';
-import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
 void showCallDialog({String? garageName, String? phoneNumber}) {
   Get.dialog(

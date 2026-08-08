@@ -11,12 +11,12 @@ import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/service/translation_service.dart';
 
-class BrakePadsScreen extends StatelessWidget {
+class BrakePadsScreen extends GetView<BrakePadsController> {
   const BrakePadsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.put(BrakePadsController());
+    final c = controller;
 
     Widget badge(String text, Color color) => Container(
       padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -346,13 +346,19 @@ class BrakePadsScreen extends StatelessWidget {
                               print('userId (createdById): $userId');
                               print('userId type: ${userId.runtimeType}');
                               print('userId is not null: ${userId != null}');
-                              print('userId is not empty: ${userId?.isNotEmpty}');
+                              print(
+                                'userId is not empty: ${userId?.isNotEmpty}',
+                              );
                               print('sellerName: $sellerName');
-                              print('sellerName type: ${sellerName.runtimeType}');
+                              print(
+                                'sellerName type: ${sellerName.runtimeType}',
+                              );
                               print(
                                 'product data keys: ${(c.product as Map).keys.toList()}',
                               );
-                              print('═══════════════════════════════════════\n');
+                              print(
+                                '═══════════════════════════════════════\n',
+                              );
 
                               if (userId != null && userId.isNotEmpty) {
                                 print(
@@ -582,7 +588,7 @@ class _FeatureItem extends StatelessWidget {
   final String text;
   final RxBool isExpanded = false.obs;
 
-  _FeatureItem(this.text, {super.key});
+  _FeatureItem(this.text);
 
   @override
   Widget build(BuildContext context) => Padding(

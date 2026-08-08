@@ -36,9 +36,7 @@ class PartsSearchResultsScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (productsCtrl.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
         if (productsCtrl.products.isEmpty) {
           return Center(
@@ -65,10 +63,7 @@ class PartsSearchResultsScreen extends StatelessWidget {
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           itemCount: productsCtrl.products.length,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (_, idx) {
@@ -81,11 +76,9 @@ class PartsSearchResultsScreen extends StatelessWidget {
                 : '-';
             final photo = (p is Map && p['profilePhoto'] != null)
                 ? p['profilePhoto'].toString()
-                : (p is Map &&
-                        p['photos'] is List &&
-                        p['photos'].isNotEmpty
-                    ? p['photos'][0].toString()
-                    : null);
+                : (p is Map && p['photos'] is List && p['photos'].isNotEmpty
+                      ? p['photos'][0].toString()
+                      : null);
             final desc = (p is Map && p['description'] != null)
                 ? p['description'].toString()
                 : '';
@@ -104,10 +97,7 @@ class PartsSearchResultsScreen extends StatelessWidget {
                   }
                 }
                 if (id != null) {
-                  Get.toNamed(
-                    Approute.getBrakePadsScreen(),
-                    arguments: id,
-                  );
+                  Get.toNamed(Approute.getBrakePadsScreen(), arguments: id);
                 }
               },
               child: Container(
@@ -116,9 +106,7 @@ class PartsSearchResultsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: 0.04,
-                      ),
+                      color: Colors.black.withValues(alpha: 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -142,27 +130,25 @@ class PartsSearchResultsScreen extends StatelessWidget {
                                   width: 90,
                                   height: 90,
                                   fit: BoxFit.cover,
-                                  loadingBuilder: (
-                                    context,
-                                    child,
-                                    loadingProgress,
-                                  ) {
-                                    if (loadingProgress == null) {
-                                      return child;
-                                    }
-                                    return const Center(
-                                      child: SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            AppColors.primaryColor,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null) {
+                                          return child;
+                                        }
+                                        return const Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                    AppColors.primaryColor,
+                                                  ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  },
+                                        );
+                                      },
                                   errorBuilder: (_, __, ___) => Center(
                                     child: Image.asset(
                                       Iconpath.carHomeIcon,

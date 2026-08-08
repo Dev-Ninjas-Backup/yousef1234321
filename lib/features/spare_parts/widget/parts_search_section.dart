@@ -107,7 +107,8 @@ class PartsSearchSection extends StatelessWidget {
 
                         return DropdownButtonFormField<String>(
                           isExpanded: true,
-                          initialValue: (controller.selectedCategory.value != null &&
+                          value:
+                              (controller.selectedCategory.value != null &&
                                   items.contains(
                                     controller.selectedCategory.value,
                                   ))

@@ -188,12 +188,10 @@ class SearchSection extends StatelessWidget {
                         LocationPermission permission =
                             await Geolocator.checkPermission();
                         if (permission == LocationPermission.denied) {
-                          permission =
-                              await Geolocator.requestPermission();
+                          permission = await Geolocator.requestPermission();
                         }
                         if (permission == LocationPermission.denied ||
-                            permission ==
-                                LocationPermission.deniedForever) {
+                            permission == LocationPermission.deniedForever) {
                           EasyLoading.dismiss();
                         } else {
                           final pos = await Geolocator.getCurrentPosition(
@@ -215,10 +213,14 @@ class SearchSection extends StatelessWidget {
                         if (lat != null && lng != null) 'currentLng': lng,
                       };
 
-                      Get.toNamed(
+                      await Get.toNamed(
                         Approute.getfindGaragePage(),
                         arguments: args,
                       );
+
+                      // Clear selections so they are unselected when coming back
+                      controller.selectedLocation.value = null;
+                      controller.selectedService.value = null;
                     },
                     child: const TranslatedText(text: "search_garage"),
                   );

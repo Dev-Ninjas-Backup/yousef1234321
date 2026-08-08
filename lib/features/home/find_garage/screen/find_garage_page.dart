@@ -19,7 +19,7 @@ class FindGaragePage extends StatefulWidget {
 }
 
 class _FindGaragePageState extends State<FindGaragePage> {
-  final FindGarageController controller = Get.put(FindGarageController());
+  final FindGarageController controller = Get.find<FindGarageController>();
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
   String _youText = 'You';

@@ -9,9 +9,8 @@ import 'package:yousef1234321/features/profile/profile_page/controller/profile_c
 
 import '../widgets/delete_dialog.dart';
 
-class ProfilePage extends StatelessWidget {
-  final controller = Get.put(ProfileController());
-  ProfilePage({super.key});
+class ProfilePage extends GetView<ProfileController> {
+  const ProfilePage({super.key});
 
   Widget buildProfileImage() {
     // Display API profile photo or default avatar

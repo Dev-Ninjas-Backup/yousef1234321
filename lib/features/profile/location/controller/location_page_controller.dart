@@ -8,12 +8,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/profile/location/service/location_page_service.dart';
 import 'package:yousef1234321/secrets/google_map_api_key.dart';
 
 class LocationPageController extends GetxController {
+  final LocationPageService _locationPageService;
+
+  LocationPageController(this._locationPageService);
   final TextEditingController searchController = TextEditingController();
 
   // Map state
@@ -51,8 +52,9 @@ class LocationPageController extends GetxController {
   Future<void> _loadSavedLocationFromProfile() async {
     try {
       isLoadingProfile.value = true;
-      final res = await ApiClient.to.get(Endpoint.profile);
+      final res = await _locationPageService.getProfile();
       if (res.statusCode == 200 &&
+          res.body != null &&
           res.body is Map &&
           res.body['data'] != null) {
         final data = res.body['data'] as Map<String, dynamic>;
@@ -177,11 +179,10 @@ class LocationPageController extends GetxController {
       EasyLoading.show(status: 'searching_location'.tr);
       final apiKey = _getGeocodingApiKey();
       print('Using Geocoding API Key: $apiKey');
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(query)}&key=$apiKey',
+      final res = await _locationPageService.searchLocationByText(
+        query,
+        apiKey,
       );
-      print('Geocoding URL: $url');
-      final res = await http.get(url);
       print('Geocoding Response Status: ${res.statusCode}');
       print('Geocoding Response Body: ${res.body}');
 
@@ -237,7 +238,7 @@ class LocationPageController extends GetxController {
         'userLat': latlng.latitude.toString(),
         'userLng': latlng.longitude.toString(),
       };
-      final res = await ApiClient.to.patch(Endpoint.editProfile, body);
+      final res = await _locationPageService.updateLocation(body);
       if (res.statusCode == 200 || res.statusCode == 201) {
         EasyLoading.showSuccess('Default location set successfully!');
         // Refresh saved location from profile to keep consistency with server
@@ -259,11 +260,11 @@ class LocationPageController extends GetxController {
   Future<void> reverseGeocode(LatLng latLng) async {
     try {
       final apiKey = _getGeocodingApiKey();
-      final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}&key=$apiKey',
+      final res = await _locationPageService.reverseGeocode(
+        latLng.latitude,
+        latLng.longitude,
+        apiKey,
       );
-      print('Reverse Geocoding URL: $url');
-      final res = await http.get(url);
       print('Reverse Geocoding Response Status: ${res.statusCode}');
       print('Reverse Geocoding Response Body: ${res.body}');
 

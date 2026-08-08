@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/auth/sign_in/service/sign_in_service.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
 class SignInController extends GetxController {
+  final SignInService _signInService;
+
+  SignInController(this._signInService);
+
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -34,81 +38,35 @@ class SignInController extends GetxController {
     isLoading.value = true;
 
     try {
-      final body = {'email': emailValue, 'password': passwordValue};
+      final authResponse = await _signInService.signIn(
+        emailValue,
+        passwordValue,
+      );
 
-      final response = await ApiClient.to.post(Endpoint.login, body);
+      if (authResponse.token.isNotEmpty) {
+        await ApiClient.to.setToken(authResponse.token);
+        await ApiClient.to.setUserId(authResponse.userId);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // Login response is nested inside "result"
-        if (response.body != null &&
-            response.body is Map &&
-            response.body['result'] != null &&
-            response.body['result']['data'] != null) {
-          final resultData = response.body['result']['data'];
-          String accessToken = resultData['token'] ?? "";
-          String userId = resultData['user']['id'] ?? "";
-
-          if (accessToken.isNotEmpty) {
-            await ApiClient.to.setToken(accessToken);
-            await ApiClient.to.setUserId(userId);
-
-            // Navigate to Home/Dashboard
-            Get.offAllNamed(Approute.bottomNavBarScreen);
-          } else {
-            Get.snackbar(
-              "Error",
-              "Invalid token received",
-              backgroundColor: Colors.redAccent,
-              colorText: Colors.white,
-            );
-          }
-        } else {
-          Get.snackbar(
-            "Error",
-            "Invalid response format",
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
-          );
-        }
+        Get.offAllNamed(Approute.bottomNavBarScreen);
       } else {
-        String errorMessage = "Login failed";
-        if (response.body != null && response.body is Map) {
-          final rawMessage = response.body['message'] ??
-              response.body['error'] ??
-              response.body['errorMessage'];
-          if (rawMessage is List && rawMessage.isNotEmpty) {
-            errorMessage = rawMessage.map((e) => e.toString()).join('\n');
-          } else if (rawMessage != null && rawMessage.toString().isNotEmpty) {
-            errorMessage = rawMessage.toString();
-          }
-        } else if (response.statusText != null && response.statusText!.isNotEmpty) {
-          errorMessage = response.statusText!;
-        }
-
         Get.snackbar(
-          "Login Failed",
-          errorMessage,
+          "Error",
+          "Invalid token received",
           backgroundColor: Colors.redAccent,
           colorText: Colors.white,
-          duration: const Duration(seconds: 4),
         );
       }
     } catch (e) {
       Get.snackbar(
-        "Error",
-        "Something went wrong: $e",
+        "Login Failed",
+        e.toString().replaceAll("Exception: ", ""),
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
+        duration: const Duration(seconds: 4),
       );
     } finally {
       isLoading.value = false;
     }
   }
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
 }

@@ -5,11 +5,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
+import 'package:yousef1234321/features/home/home_page/service/home_service.dart';
 
 class HomeController extends GetxController {
+  final HomeService _homeService;
+
+  HomeController(this._homeService);
+
   final ScrollController scrollController = ScrollController();
   late Timer timer;
 
@@ -61,7 +64,7 @@ class HomeController extends GetxController {
   var selectedService = RxnString();
   var selectedLocation = RxnString();
 
-  final serviceTypes = <String>[].obs; // Changed to observable list
+  final serviceTypes = <String>[].obs;
 
   final locations = [
     "abu_dhabi",
@@ -79,68 +82,10 @@ class HomeController extends GetxController {
   Future<void> fetchTopRatedGarages() async {
     try {
       isLoadingGarages.value = true;
-
-      // Fetch more garages (limit 10) to have better selection for top 2
-      var response = await ApiClient.to.get(
-        '${Endpoint.findGarage}?page=1&limit=10&status=APPROVED&sortBy=averageRating&order=desc',
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-        if (body != null &&
-            body['success'] == true &&
-            body['data'] != null &&
-            body['data']['data'] != null) {
-          final List<dynamic> garagesJson = body['data']['data'];
-
-          // If no APPROVED garages found, try fetching all garages
-          if (garagesJson.isEmpty) {
-            response = await ApiClient.to.get(
-              '${Endpoint.findGarage}?page=1&limit=10&sortBy=averageRating&order=desc',
-            );
-
-            if (response.statusCode == 200 || response.statusCode == 201) {
-              final allBody = response.body;
-              if (allBody != null &&
-                  allBody['success'] == true &&
-                  allBody['data'] != null &&
-                  allBody['data']['data'] != null) {
-                final allGaragesJson = allBody['data']['data'] as List<dynamic>;
-
-                final garagesList = allGaragesJson
-                    .map((json) => GarageModel.fromJson(json))
-                    .toList();
-
-                // Sort by averageRating in descending order
-                garagesList.sort(
-                  (a, b) => b.averageRating.compareTo(a.averageRating),
-                );
-
-                // Log ratings for debugging
-                //for (var garage in garagesList) {}
-
-                // Take only top 2
-                garages.value = garagesList.take(2).toList();
-              }
-            }
-          } else {
-            final garagesList = garagesJson
-                .map((json) => GarageModel.fromJson(json))
-                .toList();
-
-            // Sort by averageRating in descending order (client-side backup)
-            garagesList.sort(
-              (a, b) => b.averageRating.compareTo(a.averageRating),
-            );
-
-            // Log ratings for debugging
-            //for (var garage in garagesList) {}
-
-            // Take only top 2
-            garages.value = garagesList.take(2).toList();
-          }
-        } else {}
-      } else {}
+      final fetchedGarages = await _homeService.fetchTopRatedGarages();
+      garages.value = fetchedGarages;
+    } catch (e) {
+      print('Error fetching garages: $e');
     } finally {
       isLoadingGarages.value = false;
     }
@@ -149,32 +94,8 @@ class HomeController extends GetxController {
   Future<void> fetchServices() async {
     try {
       isLoadingServices.value = true;
-
-      final response = await ApiClient.to.get(Endpoint.getService);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-
-        if (body != null) {
-          // Handle both 'data' and 'serviceCategories' structures
-          List<dynamic>? categories;
-          if (body['data'] is List) {
-            categories = body['data'];
-          } else if (body['serviceCategories'] is List) {
-            categories = body['serviceCategories'];
-          }
-
-          if (categories != null) {
-            serviceTypes.value = categories
-                .map((e) {
-                  if (e is Map) return e['name']?.toString() ?? '';
-                  return e.toString();
-                })
-                .where((s) => s.isNotEmpty)
-                .toList();
-          }
-        }
-      }
+      final fetchedServices = await _homeService.fetchServices();
+      serviceTypes.value = fetchedServices;
     } catch (e) {
       print('Error fetching services: $e');
     } finally {

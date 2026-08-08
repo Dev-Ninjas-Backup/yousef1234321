@@ -6,7 +6,7 @@ import 'package:yousef1234321/features/home/home_page/controller/home_controller
 class BrandMarqueeView extends StatelessWidget {
   BrandMarqueeView({super.key});
 
-  final controller = Get.put(HomeController());
+  final controller = Get.put(HomeController(Get.find()));
 
   final brands = [
     Imagepath.slide1,

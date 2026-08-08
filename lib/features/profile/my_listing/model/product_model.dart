@@ -3,16 +3,18 @@ class ProductModel {
   final String sellerId;
   final String createdById;
   final String partName;
-  final String brand;
+  final String? brand;
   final String categoryId;
   final String condition;
-  final String price;
+  final double price;
   final int quantity;
   final String description;
   final List<String> photos;
-  final String status;
+  final String status; // "DRAFT" | "PENDING" | "APPROVED" | "REJECTED"
   final bool isPromoted;
-  final double? promoCost;
+  final String? promoCost;
+  final DateTime? promotedUntil;
+  final DateTime? expiresAt;
   final int views;
   final int inquiries;
   final String createdAt;
@@ -22,67 +24,86 @@ class ProductModel {
 
   ProductModel({
     required this.id,
-    required this.sellerId,
-    required this.createdById,
+    this.sellerId = '',
+    this.createdById = '',
     required this.partName,
-    required this.brand,
-    required this.categoryId,
-    required this.condition,
+    this.brand,
+    this.categoryId = '',
+    this.condition = '',
     required this.price,
-    required this.quantity,
-    required this.description,
+    this.quantity = 1,
+    this.description = '',
     required this.photos,
     required this.status,
     required this.isPromoted,
     this.promoCost,
-    required this.views,
-    required this.inquiries,
-    required this.createdAt,
-    required this.updatedAt,
+    this.promotedUntil,
+    this.expiresAt,
+    this.views = 0,
+    this.inquiries = 0,
+    this.createdAt = '',
+    this.updatedAt = '',
     this.seller,
     this.createdBy,
   });
 
-  // Check if product is active (not sold)
-  bool get isActive => status != 'SOLD';
+  /// Formula: status == 'APPROVED' && expiresAt != null && expiresAt.isBefore(DateTime.now())
+  bool get isExpired =>
+      status == 'APPROVED' &&
+      expiresAt != null &&
+      expiresAt!.isBefore(DateTime.now());
 
-  // Get first photo or placeholder
+  /// Active status check
+  bool get isActive => status != 'DRAFT' && !isExpired;
+
+  /// Get main image or default fallback
   String get mainImage {
     if (photos.isNotEmpty && photos[0].isNotEmpty) {
       return photos[0];
     }
-    return 'assets/images/spare_parts5.png'; // Default fallback
+    return 'assets/images/spare_parts5.png';
   }
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    double parsedPrice = 0.0;
+    if (json['price'] != null) {
+      parsedPrice = double.tryParse(json['price'].toString()) ?? 0.0;
+    }
+
+    List<String> photosList = [];
+    if (json['photos'] is List) {
+      photosList = (json['photos'] as List).map((e) => e.toString()).toList();
+    } else if (json['images'] is List) {
+      photosList = (json['images'] as List).map((e) => e.toString()).toList();
+    }
+
+    DateTime? parseDate(dynamic v) {
+      if (v == null) return null;
+      return DateTime.tryParse(v.toString());
+    }
+
     return ProductModel(
-      id: json['id'] ?? '',
-      sellerId: json['sellerId'] ?? '',
-      createdById: json['createdById'] ?? '',
-      partName: json['partName'] ?? '',
-      brand: json['brand'] ?? '',
-      categoryId: json['categoryId'] ?? '',
-      condition: json['condition'] ?? '',
-      price: json['price']?.toString() ?? '0',
-      quantity: json['quantity'] ?? 0,
-      description: json['description'] ?? '',
-      photos:
-          (json['photos'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
-      status: json['status'] ?? 'PENDING',
-      isPromoted: json['isPromoted'] ?? false,
-      promoCost: (json['promoCost'] != null)
-          ? double.tryParse(json['promoCost'].toString())
-          : null,
-      views: json['views'] ?? 0,
-      inquiries: json['inquiries'] ?? 0,
-      createdAt: json['createdAt'] ?? '',
-      updatedAt: json['updatedAt'] ?? '',
-      seller: json['seller'] != null
-          ? SellerInfo.fromJson(json['seller'])
-          : null,
+      id: json['id']?.toString() ?? '',
+      sellerId: json['sellerId']?.toString() ?? '',
+      createdById: json['createdById']?.toString() ?? '',
+      partName: json['partName']?.toString() ?? json['title']?.toString() ?? '',
+      brand: json['brand']?.toString(),
+      categoryId: json['categoryId']?.toString() ?? '',
+      condition: json['condition']?.toString() ?? '',
+      price: parsedPrice,
+      quantity: json['quantity'] is num ? (json['quantity'] as num).toInt() : 1,
+      description: json['description']?.toString() ?? '',
+      photos: photosList,
+      status: json['status']?.toString().toUpperCase() ?? 'PENDING',
+      isPromoted: json['isPromoted'] == true,
+      promoCost: json['promoCost']?.toString(),
+      promotedUntil: parseDate(json['promotedUntil']),
+      expiresAt: parseDate(json['expiresAt']),
+      views: json['views'] is num ? (json['views'] as num).toInt() : 0,
+      inquiries: json['inquiries'] is num ? (json['inquiries'] as num).toInt() : 0,
+      createdAt: json['createdAt']?.toString() ?? '',
+      updatedAt: json['updatedAt']?.toString() ?? '',
+      seller: json['seller'] != null ? SellerInfo.fromJson(json['seller']) : null,
       createdBy: json['createdBy'] != null
           ? CreatedByInfo.fromJson(json['createdBy'])
           : null,

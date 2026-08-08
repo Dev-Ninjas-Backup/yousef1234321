@@ -3,11 +3,14 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/endpoint/endpoint.dart';
-import '../../../../core/network/api_client.dart';
 import '../../../service/service page/model/garage_model.dart';
+import 'package:yousef1234321/features/home/find_garage/service/find_garage_service.dart';
 
 class FindGarageController extends GetxController {
+  final FindGarageService _findGarageService;
+
+  FindGarageController(this._findGarageService);
+
   // Observables for location
   final Rxn<double> currentLat = Rxn<double>();
   final Rxn<double> currentLng = Rxn<double>();
@@ -78,23 +81,10 @@ class FindGarageController extends GetxController {
 
   Future<void> fetchServiceCategories() async {
     try {
-      final res = await ApiClient.to.get(Endpoint.getService);
-      if (res.statusCode == 200 && res.body != null) {
-        final body = res.body;
-        List<dynamic>? categories;
-        if (body['data'] is List) {
-          categories = body['data'];
-        } else if (body['serviceCategories'] is List) {
-          categories = body['serviceCategories'];
-        }
-
-        if (categories != null) {
-          final fetchedNames = categories
-              .map((e) => e is Map ? (e['name']?.toString() ?? '') : e.toString())
-              .where((s) => s.isNotEmpty)
-              .toList();
-          items.assignAll(['All', ...fetchedNames]);
-        }
+      final fetchedCategories = await _findGarageService
+          .fetchServiceCategories();
+      if (fetchedCategories.isNotEmpty) {
+        items.assignAll(['All', ...fetchedCategories]);
       }
     } catch (_) {}
   }

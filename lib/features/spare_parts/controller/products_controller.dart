@@ -2,9 +2,12 @@
 
 import 'package:get/get.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
-import 'package:yousef1234321/core/network/api_client.dart';
+import 'package:yousef1234321/features/spare_parts/service/spare_parts_service.dart';
 
 class ProductsController extends GetxController {
+  final SparePartsService _sparePartsService;
+
+  ProductsController(this._sparePartsService);
   final products = <dynamic>[].obs;
   final isLoading = false.obs;
   final isLoadingMore = false.obs;
@@ -64,7 +67,7 @@ class ProductsController extends GetxController {
         print('[ProductsController] GET $url');
       } catch (_) {}
 
-      Response response = await ApiClient.to.get(url);
+      Response response = await _sparePartsService.fetchProducts(url);
 
       if (!(response.statusCode == 200 || response.statusCode == 201) ||
           response.body == null) {
@@ -76,7 +79,7 @@ class ProductsController extends GetxController {
             '${search != null && search.isNotEmpty ? '&search=${Uri.encodeQueryComponent(search)}' : ''}';
         try {
           print('[ProductsController] retry GET $altUrl');
-          final retryResp = await ApiClient.to.get(altUrl);
+          final retryResp = await _sparePartsService.fetchProducts(altUrl);
           if (retryResp.statusCode == 200 || retryResp.statusCode == 201) {
             response = retryResp;
           }
@@ -164,13 +167,14 @@ class ProductsController extends GetxController {
     final filtered = items.where((item) {
       if (item is! Map) return true;
 
-      final itemCatId = (item['categoryId'] ??
-              item['category_id'] ??
-              item['partsCategoryId'] ??
-              '')
-          .toString()
-          .trim()
-          .toLowerCase();
+      final itemCatId =
+          (item['categoryId'] ??
+                  item['category_id'] ??
+                  item['partsCategoryId'] ??
+                  '')
+              .toString()
+              .trim()
+              .toLowerCase();
 
       String itemCatName = '';
       final catObj = item['category'];
@@ -196,7 +200,9 @@ class ProductsController extends GetxController {
         return true;
       }
 
-      if (reqName.isNotEmpty && itemCatName.isNotEmpty && itemCatName == reqName) {
+      if (reqName.isNotEmpty &&
+          itemCatName.isNotEmpty &&
+          itemCatName == reqName) {
         return true;
       }
 
@@ -229,13 +235,14 @@ class ProductsController extends GetxController {
       if (st != null && st.isNotEmpty) {
         url = '$url&status=${Uri.encodeQueryComponent(st)}';
       }
-      if (cid != null && cid.isNotEmpty) url = '$url&categoryId=$cid&category_id=$cid';
+      if (cid != null && cid.isNotEmpty)
+        url = '$url&categoryId=$cid&category_id=$cid';
       if (cs != null && cs.isNotEmpty) {
         url = '$url&search=${Uri.encodeQueryComponent(cs)}';
       }
 
       print('[ProductsController] loadMore GET $url');
-      final response = await ApiClient.to.get(url);
+      final response = await _sparePartsService.fetchProducts(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = response.body;

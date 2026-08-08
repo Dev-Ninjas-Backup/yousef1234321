@@ -3,13 +3,11 @@ import 'package:get/get.dart';
 import 'package:yousef1234321/core/common/constants/app_colors.dart';
 import 'package:yousef1234321/features/splash/controller/splash_controller.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends GetView<SplashController> {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SplashController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
