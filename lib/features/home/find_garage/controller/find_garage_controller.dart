@@ -24,11 +24,27 @@ class FindGarageController extends GetxController {
   final RxList<GarageModel> garages = <GarageModel>[].obs;
   final RxBool isLoading = false.obs;
 
+  // Page Controller for slider carousel
+  final PageController pageController = PageController(viewportFraction: 0.75);
+  final RxDouble currentPage = 0.0.obs;
+
   @override
   void onInit() {
     super.onInit();
+    pageController.addListener(() {
+      currentPage.value = pageController.page ?? 0.0;
+    });
     _initAndFetch();
   }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    searchController.dispose();
+    super.onClose();
+  }
+
+  String? _currentEmirate;
 
   Future<void> _initAndFetch() async {
     String? emirate;
@@ -38,6 +54,7 @@ class FindGarageController extends GetxController {
       final Map args = Get.arguments;
       emirate = args['emirate']?.toString();
       serviceName = args['serviceName']?.toString();
+      _currentEmirate = emirate;
       if (args['currentLat'] != null) {
         currentLat.value = (args['currentLat'] as num).toDouble();
       }
@@ -147,7 +164,7 @@ class FindGarageController extends GetxController {
         url += '&emirate=${Uri.encodeComponent(emirate)}';
       }
       if (serviceName != null && serviceName.isNotEmpty && serviceName != 'All') {
-        url += '&search=${Uri.encodeComponent(serviceName)}';
+        url += '&serviceName=${Uri.encodeComponent(serviceName)}';
       }
       final res = await ApiClient.to.get(url);
       if (res.statusCode == 200 && res.body != null) {
@@ -189,6 +206,6 @@ class FindGarageController extends GetxController {
     selectedItem.value = category;
     isDropdownVisible.value = false;
     final filterName = category == 'All' ? null : category;
-    fetchGarages(serviceName: filterName);
+    fetchGarages(emirate: _currentEmirate, serviceName: filterName);
   }
 }

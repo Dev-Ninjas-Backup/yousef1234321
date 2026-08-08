@@ -53,10 +53,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
           Marker(
             markerId: MarkerId(g.id),
             position: LatLng(g.garageLat!, g.garageLng!),
-            infoWindow: InfoWindow(
-              title: g.name,
-              snippet: g.address ?? '',
-            ),
+            infoWindow: InfoWindow(title: g.name, snippet: g.address ?? ''),
           ),
         );
       }
@@ -254,10 +251,7 @@ class _FindGaragePageState extends State<FindGaragePage> {
                     controller.currentLat.value != null &&
                     controller.currentLng.value != null;
 
-                return
-                
-                
-                 Container(
+                return Container(
                   height: 400,
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -314,35 +308,34 @@ class _FindGaragePageState extends State<FindGaragePage> {
                         bottom: 12,
                         right: 12,
                         child: FloatingActionButton(
-                            mini: true,
-                            backgroundColor: Colors.white,
-                            onPressed: () async {
-                              await controller.loadCurrentLocation();
-                              if (controller.currentLat.value != null &&
-                                  controller.currentLng.value != null) {
-                                try {
-                                  final mapCtrl =
-                                      await _mapController.future;
-                                  final lat = controller.currentLat.value!;
-                                  final lng = controller.currentLng.value!;
-                                  await mapCtrl.animateCamera(
-                                    CameraUpdate.newLatLngZoom(
-                                      LatLng(lat, lng),
-                                      14,
-                                    ),
-                                  );
-                                } catch (e) {
-                                  // ignore errors
-                                }
+                          mini: true,
+                          backgroundColor: Colors.white,
+                          onPressed: () async {
+                            await controller.loadCurrentLocation();
+                            if (controller.currentLat.value != null &&
+                                controller.currentLng.value != null) {
+                              try {
+                                final mapCtrl = await _mapController.future;
+                                final lat = controller.currentLat.value!;
+                                final lng = controller.currentLng.value!;
+                                await mapCtrl.animateCamera(
+                                  CameraUpdate.newLatLngZoom(
+                                    LatLng(lat, lng),
+                                    14,
+                                  ),
+                                );
+                              } catch (e) {
+                                // ignore errors
                               }
-                            },
-                            child: const Icon(
-                              Icons.my_location,
-                              color: Colors.black54,
-                              size: 18,
-                            ),
+                            }
+                          },
+                          child: const Icon(
+                            Icons.my_location,
+                            color: Colors.black54,
+                            size: 18,
                           ),
                         ),
+                      ),
                     ],
                   ),
                 );
@@ -370,83 +363,165 @@ class _FindGaragePageState extends State<FindGaragePage> {
                 }
 
                 return SizedBox(
-                  height: 140,
-                  child: ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                  height: 180,
+                  child: PageView.builder(
+                    controller: controller.pageController,
                     itemCount: list.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 12),
+                    physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) {
                       final g = list[index];
-                      return GestureDetector(
-                        onTap: () {
-                          // navigate to booking for this garage
-                          Get.toNamed(
-                            Approute.getServiceBooking(),
-                            arguments: {'garageId': g.id},
-                          );
-                        },
-                        child: Container(
-                          width: 220,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(8),
-                                  topRight: Radius.circular(8),
-                                ),
-                                child:
+                      return Obx(() {
+                        double scale = (controller.currentPage.value - index)
+                            .abs();
+                        double size = 1 - (scale * 0.15);
+                        if (size < 0.85) size = 0.85;
+
+                        return AnimatedScale(
+                          scale: size,
+                          duration: const Duration(milliseconds: 150),
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.toNamed(
+                                Approute.getServiceBooking(),
+                                arguments: {'garageId': g.id},
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    // Full cover garage photo
                                     (g.profileImage != null &&
                                             g.profileImage!.isNotEmpty)
                                         ? Image.network(
-                                          g.profileImage!,
-                                          height: 84,
-                                          width: 220,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (_, __, ___) => Container(
-                                                height: 84,
-                                                width: 220,
-                                                color: Colors.grey.shade100,
-                                                child: const Icon(
-                                                  Icons.storefront_outlined,
-                                                  size: 36,
-                                                  color: Colors.grey,
+                                            g.profileImage!,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            errorBuilder: (_, __, ___) =>
+                                                Container(
+                                                  color:
+                                                      Colors.blueGrey.shade800,
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.storefront_outlined,
+                                                      size: 48,
+                                                      color: Colors.white54,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                        )
+                                          )
                                         : Container(
-                                          height: 84,
-                                          width: 220,
-                                          color: Colors.grey.shade100,
-                                          child: const Icon(
-                                            Icons.storefront_outlined,
-                                            size: 36,
-                                            color: Colors.grey,
+                                            color: Colors.blueGrey.shade800,
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.storefront_outlined,
+                                                size: 48,
+                                                color: Colors.white54,
+                                              ),
+                                            ),
+                                          ),
+
+                                    // Gradient overlay at bottom
+                                    Positioned(
+                                      bottom: 0,
+                                      left: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 14,
+                                          vertical: 12,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black.withValues(
+                                                alpha: 0.75,
+                                              ),
+                                            ],
                                           ),
                                         ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TranslatedText(
-                                  text: g.name,
-                                  style: getTextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: TranslatedText(
+                                                text: g.name,
+                                                style: getTextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Flexible(
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  Flexible(
+                                                    child: TranslatedText(
+                                                      text:
+                                                          (g.address != null &&
+                                                                  g
+                                                                      .address!
+                                                                      .isNotEmpty)
+                                                              ? g.address!
+                                                              : "Abu Dhabi",
+                                                      style: getTextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  const Icon(
+                                                    Icons.location_on,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      });
                     },
                   ),
                 );
