@@ -100,6 +100,28 @@ class FindGarageController extends GetxController {
   }
 
   Future<void> loadCurrentLocation() async {
+    // 1. Try to fetch default location set in user profile (/user/me/profile)
+    try {
+      final profileRes = await ApiClient.to.get(Endpoint.profile);
+      if (profileRes.statusCode == 200 && profileRes.body != null) {
+        final data = profileRes.body is Map ? profileRes.body['data'] : null;
+        if (data is Map) {
+          final uLatRaw = data['userLat'];
+          final uLngRaw = data['userLng'];
+          if (uLatRaw != null && uLngRaw != null) {
+            final double? pLat = double.tryParse(uLatRaw.toString());
+            final double? pLng = double.tryParse(uLngRaw.toString());
+            if (pLat != null && pLng != null && pLat != 0 && pLng != 0) {
+              currentLat.value = pLat;
+              currentLng.value = pLng;
+              return; // Successfully set from user profile setting
+            }
+          }
+        }
+      }
+    } catch (_) {}
+
+    // 2. If profile location is null/empty, fall back to device GPS location
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -165,6 +187,9 @@ class FindGarageController extends GetxController {
       }
       if (serviceName != null && serviceName.isNotEmpty && serviceName != 'All') {
         url += '&serviceName=${Uri.encodeComponent(serviceName)}';
+      }
+      if (currentLat.value != null && currentLng.value != null) {
+        url += '&userLat=${currentLat.value}&userLng=${currentLng.value}';
       }
       final res = await ApiClient.to.get(url);
       if (res.statusCode == 200 && res.body != null) {

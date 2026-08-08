@@ -125,6 +125,16 @@ class GarageListController extends GetxController {
         url += '&serviceName=$serviceVal&service=$serviceVal';
       }
 
+      try {
+        final profileRes = await ApiClient.to.get(Endpoint.profile);
+        if (profileRes.statusCode == 200 && profileRes.body != null) {
+          final data = profileRes.body is Map ? profileRes.body['data'] : null;
+          if (data is Map && data['userLat'] != null && data['userLng'] != null) {
+            url += '&userLat=${data['userLat']}&userLng=${data['userLng']}';
+          }
+        }
+      } catch (_) {}
+
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
