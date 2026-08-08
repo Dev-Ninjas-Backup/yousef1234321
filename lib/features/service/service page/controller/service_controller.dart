@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 import '../model/garage_model.dart';
 import 'package:yousef1234321/features/service/service%20page/service/service_page_service.dart';
 
@@ -261,10 +263,11 @@ class ServiceController extends GetxController {
   Future<void> _loadCurrentLocationSilently() async {
     try {
       final permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         return;
       }
-      
+
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );

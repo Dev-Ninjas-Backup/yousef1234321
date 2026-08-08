@@ -246,7 +246,9 @@ class SparePartsScreen extends GetView<SparePartsController> {
             //_sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
-            partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
+            partsList(
+              Get.put(ProductsController(Get.find()), tag: 'todaysDeals'),
+            ),
             const SizedBox(height: 110),
           ],
         ),
@@ -353,8 +355,8 @@ class SparePartsScreen extends GetView<SparePartsController> {
                 : 0.0;
             final bool isPromoted =
                 (item is Map &&
-                    (item['isPromoted'] == true ||
-                        item['isPromoted']?.toString() == 'true'));
+                (item['isPromoted'] == true ||
+                    item['isPromoted']?.toString() == 'true'));
 
             return GestureDetector(
               onTap: () {
@@ -568,8 +570,8 @@ class SparePartsScreen extends GetView<SparePartsController> {
                   : 0.0;
               final bool isPromoted =
                   (p is Map &&
-                      (p['isPromoted'] == true ||
-                          p['isPromoted']?.toString() == 'true'));
+                  (p['isPromoted'] == true ||
+                      p['isPromoted']?.toString() == 'true'));
 
               return GestureDetector(
                 onTap: () {
@@ -629,7 +631,10 @@ class SparePartsScreen extends GetView<SparePartsController> {
                                                     valueColor:
                                                         AlwaysStoppedAnimation<
                                                           Color
-                                                        >(AppColors.primaryColor),
+                                                        >(
+                                                          AppColors
+                                                              .primaryColor,
+                                                        ),
                                                   ),
                                                 ),
                                               );

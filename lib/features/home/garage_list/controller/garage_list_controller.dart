@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';
 import 'package:yousef1234321/features/home/garage_list/service/garage_list_service.dart';
@@ -132,7 +134,9 @@ class GarageListController extends GetxController {
         final profileRes = await ApiClient.to.get(Endpoint.profile);
         if (profileRes.statusCode == 200 && profileRes.body != null) {
           final data = profileRes.body is Map ? profileRes.body['data'] : null;
-          if (data is Map && data['userLat'] != null && data['userLng'] != null) {
+          if (data is Map &&
+              data['userLat'] != null &&
+              data['userLng'] != null) {
             url += '&userLat=${data['userLat']}&userLng=${data['userLng']}';
           }
         }

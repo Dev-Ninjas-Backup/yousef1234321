@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 
 import '../../../service/service page/model/garage_model.dart';
 import 'package:yousef1234321/features/home/find_garage/service/find_garage_service.dart';
@@ -164,7 +166,9 @@ class FindGarageController extends GetxController {
           }
           for (var item in nearbyList) {
             if (item is Map && item['id'] != null) {
-              garageMap[item['id'].toString()] = Map<String, dynamic>.from(item);
+              garageMap[item['id'].toString()] = Map<String, dynamic>.from(
+                item,
+              );
             }
           }
         }
@@ -175,7 +179,9 @@ class FindGarageController extends GetxController {
       if (emirate != null && emirate.isNotEmpty) {
         url += '&emirate=${Uri.encodeComponent(emirate)}';
       }
-      if (serviceName != null && serviceName.isNotEmpty && serviceName != 'All') {
+      if (serviceName != null &&
+          serviceName.isNotEmpty &&
+          serviceName != 'All') {
         url += '&serviceName=${Uri.encodeComponent(serviceName)}';
       }
       if (currentLat.value != null && currentLng.value != null) {
