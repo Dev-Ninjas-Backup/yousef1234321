@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:yousef1234321/features/product_listing/views/create_product_screen.dart';
 import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/constants/imagepath.dart';
 import 'package:yousef1234321/features/spare_parts/controller/products_controller.dart';
@@ -21,13 +22,11 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 
 import '../../../core/common/style/global_text_style.dart';
 
-class SparePartsScreen extends StatelessWidget {
-  SparePartsScreen({super.key});
+class SparePartsScreen extends GetView<SparePartsController> {
+  const SparePartsScreen({super.key});
 
   // Ensure we only run the initial fetch once per app lifecycle to avoid repeated network calls
   static bool _initialized = false;
-
-  final SparePartsController controller = Get.put(SparePartsController());
 
   // Helper to get English text for a key to send to TranslationService
   String _getEnglishText(String key) {
@@ -44,12 +43,15 @@ class SparePartsScreen extends StatelessWidget {
     if (!SparePartsScreen._initialized) {
       SparePartsScreen._initialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final allPartsCtrl = Get.put(ProductsController(), tag: 'allParts');
+        final allPartsCtrl = Get.put(
+          ProductsController(Get.find()),
+          tag: 'allParts',
+        );
         if (allPartsCtrl.products.isEmpty && !allPartsCtrl.isLoading.value) {
           allPartsCtrl.fetchProducts(page: 1, limit: 10);
         }
         final todaysDealsCtrl = Get.put(
-          ProductsController(),
+          ProductsController(Get.find()),
           tag: 'todaysDeals',
         );
         if (todaysDealsCtrl.products.isEmpty &&
@@ -98,7 +100,7 @@ class SparePartsScreen extends StatelessWidget {
                         final profileController =
                             Get.isRegistered<ProfileController>()
                             ? Get.find<ProfileController>()
-                            : Get.put(ProfileController());
+                            : Get.put(ProfileController(Get.find()));
                         final profilePhoto =
                             profileController.profilePhoto.value;
 
@@ -130,40 +132,42 @@ class SparePartsScreen extends StatelessWidget {
             PartsSearchSection(),
             const SizedBox(height: 16),
             // Category section - Single row horizontally scrollable
-            SizedBox(
-              height: 130,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: controller.categories.length,
-                itemBuilder: (context, index) {
-                  final cat = controller.categories[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: CategoryItem(
-                      icon: cat['icon'] as IconData,
-                      title: cat['name'] as String,
-                      color: controller.getRandomColor(),
-                      onTap: () async {
-                        // extract category name and id
-                        final cname = (cat['name'] ?? 'category').toString();
-                        final catId = (cat['id'] ?? '').toString();
+            Obx(
+              () => SizedBox(
+                height: 130,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.categories.length,
+                  itemBuilder: (context, index) {
+                    final cat = controller.categories[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: CategoryItem(
+                        icon: cat['icon'] as IconData,
+                        title: cat['name'] as String,
+                        color: controller.getRandomColor(),
+                        onTap: () async {
+                          // extract category name and id
+                          final cname = (cat['name'] ?? 'category').toString();
+                          final catId = (cat['id'] ?? '').toString();
 
-                        final productsCtrl = Get.put(
-                          ProductsController(),
-                          tag: 'productsList',
-                        );
-                        await productsCtrl.fetchProducts(
-                          page: 1,
-                          limit: 20,
-                          categoryId: catId.isNotEmpty ? catId : null,
-                          category: cname,
-                        );
+                          final productsCtrl = Get.put(
+                            ProductsController(Get.find()),
+                            tag: 'productsList',
+                          );
+                          await productsCtrl.fetchProducts(
+                            page: 1,
+                            limit: 20,
+                            categoryId: catId.isNotEmpty ? catId : null,
+                            category: cname,
+                          );
 
-                        _openProductListScreen(cname, productsCtrl);
-                      },
-                    ),
-                  );
-                },
+                          _openProductListScreen(cname, productsCtrl);
+                        },
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
 
@@ -203,7 +207,7 @@ class SparePartsScreen extends StatelessWidget {
                           ),
                         ),
                         onPressed: () {
-                          Get.toNamed(Approute.partsDetailsScreen);
+                          Get.to(() => const CreateProductScreen());
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -232,7 +236,7 @@ class SparePartsScreen extends StatelessWidget {
             //_sectionCard("all_parts"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
-            partsList(Get.put(ProductsController(), tag: 'allParts')),
+            partsList(Get.put(ProductsController(Get.find()), tag: 'allParts')),
 
             const SizedBox(height: 20),
 
@@ -242,7 +246,10 @@ class SparePartsScreen extends StatelessWidget {
             //_sectionCard("todays_deals"),
             const SizedBox(height: 10),
             // partsList already uses Obx internally; avoid wrapping it in another Obx
-            partsList(Get.put(ProductsController(), tag: 'todaysDeals')),
+            partsList(
+              Get.put(ProductsController(Get.find()), tag: 'todaysDeals'),
+            ),
+            const SizedBox(height: 110),
           ],
         ),
       ),
@@ -263,7 +270,7 @@ class SparePartsScreen extends StatelessWidget {
             // Navigate to products list page with API call (page=1, limit=10)
             // Create ProductsController and fetch products
             final productsCtrl = Get.put(
-              ProductsController(),
+              ProductsController(Get.find()),
               tag: 'productsList',
             );
             await productsCtrl.fetchProducts(page: 1, limit: 10);
@@ -345,7 +352,11 @@ class SparePartsScreen extends StatelessWidget {
                 : 0.0;
             final rating = (item is Map && item['rating'] != null)
                 ? double.parse(item['rating'].toString())
-                : 0.0; // Assuming rating might not be in the API response yet
+                : 0.0;
+            final bool isPromoted =
+                (item is Map &&
+                (item['isPromoted'] == true ||
+                    item['isPromoted']?.toString() == 'true'));
 
             return GestureDetector(
               onTap: () {
@@ -367,6 +378,7 @@ class SparePartsScreen extends StatelessWidget {
                 desc: desc,
                 price: price,
                 rating: rating,
+                isPromoted: isPromoted,
               ),
             );
           },
@@ -556,6 +568,10 @@ class SparePartsScreen extends StatelessWidget {
               final rating = (p is Map && p['rating'] != null)
                   ? double.tryParse(p['rating'].toString()) ?? 0.0
                   : 0.0;
+              final bool isPromoted =
+                  (p is Map &&
+                  (p['isPromoted'] == true ||
+                      p['isPromoted']?.toString() == 'true'));
 
               return GestureDetector(
                 onTap: () {
@@ -588,54 +604,104 @@ class SparePartsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Left - Image
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            width: 90,
-                            height: 90,
-                            color: AppColors.containerFillColor,
-                            child: photo != null
-                                ? Image.network(
-                                    photo,
-                                    width: 90,
-                                    height: 90,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
-                                          return const Center(
-                                            child: SizedBox(
-                                              width: 24,
-                                              height: 24,
-                                              child: CircularProgressIndicator(
-                                                strokeWidth: 2,
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                      Color
-                                                    >(AppColors.primaryColor),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                    errorBuilder: (_, __, ___) => Center(
-                                      child: Image.asset(
-                                        Iconpath.carHomeIcon,
-                                        width: 48,
-                                        height: 48,
-                                        fit: BoxFit.contain,
+                        Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 90,
+                                height: 90,
+                                color: AppColors.containerFillColor,
+                                child: photo != null
+                                    ? Image.network(
+                                        photo,
+                                        width: 90,
+                                        height: 90,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return const Center(
+                                                child: SizedBox(
+                                                  width: 24,
+                                                  height: 24,
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    valueColor:
+                                                        AlwaysStoppedAnimation<
+                                                          Color
+                                                        >(
+                                                          AppColors
+                                                              .primaryColor,
+                                                        ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                        errorBuilder: (_, __, ___) => Center(
+                                          child: Image.asset(
+                                            Iconpath.carHomeIcon,
+                                            width: 48,
+                                            height: 48,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Image.asset(
+                                          Iconpath.carHomeIcon,
+                                          width: 48,
+                                          height: 48,
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : Center(
-                                    child: Image.asset(
-                                      Iconpath.carHomeIcon,
-                                      width: 48,
-                                      height: 48,
-                                      fit: BoxFit.contain,
-                                    ),
+                              ),
+                            ),
+                            if (isPromoted)
+                              Positioned(
+                                top: 4,
+                                left: 4,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 2,
                                   ),
-                          ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFF9800),
+                                    borderRadius: BorderRadius.circular(4),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Icon(
+                                        Icons.bolt,
+                                        color: Colors.white,
+                                        size: 10,
+                                      ),
+                                      SizedBox(width: 1),
+                                      TranslatedText(
+                                        text: "promoted",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 8,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                         const SizedBox(width: 16),
                         // Right - Content Info

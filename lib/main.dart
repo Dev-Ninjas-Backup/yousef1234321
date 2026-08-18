@@ -8,6 +8,10 @@ import 'package:yousef1234321/features/notification/controller/notification_cont
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';
 import 'package:yousef1234321/core/service/translation_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:yousef1234321/features/notification/service/notification_rest_service.dart';
+import 'package:yousef1234321/features/profile/language/service/language_service.dart';
+import 'package:yousef1234321/features/service/service_booking/service/service_booking_service.dart';
+import 'package:yousef1234321/features/service/service_booking/controller/service_booking_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,9 +21,28 @@ void main() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   Get.put<SharedPreferences>(sharedPreferences, permanent: true);
   Get.put<ApiClient>(ApiClient(sharedPreferences: Get.find()), permanent: true);
-  Get.put(NotificationController(), permanent: true);
-  Get.put(LanguageController(), permanent: true);
+  Get.put<NotificationServiceRest>(
+    NotificationServiceRest(Get.find()),
+    permanent: true,
+  );
+  Get.put<NotificationController>(
+    NotificationController(Get.find()),
+    permanent: true,
+  );
+
+  Get.put<LanguageService>(LanguageService(Get.find()), permanent: true);
+  Get.put<LanguageController>(LanguageController(Get.find()), permanent: true);
+
   Get.put(TranslationService(), permanent: true);
+
+  Get.put<ServiceBookingService>(
+    ServiceBookingService(Get.find()),
+    permanent: true,
+  );
+  Get.put<ServiceBookingController>(
+    ServiceBookingController(Get.find()),
+    permanent: true,
+  );
 
   configEasyLoading();
   runApp(const MyApp());

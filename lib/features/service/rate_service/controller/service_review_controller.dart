@@ -7,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../core/network/api_client.dart';
-import '../../../../core/endpoint/endpoint.dart';
+import 'package:yousef1234321/features/service/rate_service/service/service_review_service.dart';
 
 class ServiceReviewController extends GetxController {
+  final ServiceReviewService _serviceReviewService;
+
+  ServiceReviewController(this._serviceReviewService);
+
   // Star Ratings
   var overallRating = 0.obs;
   var serviceQualityRating = 0.obs;
@@ -92,22 +95,21 @@ class ServiceReviewController extends GetxController {
     try {
       isSubmitting.value = true;
       // Debug: log request body
-      print('Posting review to: ${Endpoint.postReview}/$garageId');
       print('Review request body: $body');
 
-      final res = await ApiClient.to.post(
-        '${Endpoint.postReview}/$garageId',
-        body,
-      );
+      final res = await _serviceReviewService.submitReview(garageId, body);
+
+      final statusCode = res['statusCode'];
+      final bodyString = res['bodyString'];
+      final respBody = res['body'];
 
       // Debug: log full response
-      print('Review POST response: ${res.statusCode}');
-      print('Review POST response body: ${res.bodyString}');
+      print('Review POST response: $statusCode');
+      print('Review POST response body: $bodyString');
 
-      if (res.statusCode == 200 || res.statusCode == 201) {
+      if (statusCode == 200 || statusCode == 201) {
         // Some backends return 200 with an error payload. Inspect body for explicit error markers.
         bool backendOk = true;
-        final respBody = res.body;
         if (respBody is Map<String, dynamic>) {
           if (respBody.containsKey('success') && respBody['success'] == false) {
             backendOk = false;
@@ -121,9 +123,7 @@ class ServiceReviewController extends GetxController {
         }
 
         if (!backendOk) {
-          print(
-            'Backend reported error when creating review: ${res.bodyString}',
-          );
+          print('Backend reported error when creating review: $bodyString');
           EasyLoading.showError('failed_submit_review'.tr);
           EasyLoading.showError('submit_review_failed'.tr);
         } else {
@@ -185,7 +185,7 @@ class ServiceReviewController extends GetxController {
           });
         }
       } else {
-        print('Failed to post review: ${res.statusCode} ${res.bodyString}');
+        print('Failed to post review: $statusCode $bodyString');
         EasyLoading.showError('failed_submit_review'.tr);
         EasyLoading.showError('submit_review_failed'.tr);
       }

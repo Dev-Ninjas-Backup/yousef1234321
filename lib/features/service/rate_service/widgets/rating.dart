@@ -15,7 +15,7 @@ class Rating extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "Rate Your Service Experience",

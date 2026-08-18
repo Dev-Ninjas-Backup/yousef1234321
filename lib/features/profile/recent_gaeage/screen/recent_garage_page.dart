@@ -5,11 +5,10 @@ import 'package:yousef1234321/core/common/style/global_text_style.dart';
 import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/features/profile/recent_gaeage/controller/recent_garage_controller.dart';
 import 'package:yousef1234321/features/profile/recent_gaeage/widgets/recent_garage_card.dart';
-import 'package:yousef1234321/features/service/rate_service/screen/service_review_scree.dart';
+import 'package:yousef1234321/routes/app_route.dart';
 
-class RecentGaragePage extends StatelessWidget {
-  final controller = Get.put(RecentGarageController());
-  RecentGaragePage({super.key});
+class RecentGaragePage extends GetView<RecentGarageController> {
+  const RecentGaragePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class RecentGaragePage extends StatelessWidget {
             SizedBox(height: 24),
             GestureDetector(
               onTap: () {
-                Get.to(ServiceReviewScreen());
+                Get.toNamed(Approute.getRateServiceScreen());
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 10),

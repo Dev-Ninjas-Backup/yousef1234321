@@ -6,13 +6,11 @@ import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/otp/controller/otp_controller.dart';
 
-class OtpScreen extends StatelessWidget {
+class OtpScreen extends GetView<OtpController> {
   const OtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<OtpController>();
-
     final defaultPinTheme = PinTheme(
       width: 45,
       height: 60,
@@ -45,7 +43,11 @@ class OtpScreen extends StatelessWidget {
                   onTap: () => Get.back(),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 24, top: 24),
-                    child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+                    child: Image.asset(
+                      Iconpath.arrowback,
+                      height: 44,
+                      width: 44,
+                    ),
                   ),
                 ),
               ),

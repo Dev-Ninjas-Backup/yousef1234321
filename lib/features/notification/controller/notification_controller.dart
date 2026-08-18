@@ -7,8 +7,9 @@ import 'package:yousef1234321/features/notification/service/notification_rest_se
 import 'package:yousef1234321/features/notification/service/notification_service.dart';
 
 class NotificationController extends GetxController {
-  final NotificationServiceRest notificationServiceREST =
-      NotificationServiceRest();
+  final NotificationServiceRest notificationServiceREST;
+
+  NotificationController(this.notificationServiceREST);
 
   final RxBool isLoading = false.obs;
   final RxList<AppNotification> notifications = <AppNotification>[].obs;

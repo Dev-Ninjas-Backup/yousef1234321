@@ -7,12 +7,12 @@ import 'package:yousef1234321/features/parts_details/controller/parts_details_co
 import 'package:yousef1234321/features/parts_details/widgets/promotion_listing.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
-class PartsDetailsScreen extends StatelessWidget {
+class PartsDetailsScreen extends GetView<PartsDetailsController> {
   const PartsDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = Get.put(PartsDetailsController());
+    final c = controller;
 
     // 🔹 Reusable TextField
     Widget textField(

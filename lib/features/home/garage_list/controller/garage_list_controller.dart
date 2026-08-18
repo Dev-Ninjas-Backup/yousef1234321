@@ -5,8 +5,13 @@ import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/home/home_page/model/garage_model.dart';
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';
+import 'package:yousef1234321/features/home/garage_list/service/garage_list_service.dart';
 
 class GarageListController extends GetxController {
+  final GarageListService _garageListService;
+
+  GarageListController(this._garageListService);
+
   final TextEditingController searchController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
@@ -125,6 +130,18 @@ class GarageListController extends GetxController {
         url += '&serviceName=$serviceVal&service=$serviceVal';
       }
 
+      try {
+        final profileRes = await ApiClient.to.get(Endpoint.profile);
+        if (profileRes.statusCode == 200 && profileRes.body != null) {
+          final data = profileRes.body is Map ? profileRes.body['data'] : null;
+          if (data is Map &&
+              data['userLat'] != null &&
+              data['userLng'] != null) {
+            url += '&userLat=${data['userLat']}&userLng=${data['userLng']}';
+          }
+        }
+      } catch (_) {}
+
       final response = await ApiClient.to.get(url);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -192,26 +209,8 @@ class GarageListController extends GetxController {
 
   Future<void> fetchServices() async {
     try {
-      final response = await ApiClient.to.get(Endpoint.getService);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final body = response.body;
-        List<dynamic>? categories;
-        if (body != null) {
-          if (body['data'] is List) {
-            categories = body['data'];
-          } else if (body['serviceCategories'] is List) {
-            categories = body['serviceCategories'];
-          }
-        }
-
-        if (categories != null) {
-          final fetchedNames = categories
-              .map((e) => e is Map ? (e['name']?.toString() ?? '') : e.toString())
-              .where((s) => s.isNotEmpty)
-              .toList();
-          serviceTypes.assignAll(fetchedNames);
-        }
-      }
+      final fetchedServices = await _garageListService.fetchServices();
+      serviceTypes.assignAll(fetchedServices);
     } catch (e) {
       print('[GarageListController] fetchServices error: $e');
     }

@@ -6,13 +6,11 @@ import 'package:yousef1234321/core/common/constants/iconpath.dart';
 import 'package:yousef1234321/core/common/widgets/custom_button.dart';
 import 'package:yousef1234321/features/auth/sign_up/signup_otp/controller/signup_otp_controller.dart';
 
-class SignupOtpScreen extends StatelessWidget {
+class SignupOtpScreen extends GetView<SignupOtpController> {
   const SignupOtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(SignupOtpController());
-
     final defaultPinTheme = PinTheme(
       width: 45,
       height: 60,

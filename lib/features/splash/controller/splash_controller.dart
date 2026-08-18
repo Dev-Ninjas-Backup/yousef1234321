@@ -7,6 +7,8 @@ import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/notification/controller/notification_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
+import 'package:permission_handler/permission_handler.dart';
+
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {
   late AnimationController animationController;
@@ -23,8 +25,19 @@ class SplashController extends GetxController
     )..repeat();
     super.onInit();
 
+    _requestPermissions();
     _startImageRotation();
     _checkAuthStatus();
+  }
+
+  Future<void> _requestPermissions() async {
+    await [
+      Permission.location,
+      Permission.camera,
+      Permission.storage,
+      Permission.photos,
+      Permission.notification,
+    ].request();
   }
 
   /// Check if user is already logged in

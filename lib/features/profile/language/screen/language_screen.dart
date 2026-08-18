@@ -4,10 +4,8 @@ import 'package:yousef1234321/core/common/widgets/custom_appbar.dart';
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import '../controller/language_controller.dart';
 
-class LanguageScreen extends StatelessWidget {
+class LanguageScreen extends GetView<LanguageController> {
   LanguageScreen({super.key});
-
-  final LanguageController controller = Get.put(LanguageController());
 
   final List<Map<String, String>> languages = [
     {'name': 'English', 'nativeName': 'English', 'code': 'en', 'country': 'US'},

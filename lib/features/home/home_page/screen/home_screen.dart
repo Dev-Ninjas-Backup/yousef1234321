@@ -9,11 +9,12 @@ import 'package:yousef1234321/features/home/home_page/widget/search_section.dart
 import 'package:yousef1234321/features/home/home_page/widget/service_chip.dart';
 import 'package:yousef1234321/features/notification/screen/notification_screen.dart';
 import 'package:yousef1234321/features/profile/profile_page/controller/profile_controller.dart';
+import 'package:yousef1234321/features/profile/profile_page/service/profile_service.dart';
 import 'package:yousef1234321/features/bottom_navbar/controller/bottom_navbar_controller.dart';
 import 'package:yousef1234321/features/profile/profile_page/scrreen/profile_page.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   String _getIconForService(String serviceName) {
@@ -91,9 +92,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
-    // ignore: unused_local_variable
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -132,10 +130,13 @@ class HomeScreen extends StatelessWidget {
                           }
                         },
                         child: Obx(() {
+                          if (!Get.isRegistered<ProfileService>()) {
+                            Get.put(ProfileService(Get.find()));
+                          }
                           final profileController =
                               Get.isRegistered<ProfileController>()
-                              ? Get.find<ProfileController>()
-                              : Get.put(ProfileController());
+                                  ? Get.find<ProfileController>()
+                                  : Get.put(ProfileController(Get.find()));
                           final profilePhoto =
                               profileController.profilePhoto.value;
 
@@ -326,6 +327,7 @@ class HomeScreen extends StatelessWidget {
                     .toList(),
               );
             }),
+            const SizedBox(height: 100),
           ],
         ),
       ),

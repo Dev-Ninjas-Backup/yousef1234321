@@ -17,6 +17,7 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
+.vscode/
 
 # VS Code which you may wish to be included in version control, so this line
 temp_auto_push.bat

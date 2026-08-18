@@ -8,13 +8,11 @@ import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/auth/sign_up/controller/sign_up_controller.dart';
 import 'package:yousef1234321/routes/app_route.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends GetView<SignUpController> {
   const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ApiClient(sharedPreferences: Get.find()));
-    final controller = Get.put(SignUpController());
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -33,7 +31,11 @@ class SignUpScreen extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(left: 24, top: 24),
-                    child: Image.asset(Iconpath.arrowback, height: 44, width: 44),
+                    child: Image.asset(
+                      Iconpath.arrowback,
+                      height: 44,
+                      width: 44,
+                    ),
                   ),
                 ),
               ),

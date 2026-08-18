@@ -4,14 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../../../core/network/api_client.dart';
-import '../../../../core/endpoint/endpoint.dart';
+import 'package:yousef1234321/core/endpoint/endpoint.dart';
+import 'package:yousef1234321/core/network/api_client.dart';
 import '../model/garage_model.dart';
+import 'package:yousef1234321/features/service/service%20page/service/service_page_service.dart';
 
 class ServiceController extends GetxController {
+  final ServicePageService _servicePageService;
+
+  ServiceController(this._servicePageService);
+
   final radiusController = TextEditingController();
   final ScrollController scrollController = ScrollController();
-  
+
   var serviceItemList = [].obs;
 
   var selectedOption = RxString('');
@@ -47,6 +52,7 @@ class ServiceController extends GetxController {
     serviceItem();
     scrollController.addListener(_onScroll);
     fetchApprovedGarages(refresh: true);
+    _loadCurrentLocationSilently();
   }
 
   @override
@@ -59,7 +65,10 @@ class ServiceController extends GetxController {
   void _onScroll() {
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 200) {
-      if (!isLoadingMore.value && hasMore.value && !isNearbyMode.value && !isLoadingNearby.value) {
+      if (!isLoadingMore.value &&
+          hasMore.value &&
+          !isNearbyMode.value &&
+          !isLoadingNearby.value) {
         loadMoreApprovedGarages();
       }
     }
@@ -78,62 +87,41 @@ class ServiceController extends GetxController {
     }
 
     try {
-      final url = '${Endpoint.allApprovedGarage}&page=${page.value}&limit=${limit.value}';
-      final res = await ApiClient.to.get(url);
+      final res = await _servicePageService.fetchApprovedGarages(
+        page: page.value,
+        limit: limit.value,
+      );
 
-      if (res.statusCode == 200 && res.body != null) {
-        final body = res.body;
-        List<dynamic> list = [];
-        Map? pagination;
+      final models = res['garages'] as List<GarageModel>;
+      final pagination = res['pagination'] as Map?;
 
-        if (body is Map) {
-          if (body['data'] is Map) {
-            final dataMap = body['data'];
-            if (dataMap['data'] is List) {
-              list = List<dynamic>.from(dataMap['data']);
-            }
-            if (dataMap['pagination'] is Map) {
-              pagination = Map<String, dynamic>.from(dataMap['pagination']);
-            }
-          } else if (body['data'] is List) {
-            list = List<dynamic>.from(body['data']);
-          }
+      if (refresh) {
+        garages.assignAll(models);
+      } else {
+        garages.addAll(models);
+      }
 
-          if (body['pagination'] is Map) {
-            pagination = Map<String, dynamic>.from(body['pagination']);
-          }
-        }
-
-        final models = list
-            .where((e) => e != null && e is Map<String, dynamic>)
-            .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
-
-        if (refresh) {
-          garages.assignAll(models);
-        } else {
-          garages.addAll(models);
-        }
-
-        if (pagination != null) {
-          page.value = (pagination['page'] is int) ? pagination['page'] : page.value;
-          limit.value = (pagination['limit'] is int) ? pagination['limit'] : limit.value;
-          total.value = (pagination['total'] is int) ? pagination['total'] : total.value;
-          final totalPagesVal = (pagination['totalPages'] is int) ? pagination['totalPages'] : 1;
-          totalPages.value = totalPagesVal;
-          if (page.value >= totalPagesVal) {
-            hasMore.value = false;
-          }
-        } else {
-          if (models.length < limit.value) {
-            hasMore.value = false;
-          }
+      if (pagination != null) {
+        page.value = (pagination['page'] is int)
+            ? pagination['page']
+            : page.value;
+        limit.value = (pagination['limit'] is int)
+            ? pagination['limit']
+            : limit.value;
+        total.value = (pagination['total'] is int)
+            ? pagination['total']
+            : total.value;
+        final totalPagesVal = (pagination['totalPages'] is int)
+            ? pagination['totalPages']
+            : 1;
+        totalPages.value = totalPagesVal;
+        if (page.value >= totalPagesVal) {
+          hasMore.value = false;
         }
       } else {
-        if (refresh) {
-          garages.clear();
+        if (models.length < limit.value) {
+          hasMore.value = false;
         }
-        EasyLoading.showError('Failed to load approved garages');
       }
     } catch (e, st) {
       print('Error fetching approved garages: $e');
@@ -179,50 +167,25 @@ class ServiceController extends GetxController {
 
       final lat = currentLat.value!;
       final lng = currentLng.value!;
-      final url = '${Endpoint.garageNearby}?lat=$lat&lng=$lng&radius=$radius';
 
-      final res = await ApiClient.to.get(url);
-      if (res.statusCode == 200 && res.body != null) {
-        final body = res.body;
-        List<dynamic> list = [];
+      final models = await _servicePageService.findGaragesNearby(
+        lat: lat,
+        lng: lng,
+        radius: radius,
+      );
 
-        // Accept multiple response shapes: {garages: [...]}, {data: [...]}, etc.
-        if (body is Map) {
-          if (body['garages'] is List) {
-            list = List<dynamic>.from(body['garages']);
-          } else if (body['data'] is List) {
-            list = List<dynamic>.from(body['data']);
-          } else if (body['data'] is Map && body['data']['data'] is List) {
-            list = List<dynamic>.from(body['data']['data']);
-          } else if (body.values.any((v) => v is List)) {
-            final lists = body.values.whereType<List>().toList();
-            if (lists.isNotEmpty) list = List<dynamic>.from(lists.first);
-          }
-        } else if (body is List) {
-          list = List<dynamic>.from(body);
-        }
-
-        if (list.isEmpty) {
-          EasyLoading.showError('No garages found');
-          garages.clear();
-          return;
-        }
-
-        // Map to typed models
-        final models = list
-            .where((e) => e != null && e is Map<String, dynamic>)
-            .map((e) => GarageModel.fromJson(Map<String, dynamic>.from(e)))
-            .toList();
-
-        garages.assignAll(models);
-      } else {
-        EasyLoading.showError('Failed to load nearby garages');
+      if (models.isEmpty) {
+        EasyLoading.showError('No garages found');
         garages.clear();
+        return;
       }
+
+      garages.assignAll(models);
     } catch (e, st) {
       print('Error fetching nearby garages: $e');
       print(st);
       EasyLoading.showError('Failed to fetch nearby garages');
+      garages.clear();
     } finally {
       isLoadingNearby.value = false;
     }
@@ -235,7 +198,30 @@ class ServiceController extends GetxController {
       isLoadingLocation.value = true;
       EasyLoading.show(status: 'loading_location'.tr);
 
-      // Import geolocator if not already done
+      // 1. Check profile location first
+      try {
+        final profileRes = await ApiClient.to.get(Endpoint.profile);
+        if (profileRes.statusCode == 200 && profileRes.body != null) {
+          final data = profileRes.body is Map ? profileRes.body['data'] : null;
+          if (data is Map) {
+            final uLatRaw = data['userLat'];
+            final uLngRaw = data['userLng'];
+            if (uLatRaw != null && uLngRaw != null) {
+              final double? pLat = double.tryParse(uLatRaw.toString());
+              final double? pLng = double.tryParse(uLngRaw.toString());
+              if (pLat != null && pLng != null && pLat != 0 && pLng != 0) {
+                currentLat.value = pLat;
+                currentLng.value = pLng;
+                hasCurrentLocation.value = true;
+                EasyLoading.dismiss();
+                return;
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
+      // 2. Fall back to device GPS location
       final permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         final requested = await Geolocator.requestPermission();
@@ -270,6 +256,27 @@ class ServiceController extends GetxController {
       hasCurrentLocation.value = false;
     } finally {
       isLoadingLocation.value = false;
+    }
+  }
+
+  /// Silently fetches location in background when app opens
+  Future<void> _loadCurrentLocationSilently() async {
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      currentLat.value = position.latitude;
+      currentLng.value = position.longitude;
+      hasCurrentLocation.value = true;
+    } catch (e) {
+      print('Silently loading location failed: $e');
     }
   }
 }

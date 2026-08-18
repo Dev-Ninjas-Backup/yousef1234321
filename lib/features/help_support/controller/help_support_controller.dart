@@ -1,28 +1,25 @@
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:yousef1234321/features/help_support/service/help_support_service.dart';
 
 class HelpSupportController extends GetxController {
+  final HelpSupportService _helpSupportService;
+
+  HelpSupportController(this._helpSupportService);
+
   Future<void> contactSupport() async {
-    final Uri whatsappUrl = Uri.parse(
-      "https://wa.me/8801700000000",
-    ); // replace with your number
-    if (await canLaunchUrl(whatsappUrl)) {
-      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
-    } else {
+    final success = await _helpSupportService.launchWhatsApp("8801700000000");
+    if (!success) {
       Get.snackbar("Error", "Could not open WhatsApp.");
     }
   }
 
   Future<void> emailSupport() async {
-    final Uri emailUrl = Uri(
-      scheme: 'mailto',
-      path: 'support@yourapp.com',
-      query: 'subject=Support Request&body=Hi, I need help with...',
+    final success = await _helpSupportService.launchEmail(
+      'support@yourapp.com',
+      'Support Request',
+      'Hi, I need help with...',
     );
-
-    if (await canLaunchUrl(emailUrl)) {
-      await launchUrl(emailUrl);
-    } else {
+    if (!success) {
       Get.snackbar("Error", "Could not open email app.");
     }
   }

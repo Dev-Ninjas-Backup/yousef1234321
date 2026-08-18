@@ -6,13 +6,11 @@ import 'package:yousef1234321/features/profile/edit_profile/controller/edit_prof
 import 'package:yousef1234321/features/profile/edit_profile/widgets/build_field.dart';
 import 'package:yousef1234321/features/profile/edit_profile/widgets/build_phone_field.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends GetView<EditProfileController> {
   const EditProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(EditProfileController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(

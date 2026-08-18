@@ -6,13 +6,11 @@ import 'package:yousef1234321/features/home/garage_list/controller/garage_list_c
 import 'package:yousef1234321/features/home/home_page/widget/garage_card.dart';
 import 'package:yousef1234321/core/common/widgets/translated_text.dart';
 
-class GarageListScreen extends StatelessWidget {
+class GarageListScreen extends GetView<GarageListController> {
   const GarageListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(GarageListController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
