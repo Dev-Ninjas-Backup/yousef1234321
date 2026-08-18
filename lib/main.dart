@@ -7,9 +7,11 @@ import 'package:yousef1234321/core/network/api_client.dart';
 import 'package:yousef1234321/features/notification/controller/notification_controller.dart';
 import 'package:yousef1234321/features/profile/language/controller/language_controller.dart';
 import 'package:yousef1234321/core/service/translation_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // Initialize SharedPreferences & ApiClient
   final sharedPreferences = await SharedPreferences.getInstance();

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:yousef1234321/secrets/api_keys.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class TranslationService extends GetxService {
   final _cache = <String, String>{};
@@ -31,7 +31,7 @@ class TranslationService extends GetxService {
     }
 
     // Premium Google Translate API Key
-    const apiKey = googleTranslateApiKey;
+    final apiKey = dotenv.env['GOOGLE_TRANSLATE_API_KEY'] ?? '';
 
     final url = Uri.parse(
       'https://translation.googleapis.com/language/translate/v2?key=$apiKey',
