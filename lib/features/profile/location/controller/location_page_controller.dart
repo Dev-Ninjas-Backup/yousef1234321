@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:yousef1234321/features/profile/location/service/location_page_service.dart';
-import 'package:yousef1234321/secrets/google_map_api_key.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationPageController extends GetxController {
   final LocationPageService _locationPageService;
@@ -35,7 +35,7 @@ class LocationPageController extends GetxController {
 
   /// Get Geocoding API key
   String _getGeocodingApiKey() {
-    return GoogleMapApiKey.apiKey;
+    return dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
   }
 
   @override
