@@ -31,7 +31,7 @@ class TranslationService extends GetxService {
     }
 
     // Premium Google Translate API Key
-    const apiKey = googleTranslateApiKey;
+    final apiKey = googleTranslateApiKey;
 
     final url = Uri.parse(
       'https://translation.googleapis.com/language/translate/v2?key=$apiKey',

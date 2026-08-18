@@ -46,3 +46,8 @@ app.*.map.json
 .gitignore
 temp_interactive_push.bat
 branch_structure.json
+# Secrets
+lib/secrets/
+.env
+.env.*
+!.env.example
