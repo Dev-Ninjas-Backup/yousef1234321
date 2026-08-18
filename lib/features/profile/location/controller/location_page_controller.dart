@@ -11,7 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:yousef1234321/core/endpoint/endpoint.dart';
 import 'package:yousef1234321/core/network/api_client.dart';
-import 'package:yousef1234321/secrets/google_map_api_key.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LocationPageController extends GetxController {
   final TextEditingController searchController = TextEditingController();
@@ -34,7 +34,7 @@ class LocationPageController extends GetxController {
 
   /// Get Geocoding API key
   String _getGeocodingApiKey() {
-    return GoogleMapApiKey.apiKey;
+    return dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
   }
 
   @override
